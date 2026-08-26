@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bpwpivd4t5ca3"
-path="res://.godot/imported/atlas.png-7b6d701721d40511b9cfca52325841a7.ctex"
+uid="uid://b7cw5ovxfyf76"
+path="res://.godot/imported/NES - Ice Hockey - Miscellaneous - General Sprites.png-a03ed61753be40520b3c0889b8fc1015.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://atlas.png"
-dest_files=["res://.godot/imported/atlas.png-7b6d701721d40511b9cfca52325841a7.ctex"]
+source_file="res://sprites/NES - Ice Hockey - Miscellaneous - General Sprites.png"
+dest_files=["res://.godot/imported/NES - Ice Hockey - Miscellaneous - General Sprites.png-a03ed61753be40520b3c0889b8fc1015.ctex"]
 
 [params]
 

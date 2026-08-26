@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b7cw5ovxfyf76"
-path="res://.godot/imported/NES - Ice Hockey - Miscellaneous - General Sprites.png-fa8539a6851c77ab06892b46e4010856.ctex"
+uid="uid://d1smrsjfftqhr"
+path="res://.godot/imported/icon.svg-964d8c66fbd3bda40c44ca195472a8e1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://NES - Ice Hockey - Miscellaneous - General Sprites.png"
-dest_files=["res://.godot/imported/NES - Ice Hockey - Miscellaneous - General Sprites.png-fa8539a6851c77ab06892b46e4010856.ctex"]
+source_file="res://sprites/icon.svg"
+dest_files=["res://.godot/imported/icon.svg-964d8c66fbd3bda40c44ca195472a8e1.ctex"]
 
 [params]
 
@@ -39,3 +39,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false
