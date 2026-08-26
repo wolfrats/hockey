@@ -1,16 +1,14 @@
 [gd_scene format=3 uid="uid://dac22ju5kfqrs"]
 
 [ext_resource type="Script" uid="uid://5rd1s2njfu0n" path="res://objects/skaters/skater.gd" id="1_est1s"]
+[ext_resource type="Texture2D" uid="uid://bpwpivd4t5ca3" path="res://sprites/atlas.png" id="2_0eafs"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_est1s"]
 friction = 0.5
 bounce = 0.5
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y32ns"]
-load_path = "res://.godot/imported/NES - Ice Hockey - Miscellaneous - General Sprites.png-fa8539a6851c77ab06892b46e4010856.ctex"
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_arvj2"]
-atlas = SubResource("CompressedTexture2D_y32ns")
+atlas = ExtResource("2_0eafs")
 region = Rect2(4, 4, 528, 408)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]

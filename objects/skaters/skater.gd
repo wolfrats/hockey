@@ -22,10 +22,10 @@ func _physics_process(_delta: float) -> void:
 	if speed > 5 or speed == 0:
 		($Body).linear_damp = 0.9
 	#if speed > 100:
-	base_offset += (counter / 10) % 3
+	base_offset += int(counter / 10.0) % 3
 	#else:
 	#	($Body).linear_damp = 100
-	$Body/Sprite.region_rect = Rect2(base_offset * 24, 0, 24, 24)
+	$Body/Sprite.region_rect = Rect2(base_offset * 24 + 4, 0, 24, 24)
 
 func impulse(dx: float, dy: float) -> void:
 	($Body).apply_impulse(Vector2(dx, dy))
