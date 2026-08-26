@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://5rd1s2njfu0n" path="res://objects/skaters/skater.gd" id="1_est1s"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_est1s"]
+friction = 0.5
+bounce = 0.5
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_y32ns"]
 load_path = "res://.godot/imported/NES - Ice Hockey - Miscellaneous - General Sprites.png-fa8539a6851c77ab06892b46e4010856.ctex"
@@ -12,6 +14,7 @@ atlas = SubResource("CompressedTexture2D_y32ns")
 region = Rect2(4, 4, 528, 408)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]
+size = Vector2(20, 5.5)
 
 [node name="Skater" type="Node2D" unique_id=149229949]
 script = ExtResource("1_est1s")
@@ -19,8 +22,10 @@ script = ExtResource("1_est1s")
 [node name="Body" type="RigidBody2D" parent="." unique_id=844181388]
 physics_material_override = SubResource("PhysicsMaterial_est1s")
 gravity_scale = 0.0
+lock_rotation = true
 linear_damp_mode = 1
 linear_damp = 0.8
+angular_damp = 100.0
 
 [node name="Sprite" type="Sprite2D" parent="Body" unique_id=406336950]
 scale = Vector2(4, 4)
@@ -29,5 +34,6 @@ region_enabled = true
 region_rect = Rect2(0, 0, 24, 24)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Body" unique_id=1481518937]
+position = Vector2(0, 29)
 scale = Vector2(4, 4)
 shape = SubResource("RectangleShape2D_est1s")
