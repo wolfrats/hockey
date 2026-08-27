@@ -1,6 +1,8 @@
 class_name Skater
 extends Node2D
 var counter = 0
+@export var ghost: Ghost
+@export var home_team: bool
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -10,7 +12,9 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	pass
 	
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
+	if ghost:
+		ghost.handle(delta, self)
 	#counter += 1
 	var speed = ($Body).linear_velocity.length()
 	$Body/Sprite.flip_h = ($Body.linear_velocity.x > 0)
