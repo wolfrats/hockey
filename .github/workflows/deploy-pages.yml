@@ -13,21 +13,38 @@ jobs:
   export:
     name: Export to HTML5
     runs-on: ubuntu-latest
-    container:
-      image: barichello/godot-ci:4.7.2
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Godot templates
+      - name: Cache Godot files
+        id: cache-godot
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.local/share/godot/**
+            ~/.local/bin/godot
+            ~/.config/godot/**
+          key: ${{ runner.os }}-godot-4.8-dev3
+
+      - name: Download and config Godot Engine linux server and templates
+        if: steps.cache-godot.outputs.cache-hit != 'true'
         run: |
-          mkdir -v -p ~/.local/share/godot/export_templates/
-          mv /root/.local/share/godot/export_templates/4.2.2.stable ~/.local/share/godot/export_templates/4.2.2.stable
+          wget -q https://github.com/godotengine/godot-builds/releases/download/4.8-dev3/Godot_v4.8-dev3_linux.x86_64.zip
+          wget -q https://github.com/godotengine/godot-builds/releases/download/4.8-dev3/Godot_v4.8-dev3_export_templates.tpz
+          unzip Godot_v4.8-dev3_linux.x86_64.zip
+          unzip Godot_v4.8-dev3_export_templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/4.8.dev3.official
+          mkdir -p ~/.config/godot/
+          mkdir -p ~/.local/bin/
+          mv templates/* ~/.local/share/godot/export_templates/4.8.dev3.official
+          rm -f Godot_v4.8-dev3_linux.x86_64.zip Godot_v4.8-dev3_export_templates.tpz
+          mv ./Godot_v4.8-dev3_linux.x86_64 ~/.local/bin/godot
 
       - name: Export Web
         run: |
           mkdir -v -p build/web
-          godot --headless --export-release "Web" build/web/index.html
+          ~/.local/bin/godot --headless --export-release "Web" build/web/index.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
