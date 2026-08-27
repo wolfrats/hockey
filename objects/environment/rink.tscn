@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://7mux8lo0ke4" path="res://objects/skaters/player.tscn" id="1_vgmlv"]
 [ext_resource type="Texture2D" uid="uid://bpwpivd4t5ca3" path="res://sprites/atlas.png" id="2_1h4t5"]
 [ext_resource type="PackedScene" uid="uid://dac22ju5kfqrs" path="res://objects/skaters/skater.tscn" id="3_vqtge"]
+[ext_resource type="PackedScene" uid="uid://087q0jqlan76" path="res://objects/skaters/puck.tscn" id="4_1wsni"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vqtge"]
 texture = ExtResource("2_1h4t5")
@@ -1074,26 +1075,32 @@ tile_set = SubResource("TileSet_arvj2")
 [node name="Player" parent="." unique_id=1253797390 instance=ExtResource("1_vgmlv")]
 position = Vector2(264, 292)
 
-[node name="Skater11111" parent="." unique_id=149229949 instance=ExtResource("3_vqtge")]
+[node name="Entities" type="Node2D" parent="." unique_id=7898797]
+y_sort_enabled = true
+
+[node name="Skater11111" parent="Entities" unique_id=149229949 instance=ExtResource("3_vqtge")]
 position = Vector2(631, 404)
 home_team = true
 
-[node name="Skater1111" parent="." unique_id=885562940 instance=ExtResource("3_vqtge")]
+[node name="Skater1111" parent="Entities" unique_id=885562940 instance=ExtResource("3_vqtge")]
 position = Vector2(564, 550)
 home_team = true
 
-[node name="Skater111" parent="." unique_id=1556233076 instance=ExtResource("3_vqtge")]
+[node name="Skater111" parent="Entities" unique_id=1556233076 instance=ExtResource("3_vqtge")]
 position = Vector2(636, 269)
 home_team = true
 
-[node name="Skater11" parent="." unique_id=1966509114 instance=ExtResource("3_vqtge")]
+[node name="Skater11" parent="Entities" unique_id=1966509114 instance=ExtResource("3_vqtge")]
 position = Vector2(397, 484)
 home_team = true
 
-[node name="Skater1" parent="." unique_id=505868705 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
+[node name="Skater1" parent="Entities" unique_id=505868705 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
 position = Vector2(372, 281)
-ghost = NodePath("../Player")
+ghost = NodePath("../../Player")
 home_team = true
+
+[node name="Puck" parent="Entities" unique_id=1068731431 instance=ExtResource("4_1wsni")]
+position = Vector2(412, 337)
 
 [node name="Boards" type="StaticBody2D" parent="." unique_id=897642293]
 
