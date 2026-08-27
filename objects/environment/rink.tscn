@@ -1081,14 +1081,17 @@ y_sort_enabled = true
 [node name="Skater11111" parent="Entities" unique_id=149229949 instance=ExtResource("3_vqtge")]
 position = Vector2(631, 404)
 home_team = true
+stats = 1
 
 [node name="Skater1111" parent="Entities" unique_id=885562940 instance=ExtResource("3_vqtge")]
 position = Vector2(564, 550)
 home_team = true
+stats = 1
 
 [node name="Skater111" parent="Entities" unique_id=1556233076 instance=ExtResource("3_vqtge")]
 position = Vector2(636, 269)
 home_team = true
+stats = 2
 
 [node name="Skater11" parent="Entities" unique_id=1966509114 instance=ExtResource("3_vqtge")]
 position = Vector2(397, 484)

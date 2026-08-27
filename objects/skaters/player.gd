@@ -17,7 +17,7 @@ func handle(_delta: float, skater: Skater) -> void:
 		print('Skater%s' % "1".repeat(Is))
 		get_parent().get_node('Entities/Skater%s' % "1".repeat(Is)).ghost = self
 		return
-	var dx = Input.get_axis("skate_left", "skate_right") * 5
-	var dy = Input.get_axis("skate_up", "skate_down") * 5
+	var dx = Input.get_axis("skate_left", "skate_right")
+	var dy = Input.get_axis("skate_up", "skate_down")
 	if ((dx != 0) or (dy != 0)): skater.counter += 1
 	skater.impulse(dx, dy)

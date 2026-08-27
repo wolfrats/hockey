@@ -3,9 +3,12 @@ extends Node2D
 var counter = 0
 @export var ghost: Ghost
 @export var home_team: bool
-
+@export var stats: Stats.ClassTypes
+var statbook: Stats.StatBlock
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	statbook = StatBook.Classes[stats]
+	$Body.mass = statbook.weight
 	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -29,7 +32,7 @@ func _physics_process(delta: float) -> void:
 	base_offset += int(counter / 10.0) % 3
 	#else:
 	#	($Body).linear_damp = 100
-	$Body/Sprite.region_rect = Rect2(base_offset * 24 + 4, 0, 24, 24)
+	$Body/Sprite.region_rect = Rect2(base_offset * 24 + 4, statbook.sprite_index, 24, 24)
 
 func impulse(dx: float, dy: float) -> void:
-	($Body).apply_impulse(Vector2(dx, dy))
+	($Body).apply_impulse(Vector2(dx, dy) * statbook.speed)
