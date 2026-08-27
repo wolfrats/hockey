@@ -1081,7 +1081,6 @@ y_sort_enabled = true
 [node name="Skater11111" parent="Entities" unique_id=149229949 instance=ExtResource("3_vqtge")]
 position = Vector2(631, 404)
 home_team = true
-stats = 1
 
 [node name="Skater1111" parent="Entities" unique_id=885562940 instance=ExtResource("3_vqtge")]
 position = Vector2(564, 550)
@@ -1101,12 +1100,15 @@ home_team = true
 position = Vector2(372, 281)
 ghost = NodePath("../../Player")
 home_team = true
+stats = 1
 
-[node name="Puck" parent="Entities" unique_id=1068731431 node_paths=PackedStringArray("posessor") instance=ExtResource("4_1wsni")]
+[node name="Puck" parent="Entities" unique_id=1068731431 instance=ExtResource("4_1wsni")]
+unique_name_in_owner = true
 position = Vector2(412, 337)
-posessor = NodePath("../Skater1111")
 
 [node name="Boards" type="StaticBody2D" parent="." unique_id=897642293]
+collision_layer = 4
+collision_mask = 7
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Boards" unique_id=1201619783]
 build_mode = 1

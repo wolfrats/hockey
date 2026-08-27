@@ -14,26 +14,27 @@ region = Rect2(4, 4, 528, 408)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]
 size = Vector2(5.5, 4.25)
 
-[node name="Puck" type="Node2D" unique_id=149229949]
+[node name="Puck" type="RigidBody2D" unique_id=844181388]
 y_sort_enabled = true
-script = ExtResource("1_0yy2u")
-
-[node name="Body" type="RigidBody2D" parent="." unique_id=844181388]
-y_sort_enabled = true
+collision_layer = 2
+collision_mask = 5
 physics_material_override = SubResource("PhysicsMaterial_est1s")
 gravity_scale = 0.0
 lock_rotation = true
+contact_monitor = true
+max_contacts_reported = 10
 linear_damp_mode = 1
 linear_damp = 0.8
 angular_damp = 100.0
+script = ExtResource("1_0yy2u")
 
-[node name="Sprite" type="Sprite2D" parent="Body" unique_id=406336950]
+[node name="Sprite" type="Sprite2D" parent="." unique_id=406336950]
 scale = Vector2(4, 4)
 texture = SubResource("AtlasTexture_arvj2")
 region_enabled = true
 region_rect = Rect2(224, 120, 24, 24)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Body" unique_id=1481518937]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1481518937]
 position = Vector2(-1, 39.5)
 scale = Vector2(4, 4)
 shape = SubResource("RectangleShape2D_est1s")

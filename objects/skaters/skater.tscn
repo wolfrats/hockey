@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://5rd1s2njfu0n" path="res://objects/skaters/skater.gd" id="1_est1s"]
 [ext_resource type="Texture2D" uid="uid://bpwpivd4t5ca3" path="res://sprites/atlas.png" id="2_0eafs"]
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_est1s"]
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_arvj2"]
 friction = 0.5
 bounce = 0.5
 
@@ -14,26 +14,22 @@ region = Rect2(4, 4, 528, 408)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]
 size = Vector2(9.5, 6.25)
 
-[node name="Skater" type="Node2D" unique_id=149229949]
+[node name="Skater" type="RigidBody2D" unique_id=1515226953]
 y_sort_enabled = true
-script = ExtResource("1_est1s")
-
-[node name="Body" type="RigidBody2D" parent="." unique_id=844181388]
-physics_material_override = SubResource("PhysicsMaterial_est1s")
+collision_mask = 7
+physics_material_override = SubResource("PhysicsMaterial_arvj2")
 gravity_scale = 0.0
 lock_rotation = true
-linear_damp_mode = 1
-linear_damp = 0.8
-angular_damp = 100.0
+script = ExtResource("1_est1s")
 
-[node name="Sprite" type="Sprite2D" parent="Body" unique_id=406336950]
+[node name="Sprite" type="Sprite2D" parent="." unique_id=406336950]
 position = Vector2(-16, -16)
 scale = Vector2(4, 4)
 texture = SubResource("AtlasTexture_arvj2")
 region_enabled = true
 region_rect = Rect2(0, 0, 24, 24)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Body" unique_id=1481518937]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1481518937]
 position = Vector2(2, 23)
 scale = Vector2(4, 4)
 shape = SubResource("RectangleShape2D_est1s")

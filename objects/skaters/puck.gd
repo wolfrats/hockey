@@ -1,14 +1,18 @@
-class_name Puck extends Node2D
+class_name Puck extends RigidBody2D
 @export var posessor: Skater
-
-func _ready() -> void:
-	pass # Replace with function body.
+var blocklist: Dictionary[String, int] = {}
+var colidable: bool = true
 
 func _process(_delta: float) -> void:
 	if posessor:
-		($Body).freeze = true
-		($Body/CollisionShape2D).disabled = ($Body).freeze 
-		self.global_position = posessor.get_node("Body").global_position
+		freeze = true
+		($CollisionShape2D).disabled = freeze 
+		self.global_position = posessor.global_position
 	else:
-		($Body).freeze = false
-		($Body/CollisionShape2D).disabled = ($Body).freeze 
+		freeze = false
+		($CollisionShape2D).disabled = freeze 
+
+func _physics_process(_delta: float) -> void:
+	for body in get_colliding_bodies():
+		if body is Skater and (not blocklist.has(body.name) or blocklist[body.name] == 0) and colidable:
+			posessor = body
