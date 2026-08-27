@@ -15,7 +15,7 @@ func handle(_delta: float, skater: Skater) -> void:
 		var Is = skater.name.length() - 5
 		Is = (Is % 5) + 1
 		print('Skater%s' % "1".repeat(Is))
-		get_parent().get_node('Skater%s' % "1".repeat(Is)).ghost = self
+		get_parent().get_node('Entities/Skater%s' % "1".repeat(Is)).ghost = self
 		return
 	var dx = Input.get_axis("skate_left", "skate_right") * 5
 	var dy = Input.get_axis("skate_up", "skate_down") * 5

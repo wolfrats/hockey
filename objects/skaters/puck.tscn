@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://087q0jqlan76"]
 
+[ext_resource type="Script" uid="uid://bl2luahqyy0ss" path="res://objects/skaters/puck.gd" id="1_0yy2u"]
 [ext_resource type="Texture2D" uid="uid://bpwpivd4t5ca3" path="res://sprites/atlas.png" id="2_njx6u"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_est1s"]
@@ -15,6 +16,7 @@ size = Vector2(5.5, 4.25)
 
 [node name="Puck" type="Node2D" unique_id=149229949]
 y_sort_enabled = true
+script = ExtResource("1_0yy2u")
 
 [node name="Body" type="RigidBody2D" parent="." unique_id=844181388]
 y_sort_enabled = true
