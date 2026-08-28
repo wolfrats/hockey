@@ -30,3 +30,8 @@ LB: ability
 RB: grab
 
 grab + check = punch
+
+
+Idea:
+	Hockey roguelike? 
+		Choose new players for roster, multiple shifts? Stats, abilities?
