@@ -2,5 +2,27 @@
 
 [ext_resource type="Script" uid="uid://dker8e4fxhlf" path="res://objects/skaters/player.gd" id="1_uce12"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5twmp"]
+bg_color = Color(0.6, 0.04832193, 0.18140903, 1)
+
 [node name="Player" type="Node2D" unique_id=1253797390]
 script = ExtResource("1_uce12")
+
+[node name="Power" type="ProgressBar" parent="." unique_id=75025038]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -24.0
+offset_top = 48.0
+offset_right = 24.0
+offset_bottom = 56.0
+grow_horizontal = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_5twmp")
+value = 50.0
+show_percentage = false
+
+[node name="Angle" type="Line2D" parent="." unique_id=1653330159]
+points = PackedVector2Array(0, 0, 48, 0)
+width = 2.0
+default_color = Color(0.22035533, 1, 0.62395877, 1)
+end_cap_mode = 2
