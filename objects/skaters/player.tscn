@@ -6,6 +6,7 @@
 bg_color = Color(0.6, 0.04832193, 0.18140903, 1)
 
 [node name="Player" type="Node2D" unique_id=1253797390]
+z_index = 2
 script = ExtResource("1_uce12")
 
 [node name="Power" type="ProgressBar" parent="." unique_id=75025038]
