@@ -8,7 +8,10 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if Input.is_action_just_pressed("swap") and skater:
+	if not skater:
+		return
+	global_position = global_position.lerp(skater.global_position, 0.1)
+	if Input.is_action_just_pressed("swap"):
 		skater.ghost = null
 		var Is = skater.name.length() - 5
 		Is = (Is % 5) + 1
@@ -23,8 +26,5 @@ func handle(_delta: float, curSkater: Skater) -> void:
 	if ((dx != 0) or (dy != 0)): curSkater.counter += 1
 	curSkater.impulse(dx, dy)
 	if Input.is_action_just_released("shoot") and puck.posessor == curSkater:
-		puck.posessor = null
-		puck.blocklist[curSkater.name] = 15
-		puck.set_collision_layer_value(1, false)
-		puck.apply_impulse(Vector2(dx, dy) * 10)
-		puck.freeze = false
+		puck.shoot(curSkater.name, Vector2(dx, dy) * 200)
+		
