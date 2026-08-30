@@ -17,8 +17,7 @@ func _physics_process(_delta: float) -> void:
 		skater.ghost = null
 		var Is = skater.name.length() - 5
 		Is = (Is % 5) + 1
-		print('Skater%s' % "1".repeat(Is))
-		get_parent().get_node('Entities/Skater%s' % "1".repeat(Is)).ghost = self
+		skater.get_parent().get_node('Skater%s' % "1".repeat(Is)).ghost = self
 		return
 	
 func handle(_delta: float, curSkater: Skater) -> void:
@@ -48,6 +47,6 @@ func handle(_delta: float, curSkater: Skater) -> void:
 		$Power.value = power * 100
 		$Angle.set_point_position(1, shotDir.normalized() * 48)
 	if Input.is_action_just_released("shoot") and puck.posessor == curSkater:
-		puck.shoot(curSkater.name, shotDir.normalized() * 200 * power)
+		curSkater.shoot(shotDir, power)
 		power = 0
 		

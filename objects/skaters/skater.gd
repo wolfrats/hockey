@@ -5,6 +5,7 @@ var counter = 0
 @export var home_team: bool
 @export var stats: Stats.ClassTypes
 var statbook: Stats.StatBlock
+var rammed: bool = false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	statbook = StatBook.Classes[stats]
@@ -32,7 +33,31 @@ func _physics_process(delta: float) -> void:
 	base_offset += int(counter / 10.0) % 3
 	#else:
 	#	($Body).linear_damp = 100
+	if rammed:
+		rammed = false
+		%Puck.shoot(name, Vector2.ZERO)
 	$Sprite.region_rect = Rect2(base_offset * 24 + 4, statbook.sprite_index, 24, 24)
 
 func impulse(dx: float, dy: float) -> void:
 	apply_impulse(Vector2(dx, dy) * statbook.speed)
+
+func shoot(dir: Vector2, power: float) -> void:
+	var vec = dir.normalized() * 200 * power * statbook.shot_power
+	var vec2 = vec.rotated(statbook.shot_variance * (1 - (2*randf())))
+	%Puck.shoot(name, vec2)
+
+func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	for i in range(state.get_contact_count()):
+		 # Get the impulse vector for this specific contact point 
+		#var myimpulse: Vector2 = state.get_contact_impulse(i)
+		var myimpulse: Vector2 = state.get_contact_local_velocity_at_position(i)
+		var collider = state.get_contact_collider_object(i)
+		if "mass" in collider:
+			myimpulse *= 1 + (collider.mass - mass)
+		var impulse_strength: float = myimpulse.length()
+		if impulse_strength > 150.0:
+			print("Impact detected with impulse: ", impulse_strength)
+			#
+			#print("Collided with: ", collider)
+			rammed = true
+		 	# drop the puck

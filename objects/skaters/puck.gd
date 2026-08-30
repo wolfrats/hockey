@@ -22,15 +22,17 @@ func _physics_process(_delta: float) -> void:
 			blocklist.erase(key)
 			
 func shoot(shooter, vector) -> void:
+	if not posessor or shooter != posessor.name:
+		return
 	posessor = null
 	blocklist[shooter] = 15
+	get_tree().create_timer(0.5).timeout.connect(_enable_collision)
 	set_collision_mask_value(4, false)
 	freeze = false
 	apply_impulse(vector)
 	var new_transform = get_transform() 
 	new_transform.origin = global_position
 	set_transform(new_transform)
-	get_tree().create_timer(0.5).timeout.connect(_enable_collision)
 
 func _enable_collision() -> void:
 	set_collision_mask_value(4, true)
