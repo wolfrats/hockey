@@ -82,8 +82,5 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 			myimpulse *= 1 + (collider.mass - mass)
 		var impulse_strength: float = myimpulse.length()
 		if impulse_strength > 150.0:
-			print("Impact detected with impulse: ", impulse_strength)
-			#
-			#print("Collided with: ", collider)
-			rammed = true
 		 	# drop the puck
+			rammed = true
