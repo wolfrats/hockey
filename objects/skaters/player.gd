@@ -32,6 +32,7 @@ func handle(_delta: float, curSkater: Skater) -> void:
 		charge = 0.03
 		$Power.visible = false
 		$Angle.visible = false
+		curSkater.charging = false
 	else:
 		if dx != 0 or dy != 0:
 			shotDir = shotDir.lerp(Vector2(dx, dy), 0.1)
@@ -45,6 +46,7 @@ func handle(_delta: float, curSkater: Skater) -> void:
 			power = 0
 			charge = -charge
 		$Power.value = power * 100
+		curSkater.charging = true
 		$Angle.set_point_position(1, shotDir.normalized() * 48)
 	if Input.is_action_just_released("shoot") and puck.posessor == curSkater:
 		curSkater.shoot(shotDir, power)

@@ -6,11 +6,18 @@ var counter = 0
 @export var stats: Stats.ClassTypes
 var statbook: Stats.StatBlock
 var rammed: bool = false
+var charging: bool = false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	statbook = StatBook.Classes[stats]
 	mass = statbook.weight
 	pass # Replace with function body.
+
+enum LookDir {
+	SIDE,
+	DOWN,
+	UP
+}
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
@@ -21,12 +28,15 @@ func _physics_process(delta: float) -> void:
 		ghost.handle(delta, self)
 	#counter += 1
 	var speed = linear_velocity.length()
+	var look_dir: LookDir = LookDir.SIDE
 	$Sprite.flip_h = (linear_velocity.x > 0)
 	var base_offset = 0
 	if (linear_velocity.abs().x < linear_velocity.abs().y):
 		base_offset = 4
+		look_dir = LookDir.DOWN
 		if (linear_velocity.y < 0):
 			base_offset = 11
+			look_dir = LookDir.UP
 	if speed > 5 or speed == 0:
 		linear_damp = 0.9
 	#if speed > 100:
@@ -36,6 +46,12 @@ func _physics_process(delta: float) -> void:
 	if rammed:
 		rammed = false
 		%Puck.shoot(name, Vector2.ZERO)
+	if charging:
+		base_offset = 3
+		if look_dir == LookDir.UP:
+			base_offset = 14
+		elif look_dir == LookDir.DOWN:
+			base_offset = 10
 	$Sprite.region_rect = Rect2(base_offset * 24 + 4, statbook.sprite_index, 24, 24)
 
 func impulse(dx: float, dy: float) -> void:
