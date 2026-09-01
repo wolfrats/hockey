@@ -9,6 +9,7 @@ var rammed: bool = false
 var charging: bool = false
 var knocked_over: int = 0
 var puck: Puck = null
+var skate_dir: Vector2 = Vector2.ONE
 # Called when the node enters the scene tree for the first time.
 
 enum LookDir {
@@ -65,7 +66,15 @@ func _physics_process(delta: float) -> void:
 	if (statbook.sprite_index == 60):
 		spacing = 23
 	$Sprite.region_rect = Rect2(base_offset * spacing + 4, statbook.sprite_index, 24, 24)
-
+	if abs(skate_dir.angle_to(linear_velocity)) > 2:
+		var s: Icesputter = preload("res://objects/environment/icesplutter.tscn").instantiate()
+		%Manager.add_child(s)
+		skate_dir = linear_velocity
+		if linear_velocity.x > 0:
+			var m: ParticleProcessMaterial = s.process_material
+			m.direction.x = -m.direction.x
+		s.global_position = (global_position + Vector2.DOWN * 16)
+	skate_dir = skate_dir.lerp(self.linear_velocity, 0.03)
 func impulse(dx: float, dy: float) -> void:
 	apply_impulse(Vector2(dx, dy) * statbook.speed)
 
