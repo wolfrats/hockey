@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://7mux8lo0ke4" path="res://objects/skaters/player.tscn" id="1_vgmlv"]
 [ext_resource type="Texture2D" uid="uid://bpwpivd4t5ca3" path="res://sprites/atlas.png" id="2_1h4t5"]
 [ext_resource type="PackedScene" uid="uid://dac22ju5kfqrs" path="res://objects/skaters/skater.tscn" id="3_vqtge"]
-[ext_resource type="PackedScene" uid="uid://087q0jqlan76" path="res://objects/skaters/puck.tscn" id="4_1wsni"]
+[ext_resource type="PackedScene" uid="uid://087q0jqlan76" path="res://objects/environment/puck.tscn" id="4_1wsni"]
 [ext_resource type="PackedScene" uid="uid://db80872w7oo7x" path="res://objects/skaters/ai.tscn" id="4_bi5lh"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vqtge"]
