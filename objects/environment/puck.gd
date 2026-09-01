@@ -2,6 +2,15 @@ class_name Puck extends RigidBody2D
 @export var posessor: Skater
 var blocklist: Dictionary[String, int] = {}
 var colidable: bool = true
+var initial_position: Vector2
+
+func _ready() -> void:
+	initial_position = global_position
+
+func home() -> void:
+	freeze = true
+	($CollisionShape2D).disabled = freeze 
+	self.global_position = initial_position
 
 func _process(_delta: float) -> void:
 	if posessor:

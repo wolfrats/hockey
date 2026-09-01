@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://087q0jqlan76" path="res://objects/environment/puck.tscn" id="4_1wsni"]
 [ext_resource type="PackedScene" uid="uid://db80872w7oo7x" path="res://objects/skaters/ai.tscn" id="4_bi5lh"]
 [ext_resource type="PackedScene" uid="uid://cp3it5rmt88r3" path="res://objects/skaters/goalie.tscn" id="7_i0rd8"]
+[ext_resource type="PackedScene" uid="uid://dcs1p006dc6l1" path="res://objects/environment/Goal.tscn" id="8_otjlg"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vqtge"]
 texture = ExtResource("2_1h4t5")
@@ -1209,6 +1210,12 @@ collision_mask = 31
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="HomeGoal" unique_id=1814601784]
 build_mode = 1
 polygon = PackedVector2Array(319, 426, 289, 437, 268, 468, 260, 515, 268, 563, 272, 597, 298, 621, 331, 614, 325, 622, 282, 594, 277, 565, 272, 512, 277, 475, 292, 448)
+
+[node name="Goal" parent="HomeGoal" unique_id=1121408243 instance=ExtResource("8_otjlg")]
+position = Vector2(301, 509)
+
+[node name="Goal2" parent="HomeGoal" unique_id=289303226 instance=ExtResource("8_otjlg")]
+position = Vector2(1710, 516)
 
 [node name="AwayGoal" type="StaticBody2D" parent="." unique_id=877925233]
 collision_layer = 22

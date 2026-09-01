@@ -22,9 +22,9 @@ func _ready() -> void:
 	mass = statbook.weight
 	$Sprite.material =  $Sprite.material.duplicate();
 	if home_team:
-		$Sprite.material.set("shader_parameter/replace_0", Color.CADET_BLUE);
+		$Sprite.material.set("shader_parameter/replace_0", Globals.home_color);
 	else:
-		$Sprite.material.set("shader_parameter/replace_0", Color.BROWN);
+		$Sprite.material.set("shader_parameter/replace_0", Globals.away_color);
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

@@ -16,9 +16,9 @@ func _ready() -> void:
 	$Sprite.material =  $Sprite.material.duplicate();
 	home_x = global_position.x
 	if home_team:
-		$Sprite.material.set("shader_parameter/replace_0", Color.CADET_BLUE);
+		$Sprite.material.set("shader_parameter/replace_0", Globals.home_color.darkened(0.2));
 	else:
-		$Sprite.material.set("shader_parameter/replace_0", Color.BROWN);
+		$Sprite.material.set("shader_parameter/replace_0", Globals.away_color.darkened(0.2));
 	$Sprite.flip_h = home_team
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

@@ -1,5 +1,12 @@
 extends Node2D
 
+var home_color: Color
+var away_color: Color
+
+func _init() -> void:
+	home_color = Color(randf(), randf(), randf())
+	away_color = home_color.inverted()
+
 func get_closest_node(from_position: Vector2, group_name: String) -> Node2D:
 	var nodes = get_tree().get_nodes_in_group(group_name)
 	if nodes.is_empty():
