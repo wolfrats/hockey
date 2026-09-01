@@ -68,7 +68,7 @@ func impulse(dx: float, dy: float) -> void:
 	apply_impulse(Vector2(dx, dy) * statbook.speed)
 
 func shoot(dir: Vector2, power: float) -> void:
-	var vec = dir.normalized() * 200 * power * statbook.shot_power
+	var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
 	var vec2 = vec.rotated(statbook.shot_variance * (1 - (2*randf())))
 	%Puck.shoot(name, vec2)
 

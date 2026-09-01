@@ -23,6 +23,7 @@ value = 50.0
 show_percentage = false
 
 [node name="Angle" type="Line2D" parent="." unique_id=1653330159]
+z_index = -5
 position = Vector2(0, 40)
 points = PackedVector2Array(0, 0, 48, 0)
 width = 2.0

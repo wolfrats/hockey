@@ -1,0 +1,51 @@
+class_name Goalie
+extends RigidBody2D
+var counter = 0
+@export var ghost: Ghost
+@export var home_team: bool
+@export var stats: Stats.ClassTypes
+@export var max_y: float = 650
+@export var min_y: float = 400
+var statbook: Stats.StatBlock
+var rammed: bool = false
+var charging: bool = false
+var knocked_over: int = 0
+var home_x: float
+
+func _ready() -> void:
+	$Sprite.material =  $Sprite.material.duplicate();
+	home_x = global_position.x
+	if home_team:
+		$Sprite.material.set("shader_parameter/replace_0", Color.CADET_BLUE);
+	else:
+		$Sprite.material.set("shader_parameter/replace_0", Color.BROWN);
+	$Sprite.flip_h = home_team
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(_delta: float) -> void:
+	pass
+	
+func _physics_process(delta: float) -> void:
+	if ghost:
+		ghost.handle(delta, self)
+		return
+	var diffx = global_position.x - home_x
+	if abs(diffx) > 4:
+		apply_impulse(Vector2.LEFT * diffx)
+	var diffy = global_position.y - clamp(%Puck.global_position.y, min_y, max_y)
+	if abs(diffy) > 4:
+		apply_impulse(Vector2.UP * diffy)
+	#counter += 1
+
+func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	for i in range(state.get_contact_count()):
+		 # Get the impulse vector for this specific contact point 
+		#var myimpulse: Vector2 = state.get_contact_impulse(i)
+		var myimpulse: Vector2 = state.get_contact_local_velocity_at_position(i)
+		var collider = state.get_contact_collider_object(i)
+		if "mass" in collider:
+			myimpulse *= 1 + (collider.mass - mass)
+		var impulse_strength: float = myimpulse.length()
+		if impulse_strength > 150.0:
+		 	# drop the puck
+			rammed = true
