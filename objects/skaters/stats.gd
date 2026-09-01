@@ -31,6 +31,6 @@ func _init() -> void:
 	
 	Classes[ClassTypes.HEAVY].weight = 2
 	Classes[ClassTypes.HEAVY].speed = 6
-	Classes[ClassTypes.HEAVY].sprite_index = 32
+	Classes[ClassTypes.HEAVY].sprite_index = 26
 	Classes[ClassTypes.HEAVY].shot_power = 1.3
 	Classes[ClassTypes.HEAVY].shot_variance = deg_to_rad(30)

@@ -7,17 +7,24 @@ var counter = 0
 var statbook: Stats.StatBlock
 var rammed: bool = false
 var charging: bool = false
+var knocked_over: int = 0
 # Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	statbook = StatBook.Classes[stats]
-	mass = statbook.weight
-	pass # Replace with function body.
 
 enum LookDir {
 	SIDE,
 	DOWN,
 	UP
 }
+
+func _ready() -> void:
+	statbook = StatBook.Classes[stats]
+	mass = statbook.weight
+	$Sprite.material =  $Sprite.material.duplicate();
+	if home_team:
+		$Sprite.material.set("shader_parameter/replace_0", Color.CADET_BLUE);
+	else:
+		$Sprite.material.set("shader_parameter/replace_0", Color.BROWN);
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
@@ -52,7 +59,10 @@ func _physics_process(delta: float) -> void:
 			base_offset = 14
 		elif look_dir == LookDir.DOWN:
 			base_offset = 10
-	$Sprite.region_rect = Rect2(base_offset * 24 + 4, statbook.sprite_index, 24, 24)
+	var spacing = 24
+	if (statbook.sprite_index == 60):
+		spacing = 23
+	$Sprite.region_rect = Rect2(base_offset * spacing + 4, statbook.sprite_index, 24, 24)
 
 func impulse(dx: float, dy: float) -> void:
 	apply_impulse(Vector2(dx, dy) * statbook.speed)

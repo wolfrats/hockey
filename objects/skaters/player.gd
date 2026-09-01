@@ -14,10 +14,10 @@ func _physics_process(_delta: float) -> void:
 		return
 	global_position = global_position.lerp(skater.global_position, 0.1)
 	if Input.is_action_just_pressed("swap"):
-		skater.ghost = null
-		var Is = skater.name.length() - 5
-		Is = (Is % 5) + 1
-		skater.get_parent().get_node('Skater%s' % "1".repeat(Is)).ghost = self
+		var Is = skater.get_parent().get_children().find(skater)
+		Is = (Is + 1) % 5
+		skater.ghost = skater.get_parent().get_children()[Is].ghost
+		skater.get_parent().get_children()[Is].ghost = self
 		return
 	
 func handle(_delta: float, curSkater: Skater) -> void:
