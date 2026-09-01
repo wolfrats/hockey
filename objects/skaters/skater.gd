@@ -8,6 +8,7 @@ var statbook: Stats.StatBlock
 var rammed: bool = false
 var charging: bool = false
 var knocked_over: int = 0
+var puck: Puck = null
 # Called when the node enters the scene tree for the first time.
 
 enum LookDir {
@@ -52,7 +53,8 @@ func _physics_process(delta: float) -> void:
 	#	($Body).linear_damp = 100
 	if rammed:
 		rammed = false
-		%Puck.shoot(name, Vector2.ZERO)
+		if puck:
+			puck.shoot(name, Vector2.ZERO)
 	if charging:
 		base_offset = 3
 		if look_dir == LookDir.UP:
@@ -70,7 +72,8 @@ func impulse(dx: float, dy: float) -> void:
 func shoot(dir: Vector2, power: float) -> void:
 	var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
 	var vec2 = vec.rotated(statbook.shot_variance * (1 - (2*randf())))
-	%Puck.shoot(name, vec2)
+	if puck:
+		puck.shoot(name, vec2)
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	for i in range(state.get_contact_count()):

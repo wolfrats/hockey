@@ -8,14 +8,16 @@ var dx: float
 var dy: float
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	puck = %Puck
-		# 1. Instantiate the Timer 
+	timer.call_deferred()
+
+func timer() -> void:
 	var periodic_timer = Timer.new()
 	add_child(periodic_timer)
 	periodic_timer.wait_time = 1.5
 	periodic_timer.one_shot = false
 	periodic_timer.timeout.connect(_on_periodic_timeout)
-	periodic_timer.start()
+	periodic_timer.start()	
+
 func _on_periodic_timeout() -> void:
 	dx = 1 - (2 * randf())
 	dy = 1 - (2 * randf())

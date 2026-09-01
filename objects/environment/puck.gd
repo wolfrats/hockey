@@ -14,8 +14,9 @@ func _process(_delta: float) -> void:
 
 func _physics_process(_delta: float) -> void:
 	for body in get_colliding_bodies():
-		if body is Skater and (not blocklist.has(body.name) or blocklist[body.name] == 0) and colidable:
+		if body is Skater and (not blocklist.has(body.name) or blocklist[body.name] == 0) and colidable and not body.puck:
 			posessor = body
+			posessor.puck = self
 	for key in blocklist:
 		blocklist[key] -= 1
 		if blocklist[key] <= 0:
@@ -24,6 +25,7 @@ func _physics_process(_delta: float) -> void:
 func shoot(shooter, vector) -> void:
 	if not posessor or shooter != posessor.name:
 		return
+	posessor.puck = null
 	posessor = null
 	blocklist[shooter] = 15
 	get_tree().create_timer(0.5).timeout.connect(_enable_collision)

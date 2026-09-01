@@ -1080,10 +1080,6 @@ tile_set = SubResource("TileSet_arvj2")
 unique_name_in_owner = true
 y_sort_enabled = true
 
-[node name="Puck" parent="Manager" unique_id=1068731431 instance=ExtResource("4_1wsni")]
-unique_name_in_owner = true
-position = Vector2(412, 337)
-
 [node name="Goalie1" parent="Manager" unique_id=152097433 instance=ExtResource("7_i0rd8")]
 position = Vector2(355, 520)
 home_team = true
@@ -1172,6 +1168,30 @@ position = Vector2(264, 292)
 [node name="AI8" parent="Manager/Ghosts" unique_id=1553147913 instance=ExtResource("4_bi5lh")]
 
 [node name="AI9" parent="Manager/Ghosts" unique_id=533512970 instance=ExtResource("4_bi5lh")]
+
+[node name="Pucks" type="Node2D" parent="Manager" unique_id=1366822961]
+unique_name_in_owner = true
+
+[node name="Puck" parent="Manager/Pucks" unique_id=1068731431 instance=ExtResource("4_1wsni")]
+position = Vector2(412, 337)
+
+[node name="Puck2" parent="Manager/Pucks" unique_id=844181388 instance=ExtResource("4_1wsni")]
+position = Vector2(469, 374)
+
+[node name="Puck3" parent="Manager/Pucks" unique_id=390576909 instance=ExtResource("4_1wsni")]
+position = Vector2(744, 506)
+
+[node name="Puck4" parent="Manager/Pucks" unique_id=324255010 instance=ExtResource("4_1wsni")]
+position = Vector2(792, 711)
+
+[node name="Puck5" parent="Manager/Pucks" unique_id=108345966 instance=ExtResource("4_1wsni")]
+position = Vector2(617, 751)
+
+[node name="Puck6" parent="Manager/Pucks" unique_id=1967862578 instance=ExtResource("4_1wsni")]
+position = Vector2(486, 708)
+
+[node name="Puck7" parent="Manager/Pucks" unique_id=44914476 instance=ExtResource("4_1wsni")]
+position = Vector2(594, 680)
 
 [node name="Boards" type="StaticBody2D" parent="." unique_id=897642293]
 collision_layer = 22

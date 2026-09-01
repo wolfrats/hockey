@@ -18,11 +18,16 @@ config/icon="res://sprites/icon.svg"
 [autoload]
 
 StatBook="*uid://1058ddid81yf"
+Globals="*uid://cf58uv3mr6hvc"
 
 [display]
 
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+
+[global_group]
+
+pucks="Hockey pucks"
 
 [input]
 

@@ -4,10 +4,6 @@ var puck: Puck
 var power: float = 0
 var charge: float = 0.03
 var shotDir: Vector2
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	puck = %Puck
-
 
 func _physics_process(_delta: float) -> void:
 	if not skater:
@@ -48,7 +44,7 @@ func handle(_delta: float, curSkater: Skater) -> void:
 		$Power.value = power * 100
 		curSkater.charging = true
 		$Angle.set_point_position(1, shotDir.normalized() * 48)
-	if Input.is_action_just_released("shoot") and puck.posessor == curSkater:
+	if Input.is_action_just_released("shoot") and curSkater.puck:
 		curSkater.shoot(shotDir, power)
 		power = 0
 		

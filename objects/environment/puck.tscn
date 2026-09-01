@@ -14,7 +14,7 @@ region = Rect2(4, 4, 528, 408)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]
 size = Vector2(6, 4)
 
-[node name="Puck" type="RigidBody2D" unique_id=844181388]
+[node name="Puck" type="RigidBody2D" unique_id=844181388 groups=["pucks"]]
 y_sort_enabled = true
 collision_layer = 18
 collision_mask = 30

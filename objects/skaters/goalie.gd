@@ -32,7 +32,8 @@ func _physics_process(delta: float) -> void:
 	var diffx = global_position.x - home_x
 	if abs(diffx) > 4:
 		apply_impulse(Vector2.LEFT * diffx)
-	var diffy = global_position.y - clamp(%Puck.global_position.y, min_y, max_y)
+	var puck = Globals.get_closest_node(global_position, "pucks")
+	var diffy = global_position.y - clamp(puck.global_position.y, min_y, max_y)
 	if abs(diffy) > 4:
 		apply_impulse(Vector2.UP * diffy)
 	#counter += 1
