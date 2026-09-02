@@ -11,8 +11,13 @@ var rammed: bool = false
 var charging: bool = false
 var knocked_over: int = 0
 var home_x: float
+var needs_reset: bool = false
+
+func home() -> void:
+	needs_reset = true
 
 func _ready() -> void:
+	add_to_group("skaters")
 	home_x = global_position.x
 	$Sprite.texture = $Sprite.texture.duplicate()
 	#$Sprite.texture.atlas = $Sprite.texture.atlas.duplicate()
@@ -34,12 +39,22 @@ func _physics_process(delta: float) -> void:
 	if abs(diffx) > 4:
 		apply_impulse(Vector2.LEFT * diffx)
 	var puck = Globals.get_closest_node(global_position, "pucks")
-	var diffy = global_position.y - clamp(puck.global_position.y, min_y, max_y)
-	if abs(diffy) > 4:
-		apply_impulse(Vector2.UP * diffy)
+	if puck:
+		var diffy = global_position.y - clamp(puck.global_position.y, min_y, max_y)
+		if abs(diffy) > 4:
+			apply_impulse(Vector2.UP * diffy)
 	#counter += 1
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	if needs_reset:
+		var trans = state.get_transform()
+		trans.origin = Vector2(home_x, (min_y + max_y) / 2.0)
+		state.set_transform(trans)
+		state.linear_velocity = Vector2.ZERO
+		state.angular_velocity = 0
+		needs_reset = false
+		return
+
 	for i in range(state.get_contact_count()):
 		 # Get the impulse vector for this specific contact point 
 		#var myimpulse: Vector2 = state.get_contact_impulse(i)

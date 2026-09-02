@@ -3,14 +3,15 @@ class_name Puck extends RigidBody2D
 var blocklist: Dictionary[String, int] = {}
 var colidable: bool = true
 var initial_position: Vector2
+var needs_reset: bool = false
 
 func _ready() -> void:
 	initial_position = global_position
 
 func home() -> void:
-	freeze = true
-	($CollisionShape2D).disabled = freeze 
-	self.global_position = initial_position
+	needs_reset = true
+	self.posessor = null
+	self.freeze = false
 
 func _process(_delta: float) -> void:
 	if posessor:
@@ -47,3 +48,12 @@ func shoot(shooter, vector) -> void:
 
 func _enable_collision() -> void:
 	set_collision_mask_value(4, true)
+
+func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	if needs_reset:
+		var trans = state.get_transform()
+		trans.origin = initial_position
+		state.set_transform(trans)
+		state.linear_velocity = Vector2.ZERO
+		state.angular_velocity = 0
+		needs_reset = false

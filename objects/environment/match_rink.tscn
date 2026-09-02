@@ -1176,23 +1176,11 @@ unique_name_in_owner = true
 [node name="Puck" parent="Manager/Pucks" unique_id=1068731431 instance=ExtResource("7_xvcn5")]
 position = Vector2(412, 337)
 
-[node name="Puck2" parent="Manager/Pucks" unique_id=844181388 instance=ExtResource("7_xvcn5")]
-position = Vector2(469, 374)
 
-[node name="Puck3" parent="Manager/Pucks" unique_id=390576909 instance=ExtResource("7_xvcn5")]
-position = Vector2(744, 506)
 
-[node name="Puck4" parent="Manager/Pucks" unique_id=324255010 instance=ExtResource("7_xvcn5")]
-position = Vector2(792, 711)
 
-[node name="Puck5" parent="Manager/Pucks" unique_id=108345966 instance=ExtResource("7_xvcn5")]
-position = Vector2(617, 751)
 
-[node name="Puck6" parent="Manager/Pucks" unique_id=1967862578 instance=ExtResource("7_xvcn5")]
-position = Vector2(486, 708)
 
-[node name="Puck7" parent="Manager/Pucks" unique_id=44914476 instance=ExtResource("7_xvcn5")]
-position = Vector2(594, 680)
 
 [node name="Boards" type="StaticBody2D" parent="." unique_id=897642293]
 collision_layer = 22
@@ -1214,8 +1202,6 @@ polygon = PackedVector2Array(319, 426, 289, 437, 268, 468, 260, 515, 268, 563, 2
 [node name="Goal" parent="HomeGoal" unique_id=1121408243 instance=ExtResource("8_6d2ki")]
 position = Vector2(301, 509)
 
-[node name="Goal2" parent="HomeGoal" unique_id=289303226 instance=ExtResource("8_6d2ki")]
-position = Vector2(1710, 516)
 
 [node name="AwayGoal" type="StaticBody2D" parent="." unique_id=877925233]
 collision_layer = 22
@@ -1226,3 +1212,7 @@ position = Vector2(2023, 1051)
 scale = Vector2(-1, -1)
 build_mode = 1
 polygon = PackedVector2Array(329, 434, 289, 437, 268, 468, 260, 515, 268, 563, 272, 597, 298, 621, 325, 633, 328, 629, 282, 594, 277, 565, 272, 512, 277, 475, 292, 448)
+
+[node name="Goal2" parent="AwayGoal" unique_id=289303226 instance=ExtResource("8_6d2ki")]
+position = Vector2(1710, 516)
+is_home_goal = false
