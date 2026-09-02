@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" uid="uid://bf8fl04acqr4u" path="res://objects/gods/globals.gd" id="1_c42sn"]
 
-[node name="Globals" type="Node2D" unique_id=295877934]
+[node name="Globals" type="CanvasLayer" unique_id=654117998]
 script = ExtResource("1_c42sn")

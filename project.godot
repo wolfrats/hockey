@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Hockey"
-run/main_scene="uid://luned5gqa1pr"
+run/main_scene="uid://tn613bbsa4xm"
 config/features=PackedStringArray("4.8", "Mobile")
 config/icon="res://sprites/icon.svg"
 

@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://tn613bbsa4xm"]
+
+[ext_resource type="Theme" uid="uid://c0b4q46jrp2me" path="res://menu/theme.tres" id="1_chmv6"]
+[ext_resource type="Script" uid="uid://2dakwbknt74l" path="res://menu/main_menu.gd" id="2_f5okj"]
+
+[node name="MainMenu" type="Control" unique_id=1177999504]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_chmv6")
+script = ExtResource("2_f5okj")
+
+[node name="Panel" type="Panel" parent="." unique_id=1137272398]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_chmv6")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel" unique_id=1960952876]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_chmv6")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/ScrollContainer" unique_id=1439040152]
+layout_mode = 2
+size_flags_horizontal = 22
+size_flags_vertical = 22
+theme = ExtResource("1_chmv6")
+
+[node name="Practice" type="Button" parent="Panel/ScrollContainer/VBoxContainer" unique_id=1297484779]
+layout_mode = 2
+size_flags_horizontal = 20
+size_flags_vertical = 22
+theme = ExtResource("1_chmv6")
+text = "Practice
+"
+
+[node name="Match" type="Button" parent="Panel/ScrollContainer/VBoxContainer" unique_id=1144194092]
+layout_mode = 2
+size_flags_horizontal = 20
+size_flags_vertical = 22
+text = "Match"
+
+[node name="Joystick" type="CheckButton" parent="Panel/ScrollContainer/VBoxContainer" unique_id=2056199114]
+layout_mode = 2
+theme = ExtResource("1_chmv6")
+text = "On-Screen Joystick"
+
+[connection signal="pressed" from="Panel/ScrollContainer/VBoxContainer/Practice" to="." method="_on_practice_pressed"]
+[connection signal="pressed" from="Panel/ScrollContainer/VBoxContainer/Match" to="." method="_on_match_pressed"]
+[connection signal="toggled" from="Panel/ScrollContainer/VBoxContainer/Joystick" to="." method="_on_joystick_toggled"]

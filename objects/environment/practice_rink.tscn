@@ -1,16 +1,16 @@
 [gd_scene format=4 uid="uid://luned5gqa1pr"]
 
-[ext_resource type="PackedScene" uid="uid://58gvk4r2yio1" path="res://objects/gods/manager.tscn" id="1_34ok4"]
-[ext_resource type="PackedScene" uid="uid://7mux8lo0ke4" path="res://objects/skaters/player.tscn" id="1_vgmlv"]
-[ext_resource type="Texture2D" uid="uid://bpwpivd4t5ca3" path="res://sprites/atlas.png" id="2_1h4t5"]
-[ext_resource type="PackedScene" uid="uid://dac22ju5kfqrs" path="res://objects/skaters/skater.tscn" id="3_vqtge"]
-[ext_resource type="PackedScene" uid="uid://087q0jqlan76" path="res://objects/environment/puck.tscn" id="4_1wsni"]
-[ext_resource type="PackedScene" uid="uid://db80872w7oo7x" path="res://objects/skaters/ai.tscn" id="4_bi5lh"]
-[ext_resource type="PackedScene" uid="uid://cp3it5rmt88r3" path="res://objects/skaters/goalie.tscn" id="7_i0rd8"]
-[ext_resource type="PackedScene" uid="uid://dcs1p006dc6l1" path="res://objects/environment/Goal.tscn" id="8_otjlg"]
+[ext_resource type="Texture2D" uid="uid://bpwpivd4t5ca3" path="res://sprites/atlas.png" id="1_jdhqj"]
+[ext_resource type="PackedScene" uid="uid://58gvk4r2yio1" path="res://objects/gods/manager.tscn" id="2_8wi7v"]
+[ext_resource type="PackedScene" uid="uid://cp3it5rmt88r3" path="res://objects/skaters/goalie.tscn" id="3_k8ji8"]
+[ext_resource type="PackedScene" uid="uid://dac22ju5kfqrs" path="res://objects/skaters/skater.tscn" id="4_o06vc"]
+[ext_resource type="PackedScene" uid="uid://7mux8lo0ke4" path="res://objects/skaters/player.tscn" id="5_4alo6"]
+[ext_resource type="PackedScene" uid="uid://db80872w7oo7x" path="res://objects/skaters/ai.tscn" id="6_olylj"]
+[ext_resource type="PackedScene" uid="uid://087q0jqlan76" path="res://objects/environment/puck.tscn" id="7_4hy42"]
+[ext_resource type="PackedScene" uid="uid://dcs1p006dc6l1" path="res://objects/environment/Goal.tscn" id="8_i5rrj"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vqtge"]
-texture = ExtResource("2_1h4t5")
+texture = ExtResource("1_jdhqj")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -1077,121 +1077,121 @@ scale = Vector2(4, 4)
 tile_map_data = PackedByteArray("AAD//wAAAAAAAAsAAAD//wEAAAAAAAwAAAD//wIAAAAAAA0AAAD//wMAAAAAAA4AAAD//wQAAAAAAA8AAAD//wUAAAAAABAAAAD//wYAAAAAABEAAAD//wcAAAAAABIAAAD//wgAAAAAABMAAAD//wkAAAAAABQAAAD//woAAAAAABUAAAD//wsAAAAAABYAAAD//wwAAAAAABcAAAD//w0AAAAAABgAAAD//w4AAAAAABkAAAAAAAAAAAABAAsAAAAAAAEAAAABAAwAAAAAAAIAAAABAA0AAAAAAAMAAAABAA4AAAAAAAQAAAABAA8AAAAAAAUAAAABABAAAAAAAAYAAAABABEAAAAAAAcAAAABABIAAAAAAAgAAAABABMAAAAAAAkAAAABABQAAAAAAAoAAAABABUAAAAAAAsAAAABABYAAAAAAAwAAAABABcAAAAAAA0AAAABABgAAAAAAA4AAAABABkAAAABAAAAAAACAAsAAAABAAEAAAACAAwAAAABAAIAAAACAA0AAAABAAMAAAACAA4AAAABAAQAAAACAA8AAAABAAUAAAACABAAAAABAAYAAAACABEAAAABAAcAAAACABIAAAABAAgAAAACABMAAAABAAkAAAACABQAAAABAAoAAAACABUAAAABAAsAAAACABYAAAABAAwAAAACABcAAAABAA0AAAACABgAAAABAA4AAAACABkAAAACAAAAAAADAAsAAAACAAEAAAADAAwAAAACAAIAAAADAA0AAAACAAMAAAADAA4AAAACAAQAAAADAA8AAAACAAUAAAADABAAAAACAAYAAAADABEAAAACAAcAAAADABIAAAACAAgAAAADABMAAAACAAkAAAADABQAAAACAAoAAAADABUAAAACAAsAAAADABYAAAACAAwAAAADABcAAAACAA0AAAADABgAAAACAA4AAAADABkAAAADAAAAAAAEAAsAAAADAAEAAAAEAAwAAAADAAIAAAAEAA0AAAADAAMAAAAEAA4AAAADAAQAAAAEAA8AAAADAAUAAAAEABAAAAADAAYAAAAEABEAAAADAAcAAAAEABIAAAADAAgAAAAEABMAAAADAAkAAAAEABQAAAADAAoAAAAEABUAAAADAAsAAAAEABYAAAADAAwAAAAEABcAAAADAA0AAAAEABgAAAADAA4AAAAEABkAAAAEAAAAAAAFAAsAAAAEAAEAAAAFAAwAAAAEAAIAAAAFAA0AAAAEAAMAAAAFAA4AAAAEAAQAAAAFAA8AAAAEAAUAAAAFABAAAAAEAAYAAAAFABEAAAAEAAcAAAAFABIAAAAEAAgAAAAFABMAAAAEAAkAAAAFABQAAAAEAAoAAAAFABUAAAAEAAsAAAAFABYAAAAEAAwAAAAFABcAAAAEAA0AAAAFABgAAAAEAA4AAAAFABkAAAAFAAAAAAAGAAsAAAAFAAEAAAAGAAwAAAAFAAIAAAAGAA0AAAAFAAMAAAAGAA4AAAAFAAQAAAAGAA8AAAAFAAUAAAAGABAAAAAFAAYAAAAGABEAAAAFAAcAAAAGABIAAAAFAAgAAAAGABMAAAAFAAkAAAAGABQAAAAFAAoAAAAGABUAAAAFAAsAAAAGABYAAAAFAAwAAAAGABcAAAAFAA0AAAAGABgAAAAFAA4AAAAGABkAAAAGAAAAAAAHAAsAAAAGAAEAAAAHAAwAAAAGAAIAAAAHAA0AAAAGAAMAAAAHAA4AAAAGAAQAAAAHAA8AAAAGAAUAAAAHABAAAAAGAAYAAAAHABEAAAAGAAcAAAAHABIAAAAGAAgAAAAHABMAAAAGAAkAAAAHABQAAAAGAAoAAAAHABUAAAAGAAsAAAAHABYAAAAGAAwAAAAHABcAAAAGAA0AAAAHABgAAAAGAA4AAAAHABkAAAAHAAAAAAAIAAsAAAAHAAEAAAAIAAwAAAAHAAIAAAAIAA0AAAAHAAMAAAAIAA4AAAAHAAQAAAAIAA8AAAAHAAUAAAAIABAAAAAHAAYAAAAIABEAAAAHAAcAAAAIABIAAAAHAAgAAAAIABMAAAAHAAkAAAAIABQAAAAHAAoAAAAIABUAAAAHAAsAAAAIABYAAAAHAAwAAAAIABcAAAAHAA0AAAAIABgAAAAHAA4AAAAIABkAAAAIAAAAAAAJAAsAAAAIAAEAAAAJAAwAAAAIAAIAAAAJAA0AAAAIAAMAAAAJAA4AAAAIAAQAAAAJAA8AAAAIAAUAAAAJABAAAAAIAAYAAAAJABEAAAAIAAcAAAAJABIAAAAIAAgAAAAJABMAAAAIAAkAAAAJABQAAAAIAAoAAAAJABUAAAAIAAsAAAAJABYAAAAIAAwAAAAJABcAAAAIAA0AAAAJABgAAAAIAA4AAAAJABkAAAAJAAAAAAAKAAsAAAAJAAEAAAAKAAwAAAAJAAIAAAAKAA0AAAAJAAMAAAAKAA4AAAAJAAQAAAAKAA8AAAAJAAUAAAAKABAAAAAJAAYAAAAKABEAAAAJAAcAAAAKABIAAAAJAAgAAAAKABMAAAAJAAkAAAAKABQAAAAJAAoAAAAKABUAAAAJAAsAAAAKABYAAAAJAAwAAAAKABcAAAAJAA0AAAAKABgAAAAJAA4AAAAKABkAAAAKAAAAAAALAAsAAAAKAAEAAAALAAwAAAAKAAIAAAALAA0AAAAKAAMAAAALAA4AAAAKAAQAAAALAA8AAAAKAAUAAAALABAAAAAKAAYAAAALABEAAAAKAAcAAAALABIAAAAKAAgAAAALABMAAAAKAAkAAAALABQAAAAKAAoAAAALABUAAAAKAAsAAAALABYAAAAKAAwAAAALABcAAAAKAA0AAAALABgAAAAKAA4AAAALABkAAAALAAAAAAAMAAsAAAALAAEAAAAMAAwAAAALAAIAAAAMAA0AAAALAAMAAAAMAA4AAAALAAQAAAAMAA8AAAALAAUAAAAMABAAAAALAAYAAAAMABEAAAALAAcAAAAMABIAAAALAAgAAAAMABMAAAALAAkAAAAMABQAAAALAAoAAAAMABUAAAALAAsAAAAMABYAAAALAAwAAAAMABcAAAALAA0AAAAMABgAAAALAA4AAAAMABkAAAAMAAAAAAANAAsAAAAMAAEAAAANAAwAAAAMAAIAAAANAA0AAAAMAAMAAAANAA4AAAAMAAQAAAANAA8AAAAMAAUAAAANABAAAAAMAAYAAAANABEAAAAMAAcAAAANABIAAAAMAAgAAAANABMAAAAMAAkAAAANABQAAAAMAAoAAAANABUAAAAMAAsAAAANABYAAAAMAAwAAAANABcAAAAMAA0AAAANABgAAAAMAA4AAAANABkAAAANAAAAAAAOAAsAAAANAAEAAAAOAAwAAAANAAIAAAAOAA0AAAANAAMAAAAOAA4AAAANAAQAAAAOAA8AAAANAAUAAAAOABAAAAANAAYAAAAOABEAAAANAAcAAAAOABIAAAANAAgAAAAOABMAAAANAAkAAAAOABQAAAANAAoAAAAOABUAAAANAAsAAAAOABYAAAANAAwAAAAOABcAAAANAA0AAAAOABgAAAANAA4AAAAOABkAAAAOAAAAAAAPAAsAAAAOAAEAAAAPAAwAAAAOAAIAAAAPAA0AAAAOAAMAAAAPAA4AAAAOAAQAAAAPAA8AAAAOAAUAAAAPABAAAAAOAAYAAAAPABEAAAAOAAcAAAAPABIAAAAOAAgAAAAPABMAAAAOAAkAAAAPABQAAAAOAAoAAAAPABUAAAAOAAsAAAAPABYAAAAOAAwAAAAPABcAAAAOAA0AAAAPABgAAAAOAA4AAAAPABkAAAAPAAAAAAAQAAsAAAAPAAEAAAAQAAwAAAAPAAIAAAAQAA0AAAAPAAMAAAAQAA4AAAAPAAQAAAAQAA8AAAAPAAUAAAAQABAAAAAPAAYAAAAQABEAAAAPAAcAAAAQABIAAAAPAAgAAAAQABMAAAAPAAkAAAAQABQAAAAPAAoAAAAQABUAAAAPAAsAAAAQABYAAAAPAAwAAAAQABcAAAAPAA0AAAAQABgAAAAPAA4AAAAQABkAAAAQAAAAAAARAAsAAAAQAAEAAAARAAwAAAAQAAIAAAARAA0AAAAQAAMAAAARAA4AAAAQAAQAAAARAA8AAAAQAAUAAAARABAAAAAQAAYAAAARABEAAAAQAAcAAAARABIAAAAQAAgAAAARABMAAAAQAAkAAAARABQAAAAQAAoAAAARABUAAAAQAAsAAAARABYAAAAQAAwAAAARABcAAAAQAA0AAAARABgAAAAQAA4AAAARABkAAAARAAAAAAASAAsAAAARAAEAAAASAAwAAAARAAIAAAASAA0AAAARAAMAAAASAA4AAAARAAQAAAASAA8AAAARAAUAAAASABAAAAARAAYAAAASABEAAAARAAcAAAASABIAAAARAAgAAAASABMAAAARAAkAAAASABQAAAARAAoAAAASABUAAAARAAsAAAASABYAAAARAAwAAAASABcAAAARAA0AAAASABgAAAARAA4AAAASABkAAAASAAAAAAATAAsAAAASAAEAAAATAAwAAAASAAIAAAATAA0AAAASAAMAAAATAA4AAAASAAQAAAATAA8AAAASAAUAAAATABAAAAASAAYAAAATABEAAAASAAcAAAATABIAAAASAAgAAAATABMAAAASAAkAAAATABQAAAASAAoAAAATABUAAAASAAsAAAATABYAAAASAAwAAAATABcAAAASAA0AAAATABgAAAASAA4AAAATABkAAAATAAAAAAAUAAsAAAATAAEAAAAUAAwAAAATAAIAAAAUAA0AAAATAAMAAAAUAA4AAAATAAQAAAAUAA8AAAATAAUAAAAUABAAAAATAAYAAAAUABEAAAATAAcAAAAUABIAAAATAAgAAAAUABMAAAATAAkAAAAUABQAAAATAAoAAAAUABUAAAATAAsAAAAUABYAAAATAAwAAAAUABcAAAATAA0AAAAUABgAAAATAA4AAAAUABkAAAAUAAAAAAAVAAsAAAAUAAEAAAAVAAwAAAAUAAIAAAAVAA0AAAAUAAMAAAAVAA4AAAAUAAQAAAAVAA8AAAAUAAUAAAAVABAAAAAUAAYAAAAVABEAAAAUAAcAAAAVABIAAAAUAAgAAAAVABMAAAAUAAkAAAAVABQAAAAUAAoAAAAVABUAAAAUAAsAAAAVABYAAAAUAAwAAAAVABcAAAAUAA0AAAAVABgAAAAUAA4AAAAVABkAAAAVAAAAAAAWAAsAAAAVAAEAAAAWAAwAAAAVAAIAAAAWAA0AAAAVAAMAAAAWAA4AAAAVAAQAAAAWAA8AAAAVAAUAAAAWABAAAAAVAAYAAAAWABEAAAAVAAcAAAAWABIAAAAVAAgAAAAWABMAAAAVAAkAAAAWABQAAAAVAAoAAAAWABUAAAAVAAsAAAAWABYAAAAVAAwAAAAWABcAAAAVAA0AAAAWABgAAAAVAA4AAAAWABkAAAAWAAAAAAAXAAsAAAAWAAEAAAAXAAwAAAAWAAIAAAAXAA0AAAAWAAMAAAAXAA4AAAAWAAQAAAAXAA8AAAAWAAUAAAAXABAAAAAWAAYAAAAXABEAAAAWAAcAAAAXABIAAAAWAAgAAAAXABMAAAAWAAkAAAAXABQAAAAWAAoAAAAXABUAAAAWAAsAAAAXABYAAAAWAAwAAAAXABcAAAAWAA0AAAAXABgAAAAWAA4AAAAXABkAAAAXAAAAAAAYAAsAAAAXAAEAAAAYAAwAAAAXAAIAAAAYAA0AAAAXAAMAAAAYAA4AAAAXAAQAAAAYAA8AAAAXAAUAAAAYABAAAAAXAAYAAAAYABEAAAAXAAcAAAAYABIAAAAXAAgAAAAYABMAAAAXAAkAAAAYABQAAAAXAAoAAAAYABUAAAAXAAsAAAAYABYAAAAXAAwAAAAYABcAAAAXAA0AAAAYABgAAAAXAA4AAAAYABkAAAAYAAAAAAAZAAsAAAAYAAEAAAAZAAwAAAAYAAIAAAAZAA0AAAAYAAMAAAAZAA4AAAAYAAQAAAAZAA8AAAAYAAUAAAAZABAAAAAYAAYAAAAZABEAAAAYAAcAAAAZABIAAAAYAAgAAAAZABMAAAAYAAkAAAAZABQAAAAYAAoAAAAZABUAAAAYAAsAAAAZABYAAAAYAAwAAAAZABcAAAAYAA0AAAAZABgAAAAYAA4AAAAZABkAAAAZAAAAAAAaAAsAAAAZAAEAAAAaAAwAAAAZAAIAAAAaAA0AAAAZAAMAAAAaAA4AAAAZAAQAAAAaAA8AAAAZAAUAAAAaABAAAAAZAAYAAAAaABEAAAAZAAcAAAAaABIAAAAZAAgAAAAaABMAAAAZAAkAAAAaABQAAAAZAAoAAAAaABUAAAAZAAsAAAAaABYAAAAZAAwAAAAaABcAAAAZAA0AAAAaABgAAAAZAA4AAAAaABkAAAAaAAAAAAAbAAsAAAAaAAEAAAAbAAwAAAAaAAIAAAAbAA0AAAAaAAMAAAAbAA4AAAAaAAQAAAAbAA8AAAAaAAUAAAAbABAAAAAaAAYAAAAbABEAAAAaAAcAAAAbABIAAAAaAAgAAAAbABMAAAAaAAkAAAAbABQAAAAaAAoAAAAbABUAAAAaAAsAAAAbABYAAAAaAAwAAAAbABcAAAAaAA0AAAAbABgAAAAaAA4AAAAbABkAAAAbAAAAAAAcAAsAAAAbAAEAAAAcAAwAAAAbAAIAAAAcAA0AAAAbAAMAAAAcAA4AAAAbAAQAAAAcAA8AAAAbAAUAAAAcABAAAAAbAAYAAAAcABEAAAAbAAcAAAAcABIAAAAbAAgAAAAcABMAAAAbAAkAAAAcABQAAAAbAAoAAAAcABUAAAAbAAsAAAAcABYAAAAbAAwAAAAcABcAAAAbAA0AAAAcABgAAAAbAA4AAAAcABkAAAAcAAAAAAAdAAsAAAAcAAEAAAAdAAwAAAAcAAIAAAAdAA0AAAAcAAMAAAAdAA4AAAAcAAQAAAAdAA8AAAAcAAUAAAAdABAAAAAcAAYAAAAdABEAAAAcAAcAAAAdABIAAAAcAAgAAAAdABMAAAAcAAkAAAAdABQAAAAcAAoAAAAdABUAAAAcAAsAAAAdABYAAAAcAAwAAAAdABcAAAAcAA0AAAAdABgAAAAcAA4AAAAdABkAAAAdAAAAAAAeAAsAAAAdAAEAAAAeAAwAAAAdAAIAAAAeAA0AAAAdAAMAAAAeAA4AAAAdAAQAAAAeAA8AAAAdAAUAAAAeABAAAAAdAAYAAAAeABEAAAAdAAcAAAAeABIAAAAdAAgAAAAeABMAAAAdAAkAAAAeABQAAAAdAAoAAAAeABUAAAAdAAsAAAAeABYAAAAdAAwAAAAeABcAAAAdAA0AAAAeABgAAAAdAA4AAAAeABkAAAAeAAAAAAAfAAsAAAAeAAEAAAAfAAwAAAAeAAIAAAAfAA0AAAAeAAMAAAAfAA4AAAAeAAQAAAAfAA8AAAAeAAUAAAAfABAAAAAeAAYAAAAfABEAAAAeAAcAAAAfABIAAAAeAAgAAAAfABMAAAAeAAkAAAAfABQAAAAeAAoAAAAfABUAAAAeAAsAAAAfABYAAAAeAAwAAAAfABcAAAAeAA0AAAAfABgAAAAeAA4AAAAfABkAAAA=")
 tile_set = SubResource("TileSet_arvj2")
 
-[node name="Manager" parent="." unique_id=1081534826 instance=ExtResource("1_34ok4")]
+[node name="Manager" parent="." unique_id=1081534826 instance=ExtResource("2_8wi7v")]
 unique_name_in_owner = true
 y_sort_enabled = true
 
-[node name="Goalie1" parent="Manager" unique_id=152097433 instance=ExtResource("7_i0rd8")]
+[node name="Goalie1" parent="Manager" unique_id=152097433 instance=ExtResource("3_k8ji8")]
 position = Vector2(355, 520)
 home_team = true
 
 [node name="Team1" type="Node2D" parent="Manager" unique_id=7898797]
 y_sort_enabled = true
 
-[node name="Team1_1" parent="Manager/Team1" unique_id=149229949 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
+[node name="Team1_1" parent="Manager/Team1" unique_id=149229949 node_paths=PackedStringArray("ghost") instance=ExtResource("4_o06vc")]
 position = Vector2(631, 404)
 ghost = NodePath("../../Ghosts/AI6")
 home_team = true
 
-[node name="Team1_2" parent="Manager/Team1" unique_id=885562940 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
+[node name="Team1_2" parent="Manager/Team1" unique_id=885562940 node_paths=PackedStringArray("ghost") instance=ExtResource("4_o06vc")]
 position = Vector2(564, 550)
 ghost = NodePath("../../Ghosts/AI7")
 home_team = true
 stats = 1
 
-[node name="Team1_3" parent="Manager/Team1" unique_id=1556233076 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
+[node name="Team1_3" parent="Manager/Team1" unique_id=1556233076 node_paths=PackedStringArray("ghost") instance=ExtResource("4_o06vc")]
 position = Vector2(636, 269)
 ghost = NodePath("../../Ghosts/AI8")
 home_team = true
 stats = 2
 
-[node name="Team1_4" parent="Manager/Team1" unique_id=1966509114 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
+[node name="Team1_4" parent="Manager/Team1" unique_id=1966509114 node_paths=PackedStringArray("ghost") instance=ExtResource("4_o06vc")]
 position = Vector2(397, 484)
 ghost = NodePath("../../Ghosts/AI9")
 home_team = true
 
-[node name="Team1_5" parent="Manager/Team1" unique_id=505868705 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
+[node name="Team1_5" parent="Manager/Team1" unique_id=505868705 node_paths=PackedStringArray("ghost") instance=ExtResource("4_o06vc")]
 position = Vector2(372, 281)
 ghost = NodePath("../../Ghosts/Player")
 home_team = true
 stats = 1
 
-[node name="Goalie2" parent="Manager" unique_id=1083843776 instance=ExtResource("7_i0rd8")]
+[node name="Goalie2" parent="Manager" unique_id=1083843776 instance=ExtResource("3_k8ji8")]
 position = Vector2(1672, 521)
 
 [node name="Team2" type="Node2D" parent="Manager" unique_id=1370495656]
 y_sort_enabled = true
 
-[node name="Team2_1" parent="Manager/Team2" unique_id=1353436344 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
+[node name="Team2_1" parent="Manager/Team2" unique_id=1353436344 node_paths=PackedStringArray("ghost") instance=ExtResource("4_o06vc")]
 position = Vector2(1139, 337)
 ghost = NodePath("../../Ghosts/AI")
 stats = 1
 
-[node name="Team2_2" parent="Manager/Team2" unique_id=1515226953 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
+[node name="Team2_2" parent="Manager/Team2" unique_id=1515226953 node_paths=PackedStringArray("ghost") instance=ExtResource("4_o06vc")]
 position = Vector2(1159, 412)
 ghost = NodePath("../../Ghosts/AI5")
 
-[node name="Team2_3" parent="Manager/Team2" unique_id=672984032 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
+[node name="Team2_3" parent="Manager/Team2" unique_id=672984032 node_paths=PackedStringArray("ghost") instance=ExtResource("4_o06vc")]
 position = Vector2(1104, 583)
 ghost = NodePath("../../Ghosts/AI4")
 stats = 1
 
-[node name="Team2_4" parent="Manager/Team2" unique_id=1656323142 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
+[node name="Team2_4" parent="Manager/Team2" unique_id=1656323142 node_paths=PackedStringArray("ghost") instance=ExtResource("4_o06vc")]
 position = Vector2(1136, 502)
 ghost = NodePath("../../Ghosts/AI2")
 
-[node name="Team2_5" parent="Manager/Team2" unique_id=351450480 node_paths=PackedStringArray("ghost") instance=ExtResource("3_vqtge")]
+[node name="Team2_5" parent="Manager/Team2" unique_id=351450480 node_paths=PackedStringArray("ghost") instance=ExtResource("4_o06vc")]
 position = Vector2(1100, 269)
 ghost = NodePath("../../Ghosts/AI3")
 stats = 2
 
 [node name="Ghosts" type="Node2D" parent="Manager" unique_id=1359897304]
 
-[node name="Player" parent="Manager/Ghosts" unique_id=1253797390 instance=ExtResource("1_vgmlv")]
+[node name="Player" parent="Manager/Ghosts" unique_id=1253797390 instance=ExtResource("5_4alo6")]
 position = Vector2(264, 292)
 
 [node name="Camera2D" type="Camera2D" parent="Manager/Ghosts/Player" unique_id=1537754657]
 
-[node name="AI" parent="Manager/Ghosts" unique_id=1439334356 instance=ExtResource("4_bi5lh")]
+[node name="AI" parent="Manager/Ghosts" unique_id=1439334356 instance=ExtResource("6_olylj")]
 
-[node name="AI2" parent="Manager/Ghosts" unique_id=1974680101 instance=ExtResource("4_bi5lh")]
+[node name="AI2" parent="Manager/Ghosts" unique_id=1974680101 instance=ExtResource("6_olylj")]
 
-[node name="AI3" parent="Manager/Ghosts" unique_id=1130601170 instance=ExtResource("4_bi5lh")]
+[node name="AI3" parent="Manager/Ghosts" unique_id=1130601170 instance=ExtResource("6_olylj")]
 
-[node name="AI4" parent="Manager/Ghosts" unique_id=437506428 instance=ExtResource("4_bi5lh")]
+[node name="AI4" parent="Manager/Ghosts" unique_id=437506428 instance=ExtResource("6_olylj")]
 
-[node name="AI5" parent="Manager/Ghosts" unique_id=723095169 instance=ExtResource("4_bi5lh")]
+[node name="AI5" parent="Manager/Ghosts" unique_id=723095169 instance=ExtResource("6_olylj")]
 
-[node name="AI6" parent="Manager/Ghosts" unique_id=84912267 instance=ExtResource("4_bi5lh")]
+[node name="AI6" parent="Manager/Ghosts" unique_id=84912267 instance=ExtResource("6_olylj")]
 
-[node name="AI7" parent="Manager/Ghosts" unique_id=2044189390 instance=ExtResource("4_bi5lh")]
+[node name="AI7" parent="Manager/Ghosts" unique_id=2044189390 instance=ExtResource("6_olylj")]
 
-[node name="AI8" parent="Manager/Ghosts" unique_id=1553147913 instance=ExtResource("4_bi5lh")]
+[node name="AI8" parent="Manager/Ghosts" unique_id=1553147913 instance=ExtResource("6_olylj")]
 
-[node name="AI9" parent="Manager/Ghosts" unique_id=533512970 instance=ExtResource("4_bi5lh")]
+[node name="AI9" parent="Manager/Ghosts" unique_id=533512970 instance=ExtResource("6_olylj")]
 
 [node name="Pucks" type="Node2D" parent="Manager" unique_id=1366822961]
 unique_name_in_owner = true
 
-[node name="Puck" parent="Manager/Pucks" unique_id=1068731431 instance=ExtResource("4_1wsni")]
+[node name="Puck" parent="Manager/Pucks" unique_id=1068731431 instance=ExtResource("7_4hy42")]
 position = Vector2(412, 337)
 
-[node name="Puck2" parent="Manager/Pucks" unique_id=844181388 instance=ExtResource("4_1wsni")]
+[node name="Puck2" parent="Manager/Pucks" unique_id=844181388 instance=ExtResource("7_4hy42")]
 position = Vector2(469, 374)
 
-[node name="Puck3" parent="Manager/Pucks" unique_id=390576909 instance=ExtResource("4_1wsni")]
+[node name="Puck3" parent="Manager/Pucks" unique_id=390576909 instance=ExtResource("7_4hy42")]
 position = Vector2(744, 506)
 
-[node name="Puck4" parent="Manager/Pucks" unique_id=324255010 instance=ExtResource("4_1wsni")]
+[node name="Puck4" parent="Manager/Pucks" unique_id=324255010 instance=ExtResource("7_4hy42")]
 position = Vector2(792, 711)
 
-[node name="Puck5" parent="Manager/Pucks" unique_id=108345966 instance=ExtResource("4_1wsni")]
+[node name="Puck5" parent="Manager/Pucks" unique_id=108345966 instance=ExtResource("7_4hy42")]
 position = Vector2(617, 751)
 
-[node name="Puck6" parent="Manager/Pucks" unique_id=1967862578 instance=ExtResource("4_1wsni")]
+[node name="Puck6" parent="Manager/Pucks" unique_id=1967862578 instance=ExtResource("7_4hy42")]
 position = Vector2(486, 708)
 
-[node name="Puck7" parent="Manager/Pucks" unique_id=44914476 instance=ExtResource("4_1wsni")]
+[node name="Puck7" parent="Manager/Pucks" unique_id=44914476 instance=ExtResource("7_4hy42")]
 position = Vector2(594, 680)
 
 [node name="Boards" type="StaticBody2D" parent="." unique_id=897642293]
@@ -1211,10 +1211,10 @@ collision_mask = 31
 build_mode = 1
 polygon = PackedVector2Array(319, 426, 289, 437, 268, 468, 260, 515, 268, 563, 272, 597, 298, 621, 331, 614, 325, 622, 282, 594, 277, 565, 272, 512, 277, 475, 292, 448)
 
-[node name="Goal" parent="HomeGoal" unique_id=1121408243 instance=ExtResource("8_otjlg")]
+[node name="Goal" parent="HomeGoal" unique_id=1121408243 instance=ExtResource("8_i5rrj")]
 position = Vector2(301, 509)
 
-[node name="Goal2" parent="HomeGoal" unique_id=289303226 instance=ExtResource("8_otjlg")]
+[node name="Goal2" parent="HomeGoal" unique_id=289303226 instance=ExtResource("8_i5rrj")]
 position = Vector2(1710, 516)
 
 [node name="AwayGoal" type="StaticBody2D" parent="." unique_id=877925233]

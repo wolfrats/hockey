@@ -1,4 +1,4 @@
-extends Node2D
+extends CanvasLayer
 
 var home_color: Color
 var away_color: Color
