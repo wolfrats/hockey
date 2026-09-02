@@ -2,7 +2,7 @@ extends Node2D
 
 var home_score: int = 0
 var away_score: int = 0
-
+@export var is_practice: bool = false
 func _ready() -> void:
 	pass
 

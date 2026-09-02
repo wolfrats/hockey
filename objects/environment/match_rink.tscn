@@ -1089,29 +1089,29 @@ home_team = true
 y_sort_enabled = true
 
 [node name="Team1_1" parent="Manager/Team1" unique_id=149229949 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
-position = Vector2(631, 404)
+position = Vector2(830, 402)
 ghost = NodePath("../../Ghosts/AI6")
 home_team = true
 
 [node name="Team1_2" parent="Manager/Team1" unique_id=885562940 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
-position = Vector2(564, 550)
+position = Vector2(838, 600)
 ghost = NodePath("../../Ghosts/AI7")
 home_team = true
 stats = 1
 
 [node name="Team1_3" parent="Manager/Team1" unique_id=1556233076 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
-position = Vector2(636, 269)
+position = Vector2(772, 442)
 ghost = NodePath("../../Ghosts/AI8")
 home_team = true
 stats = 2
 
 [node name="Team1_4" parent="Manager/Team1" unique_id=1966509114 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
-position = Vector2(397, 484)
+position = Vector2(775, 528)
 ghost = NodePath("../../Ghosts/AI9")
 home_team = true
 
 [node name="Team1_5" parent="Manager/Team1" unique_id=505868705 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
-position = Vector2(372, 281)
+position = Vector2(912, 505)
 ghost = NodePath("../../Ghosts/Player")
 home_team = true
 stats = 1
@@ -1123,25 +1123,25 @@ position = Vector2(1672, 521)
 y_sort_enabled = true
 
 [node name="Team2_1" parent="Manager/Team2" unique_id=1353436344 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
-position = Vector2(1139, 337)
+position = Vector2(1238, 440)
 ghost = NodePath("../../Ghosts/AI")
 stats = 1
 
 [node name="Team2_2" parent="Manager/Team2" unique_id=1515226953 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
-position = Vector2(1159, 412)
+position = Vector2(1162, 392)
 ghost = NodePath("../../Ghosts/AI5")
 
 [node name="Team2_3" parent="Manager/Team2" unique_id=672984032 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
-position = Vector2(1104, 583)
+position = Vector2(1162, 602)
 ghost = NodePath("../../Ghosts/AI4")
 stats = 1
 
 [node name="Team2_4" parent="Manager/Team2" unique_id=1656323142 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
-position = Vector2(1136, 502)
+position = Vector2(1103, 501)
 ghost = NodePath("../../Ghosts/AI2")
 
 [node name="Team2_5" parent="Manager/Team2" unique_id=351450480 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
-position = Vector2(1100, 269)
+position = Vector2(1229, 527)
 ghost = NodePath("../../Ghosts/AI3")
 stats = 2
 
@@ -1174,13 +1174,7 @@ position = Vector2(264, 292)
 unique_name_in_owner = true
 
 [node name="Puck" parent="Manager/Pucks" unique_id=1068731431 instance=ExtResource("7_xvcn5")]
-position = Vector2(412, 337)
-
-
-
-
-
-
+position = Vector2(1007, 486)
 
 [node name="Boards" type="StaticBody2D" parent="." unique_id=897642293]
 collision_layer = 22
@@ -1202,7 +1196,6 @@ polygon = PackedVector2Array(319, 426, 289, 437, 268, 468, 260, 515, 268, 563, 2
 [node name="Goal" parent="HomeGoal" unique_id=1121408243 instance=ExtResource("8_6d2ki")]
 position = Vector2(301, 509)
 
-
 [node name="AwayGoal" type="StaticBody2D" parent="." unique_id=877925233]
 collision_layer = 22
 collision_mask = 31
@@ -1215,4 +1208,3 @@ polygon = PackedVector2Array(329, 434, 289, 437, 268, 468, 260, 515, 268, 563, 2
 
 [node name="Goal2" parent="AwayGoal" unique_id=289303226 instance=ExtResource("8_6d2ki")]
 position = Vector2(1710, 516)
-is_home_goal = false

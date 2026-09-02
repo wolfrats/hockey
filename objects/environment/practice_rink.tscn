@@ -1079,6 +1079,7 @@ tile_set = SubResource("TileSet_arvj2")
 [node name="Manager" parent="." unique_id=1081534826 instance=ExtResource("2_8wi7v")]
 unique_name_in_owner = true
 y_sort_enabled = true
+is_practice = true
 
 [node name="Goalie1" parent="Manager" unique_id=152097433 instance=ExtResource("3_k8ji8")]
 position = Vector2(355, 520)
@@ -1127,11 +1128,23 @@ unique_name_in_owner = true
 [node name="Puck" parent="Manager/Pucks" unique_id=1068731431 instance=ExtResource("7_4hy42")]
 position = Vector2(784, 449)
 
+[node name="Puck2" parent="Manager/Pucks" unique_id=844181388 instance=ExtResource("7_4hy42")]
+position = Vector2(785, 485)
 
+[node name="Puck3" parent="Manager/Pucks" unique_id=390576909 instance=ExtResource("7_4hy42")]
+position = Vector2(784, 517)
 
+[node name="Puck4" parent="Manager/Pucks" unique_id=324255010 instance=ExtResource("7_4hy42")]
+position = Vector2(783, 567)
 
+[node name="Puck5" parent="Manager/Pucks" unique_id=108345966 instance=ExtResource("7_4hy42")]
+position = Vector2(783, 611)
 
+[node name="Puck6" parent="Manager/Pucks" unique_id=1967862578 instance=ExtResource("7_4hy42")]
+position = Vector2(779, 366)
 
+[node name="Puck7" parent="Manager/Pucks" unique_id=44914476 instance=ExtResource("7_4hy42")]
+position = Vector2(782, 411)
 
 [node name="Boards" type="StaticBody2D" parent="." unique_id=897642293]
 collision_layer = 22
@@ -1153,6 +1166,8 @@ polygon = PackedVector2Array(319, 426, 289, 437, 268, 468, 260, 515, 268, 563, 2
 [node name="Goal" parent="HomeGoal" unique_id=1121408243 instance=ExtResource("8_i5rrj")]
 position = Vector2(301, 509)
 
+[node name="Goal2" parent="HomeGoal" unique_id=289303226 instance=ExtResource("8_i5rrj")]
+position = Vector2(1710, 516)
 
 [node name="AwayGoal" type="StaticBody2D" parent="." unique_id=877925233]
 collision_layer = 22
@@ -1163,7 +1178,3 @@ position = Vector2(2023, 1051)
 scale = Vector2(-1, -1)
 build_mode = 1
 polygon = PackedVector2Array(329, 434, 289, 437, 268, 468, 260, 515, 268, 563, 272, 597, 298, 621, 325, 633, 328, 629, 282, 594, 277, 565, 272, 512, 277, 475, 292, 448)
-
-[node name="Goal2" parent="AwayGoal" unique_id=289303226 instance=ExtResource("8_i5rrj")]
-position = Vector2(1710, 516)
-is_home_goal = false
