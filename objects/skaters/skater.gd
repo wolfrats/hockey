@@ -21,13 +21,14 @@ enum LookDir {
 func _ready() -> void:
 	statbook = StatBook.Classes[stats]
 	mass = statbook.weight
-	$Sprite.material =  $Sprite.material.duplicate();
+	#$Sprite.material =  $Sprite.material.duplicate();
+	$Sprite.texture = $Sprite.texture.duplicate()
+	#$Sprite.texture.atlas = $Sprite.texture.atlas.duplicate()
 	if home_team:
-		$Sprite.material.set("shader_parameter/replace_0", Globals.home_color);
+		$Sprite.texture.atlas = Globals.swap_color_in_texture($Sprite.texture.atlas, Color.from_rgba8(96, 176, 248), Globals.home_color)	
 	else:
-		$Sprite.material.set("shader_parameter/replace_0", Globals.away_color);
-
-
+		$Sprite.texture.atlas = Globals.swap_color_in_texture($Sprite.texture.atlas, Color.from_rgba8(96, 176, 248), Globals.away_color)
+		#$Sprite.material.set("shader_parameter/replace_0", Globals.away_color);
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
 	pass

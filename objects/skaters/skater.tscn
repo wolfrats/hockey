@@ -2,28 +2,15 @@
 
 [ext_resource type="Script" uid="uid://5rd1s2njfu0n" path="res://objects/skaters/skater.gd" id="1_est1s"]
 [ext_resource type="Texture2D" uid="uid://bpwpivd4t5ca3" path="res://sprites/atlas.png" id="2_0eafs"]
-[ext_resource type="Shader" uid="uid://c4wrpw8sx7x33" path="res://shaders/recolor.gdshader" id="2_e6fq4"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_arvj2"]
 friction = 0.5
 bounce = 0.5
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_0eafs"]
-shader = ExtResource("2_e6fq4")
-shader_parameter/original_0 = Color(0.3764706, 0.6901961, 0.972549, 1)
-shader_parameter/original_1 = Color(0, 0, 0, 1)
-shader_parameter/original_2 = Color(0, 0, 0, 1)
-shader_parameter/original_3 = Color(0, 0, 0, 1)
-shader_parameter/original_4 = Color(0, 0, 0, 1)
-shader_parameter/replace_0 = Color(0.9529412, 0, 0, 1)
-shader_parameter/replace_1 = Color(0, 0, 0, 1)
-shader_parameter/replace_2 = Color(0, 0, 0, 1)
-shader_parameter/replace_3 = Color(0, 0, 0, 1)
-shader_parameter/replace_4 = Color(0, 0, 0, 1)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_arvj2"]
 atlas = ExtResource("2_0eafs")
 region = Rect2(4, 4, 528, 408)
+filter_clip = true
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]
 size = Vector2(9, 3.75)
@@ -41,7 +28,6 @@ script = ExtResource("1_est1s")
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=406336950]
 texture_filter = 1
-material = SubResource("ShaderMaterial_0eafs")
 position = Vector2(-16, -16)
 scale = Vector2(4, 4)
 texture = SubResource("AtlasTexture_arvj2")

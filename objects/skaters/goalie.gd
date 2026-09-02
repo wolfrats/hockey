@@ -13,12 +13,13 @@ var knocked_over: int = 0
 var home_x: float
 
 func _ready() -> void:
-	$Sprite.material =  $Sprite.material.duplicate();
 	home_x = global_position.x
+	$Sprite.texture = $Sprite.texture.duplicate()
+	#$Sprite.texture.atlas = $Sprite.texture.atlas.duplicate()
 	if home_team:
-		$Sprite.material.set("shader_parameter/replace_0", Globals.home_color.darkened(0.2));
+		$Sprite.texture.atlas = Globals.swap_color_in_texture($Sprite.texture.atlas, Color.from_rgba8(96, 176, 248), Globals.home_color)	
 	else:
-		$Sprite.material.set("shader_parameter/replace_0", Globals.away_color.darkened(0.2));
+		$Sprite.texture.atlas = Globals.swap_color_in_texture($Sprite.texture.atlas, Color.from_rgba8(96, 176, 248), Globals.away_color)
 	$Sprite.flip_h = home_team
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

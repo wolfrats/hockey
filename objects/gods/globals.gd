@@ -19,3 +19,18 @@ func get_closest_node(from_position: Vector2, group_name: String) -> Node2D:
 			min_distance = distance
 			closest_node = node
 	return closest_node
+	
+func swap_color_in_texture(tex: Texture2D, from_col: Color, to_col: Color) -> ImageTexture:
+	# Convert Texture2D to an Image you can edit 
+	var img: Image = tex.get_image()
+	#img.lock() # Required for fast pixel manipulation in some contexts 
+	 # Loop through every pixel coordinates (x, y) 
+	for x in range(img.get_width()): 
+		for y in range(img.get_height()): 
+			var current_color = img.get_pixel(x, y) 
+			# Optional: add a small tolerance check if dealing with compressed/anti-aliased art 
+			if current_color.is_equal_approx(from_col): 
+				img.set_pixel(x, y, to_col) 
+	#img.unlock() 
+	# Create a new ImageTexture from the modified Image 
+	return ImageTexture.create_from_image(img)
