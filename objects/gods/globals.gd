@@ -5,8 +5,6 @@ var away_color: Color
 var home_texture: Texture2D
 var away_texture: Texture2D
 var ticks: int = 0
-var home_score: int = 0
-var away_score: int = 0
 
 func _init() -> void:
 	home_color = Color(randf(), randf(), randf())
@@ -16,12 +14,6 @@ func _init() -> void:
 
 func _physics_process(_delta: float) -> void:
 	ticks += 1
-
-func goal_scored(goal_name: String) -> void:
-	if goal_name == "HomeGoal":
-		away_score += 1
-	elif goal_name == "AwayGoal":
-		home_score += 1
 
 func get_closest_node(from_position: Vector2, group_name: String) -> Node2D:
 	var nodes = get_tree().get_nodes_in_group(group_name)

@@ -2,7 +2,7 @@ extends Node2D
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
 	if body is Puck:
-		Globals.goal_scored(get_parent().name)
+		%Manager.goal_scored(get_parent().name)
 		var pucks = get_tree().get_nodes_in_group("pucks")
 		for p in pucks:
 			p.home.call_deferred()
