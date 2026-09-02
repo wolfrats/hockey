@@ -10,6 +10,8 @@ var charging: bool = false
 var knocked_over: int = 0
 var puck: Puck = null
 var skate_dir: Vector2 = Vector2.ONE
+var last_move: Vector2 = Vector2.ONE
+var scrape_counter: int = 0
 # Called when the node enters the scene tree for the first time.
 
 enum LookDir {
@@ -23,11 +25,10 @@ func _ready() -> void:
 	mass = statbook.weight
 	#$Sprite.material =  $Sprite.material.duplicate();
 	$Sprite.texture = $Sprite.texture.duplicate()
-	#$Sprite.texture.atlas = $Sprite.texture.atlas.duplicate()
 	if home_team:
-		$Sprite.texture.atlas = Globals.swap_color_in_texture($Sprite.texture.atlas, Color.from_rgba8(96, 176, 248), Globals.home_color)	
+		$Sprite.texture.atlas = Globals.home_texture
 	else:
-		$Sprite.texture.atlas = Globals.swap_color_in_texture($Sprite.texture.atlas, Color.from_rgba8(96, 176, 248), Globals.away_color)
+		$Sprite.texture.atlas = Globals.away_texture
 		#$Sprite.material.set("shader_parameter/replace_0", Globals.away_color);
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
@@ -67,17 +68,19 @@ func _physics_process(delta: float) -> void:
 	if (statbook.sprite_index == 60):
 		spacing = 23
 	$Sprite.region_rect = Rect2(base_offset * spacing + 4, statbook.sprite_index, 24, 24)
-	if abs(skate_dir.angle_to(linear_velocity)) > 2:
+	if abs(last_move.angle_to(linear_velocity)) > 3.1 and Globals.ticks > scrape_counter:
 		var s: Icesputter = preload("res://objects/environment/icesplutter.tscn").instantiate()
 		%Manager.add_child(s)
 		skate_dir = linear_velocity
+		scrape_counter = Globals.ticks + 20
 		if linear_velocity.x > 0:
 			var m: ParticleProcessMaterial = s.process_material
 			m.direction.x = -m.direction.x
 		s.global_position = (global_position + Vector2.DOWN * 16)
 	skate_dir = skate_dir.lerp(self.linear_velocity, 0.03)
 func impulse(dx: float, dy: float) -> void:
-	apply_impulse(Vector2(dx, dy) * statbook.speed)
+	last_move = Vector2(dx, dy)
+	apply_impulse(last_move * statbook.speed)
 
 func shoot(dir: Vector2, power: float) -> void:
 	var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
