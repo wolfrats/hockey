@@ -2,6 +2,7 @@ class_name Skater
 extends RigidBody2D
 var counter = 0
 @export var ghost: Ghost
+var ai: Ghost
 @export var home_team: bool
 @export var stats: Stats.ClassTypes
 var statbook: Stats.StatBlock
@@ -31,6 +32,9 @@ func _ready() -> void:
 		$Sprite.texture.atlas = Globals.home_texture
 	else:
 		$Sprite.texture.atlas = Globals.away_texture
+	if not %Manager.is_practice:
+		ai = preload("res://objects/skaters/ai.tscn").instantiate()
+		add_child(ai)
 
 func home() -> void:
 	needs_reset = true
@@ -42,6 +46,8 @@ func _process(_delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	if ghost:
 		ghost.handle(delta, self)
+	elif ai:
+		ai.handle(delta, self)
 	var speed = linear_velocity.length()
 	var look_dir: LookDir = LookDir.SIDE
 	$Sprite.flip_h = (linear_velocity.x > 0)
