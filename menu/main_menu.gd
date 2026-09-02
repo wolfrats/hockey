@@ -10,7 +10,13 @@ func _ready() -> void:
 	Joy.action_left = &"skate_left" 
 	Joy.action_right = &"skate_right" 
 	Joy.action_up = &"skate_up"
-	Joy.action_down = &"skate_down" 	
+	Joy.action_down = &"skate_down"
+	Joy.joystick_mode = VirtualJoystick.JOYSTICK_DYNAMIC
+	Joy.visibility_mode = VirtualJoystick.VISIBILITY_ALWAYS
+	Joy.joystick_size = 150.0 
+	Joy.tip_size = 60.0
+	Joy.deadzone_ratio = 0.2
+	Joy.custom_minimum_size = Vector2(100, 100) 
 	Shoot = TouchScreenButton.new()
 	Shoot.action = &"shoot"
 	Shoot.texture_normal = preload("res://sprites/icon.svg")
@@ -36,5 +42,5 @@ func _on_match_pressed() -> void:
 func _on_joystick_toggled(toggled_on: bool) -> void:
 	if toggled_on:
 		Joy.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 150) 
-		Globals.add_child(Joy)
 		Globals.add_child(Holder)
+		Globals.add_child(Joy)

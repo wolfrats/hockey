@@ -182,6 +182,7 @@ swap={
 [input_devices]
 
 joypads/ignore_joypad_on_unfocused_application=true
+pointing/emulate_touch_from_mouse=true
 
 [physics]
 
