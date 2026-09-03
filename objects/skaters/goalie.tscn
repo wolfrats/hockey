@@ -12,12 +12,12 @@ atlas = ExtResource("3_1mhwk")
 region = Rect2(4, 4, 528, 408)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]
-size = Vector2(9, 15.875)
+size = Vector2(10.25, 15.875)
 
 [node name="Goalie" type="RigidBody2D" unique_id=1515226953]
 y_sort_enabled = true
-collision_layer = 8
-collision_mask = 12
+collision_layer = 40
+collision_mask = 44
 mass = 3.0
 physics_material_override = SubResource("PhysicsMaterial_arvj2")
 gravity_scale = 0.0
@@ -36,6 +36,6 @@ region_enabled = true
 region_rect = Rect2(84, 124, 24, 24)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1481518937]
-position = Vector2(-2, 1.75)
+position = Vector2(-6.5, 1.75)
 scale = Vector2(4, 4)
 shape = SubResource("RectangleShape2D_est1s")

@@ -45,28 +45,23 @@ func _process(_delta: float) -> void:
 	pass
 	
 func do_check() -> void:
-	if checking <= 0 and knocked_over <= 0:
-		checking = 30
+	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
+		checking = Globals.ticks + 30
 		var skaters = get_tree().get_nodes_in_group("skaters")
 		for s in skaters:
 			if s != self and global_position.distance_to(s.global_position) < 40:
-				s.knocked_over = 120
+				s.knocked_over = Globals.ticks + 120
+				s.checking = 0
+				s.charging = false
 
 func _physics_process(delta: float) -> void:
-	if knocked_over > 0:
-		knocked_over -= 1
-		checking = 0
-		charging = false
-	elif checking > 0:
-		checking -= 1
-	else:
-		if ghost:
-			ghost.handle(delta, self)
-		elif ai:
-			ai.handle(delta, self)
+	if ghost:
+		ghost.handle(delta, self)
+	elif ai:
+		ai.handle(delta, self)
 	var speed = linear_velocity.length()
 	var look_dir: LookDir = LookDir.SIDE
-	if knocked_over <= 0 and checking <= 0:
+	if knocked_over <= Globals.ticks and checking <= Globals.ticks:
 		$Sprite.flip_h = (linear_velocity.x > 0)
 	var base_offset = 0
 	if (linear_velocity.abs().x < linear_velocity.abs().y):
@@ -88,14 +83,14 @@ func _physics_process(delta: float) -> void:
 			base_offset = 14
 		elif look_dir == LookDir.DOWN:
 			base_offset = 10
-	if checking > 0:
+	if checking > Globals.ticks:
 		base_offset = 7
 		if look_dir == LookDir.UP:
 			base_offset = 9
 		elif look_dir == LookDir.DOWN:
 			base_offset = 8
-	if knocked_over > 0:
-		base_offset = 15
+	if knocked_over > Globals.ticks:
+		base_offset = 19
 	var spacing = 24
 	if (statbook.sprite_index == 60):
 		spacing = 23
@@ -112,10 +107,14 @@ func _physics_process(delta: float) -> void:
 	skate_dir = skate_dir.lerp(self.linear_velocity, 0.03)
 
 func impulse(dx: float, dy: float) -> void:
+	if knocked_over > Globals.ticks or checking > Globals.ticks:
+		return
 	last_move = Vector2(dx, dy)
 	apply_impulse(last_move * statbook.speed)
 
 func shoot(dir: Vector2, power: float) -> void:
+	if knocked_over > Globals.ticks or checking > Globals.ticks:
+		return
 	var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
 	var vec2 = vec.rotated(statbook.shot_variance * (1 - (2*randf())))
 	if puck:

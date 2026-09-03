@@ -1,6 +1,7 @@
 class_name Goalie
 extends RigidBody2D
 var counter = 0
+const OFFSET: int = 32
 @export var ghost: Ghost
 @export var home_team: bool
 @export var stats: Stats.ClassTypes
@@ -40,7 +41,7 @@ func _physics_process(delta: float) -> void:
 		apply_impulse(Vector2.LEFT * diffx)
 	var puck = Globals.get_closest_node(global_position, "pucks")
 	if puck:
-		var diffy = global_position.y - clamp(puck.global_position.y, min_y, max_y)
+		var diffy = global_position.y - clamp(puck.global_position.y + OFFSET, min_y, max_y)
 		if abs(diffy) > 4:
 			apply_impulse(Vector2.UP * diffy)
 	#counter += 1

@@ -16,8 +16,8 @@ size = Vector2(6, 4)
 
 [node name="Puck" type="RigidBody2D" unique_id=844181388 groups=["pucks"]]
 y_sort_enabled = true
-collision_layer = 18
-collision_mask = 30
+collision_layer = 50
+collision_mask = 62
 mass = 0.2
 physics_material_override = SubResource("PhysicsMaterial_est1s")
 gravity_scale = 0.0
