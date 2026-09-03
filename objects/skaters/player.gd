@@ -21,19 +21,21 @@ func handle(_delta: float, curSkater: Skater) -> void:
 	var dx = Input.get_axis("skate_left", "skate_right")
 	var dy = Input.get_axis("skate_up", "skate_down")
 
-	if Input.is_action_just_pressed("check"):
+	if Input.is_action_just_pressed("check") and curSkater.knocked_over <= Globals.ticks and curSkater.checking <= Globals.ticks:
 		curSkater.do_check()
 
-	if Input.is_action_just_pressed("shoot"):
+	if Input.is_action_just_pressed("shoot") and curSkater.knocked_over <= Globals.ticks and curSkater.checking <= Globals.ticks:
 		shotDir = Vector2(dx, dy)
+
 	if not Input.is_action_pressed("shoot"):
 		if ((dx != 0) or (dy != 0)): curSkater.counter += 1
 		curSkater.impulse(dx, dy)
 		charge = 0.03
 		$Power.visible = false
 		$Angle.visible = false
-		curSkater.charging = false
-	else:
+		if curSkater.knocked_over <= Globals.ticks and curSkater.checking <= Globals.ticks:
+			curSkater.charging = false
+	elif curSkater.knocked_over <= Globals.ticks and curSkater.checking <= Globals.ticks:
 		if dx != 0 or dy != 0:
 			shotDir = shotDir.lerp(Vector2(dx, dy), 0.1)
 		$Power.visible = true
