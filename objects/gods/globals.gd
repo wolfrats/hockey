@@ -16,6 +16,10 @@ func _init() -> void:
 func _physics_process(_delta: float) -> void:
 	ticks += 1
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		get_tree().change_scene_to_file("res://menu/main_menu.tscn")
+
 func get_closest_node(from_position: Vector2, group_name: String) -> Node2D:
 	var nodes = get_tree().get_nodes_in_group(group_name)
 	if nodes.is_empty():
