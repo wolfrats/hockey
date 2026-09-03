@@ -5,6 +5,7 @@ var away_color: Color
 var home_texture: Texture2D
 var away_texture: Texture2D
 var ticks: int = 0
+var period_length: float = 120.0
 
 func _init() -> void:
 	home_color = Color(randf(), randf(), randf())
