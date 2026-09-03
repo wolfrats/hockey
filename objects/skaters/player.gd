@@ -20,6 +20,10 @@ func handle(_delta: float, curSkater: Skater) -> void:
 	self.skater = curSkater
 	var dx = Input.get_axis("skate_left", "skate_right")
 	var dy = Input.get_axis("skate_up", "skate_down")
+
+	if Input.is_action_just_pressed("check"):
+		curSkater.do_check()
+
 	if Input.is_action_just_pressed("shoot"):
 		shotDir = Vector2(dx, dy)
 	if not Input.is_action_pressed("shoot"):

@@ -9,6 +9,7 @@ var statbook: Stats.StatBlock
 var rammed: bool = false
 var charging: bool = false
 var knocked_over: int = 0
+var checking: int = 0
 var puck: Puck = null
 var skate_dir: Vector2 = Vector2.ONE
 var last_move: Vector2 = Vector2.ONE
@@ -43,14 +44,30 @@ func home() -> void:
 func _process(_delta: float) -> void:
 	pass
 	
+func do_check() -> void:
+	if checking <= 0 and knocked_over <= 0:
+		checking = 30
+		var skaters = get_tree().get_nodes_in_group("skaters")
+		for s in skaters:
+			if s != self and global_position.distance_to(s.global_position) < 40:
+				s.knocked_over = 120
+
 func _physics_process(delta: float) -> void:
-	if ghost:
-		ghost.handle(delta, self)
-	elif ai:
-		ai.handle(delta, self)
+	if knocked_over > 0:
+		knocked_over -= 1
+		checking = 0
+		charging = false
+	elif checking > 0:
+		checking -= 1
+	else:
+		if ghost:
+			ghost.handle(delta, self)
+		elif ai:
+			ai.handle(delta, self)
 	var speed = linear_velocity.length()
 	var look_dir: LookDir = LookDir.SIDE
-	$Sprite.flip_h = (linear_velocity.x > 0)
+	if knocked_over <= 0 and checking <= 0:
+		$Sprite.flip_h = (linear_velocity.x > 0)
 	var base_offset = 0
 	if (linear_velocity.abs().x < linear_velocity.abs().y):
 		base_offset = 4
@@ -71,6 +88,14 @@ func _physics_process(delta: float) -> void:
 			base_offset = 14
 		elif look_dir == LookDir.DOWN:
 			base_offset = 10
+	if checking > 0:
+		base_offset = 7
+		if look_dir == LookDir.UP:
+			base_offset = 9
+		elif look_dir == LookDir.DOWN:
+			base_offset = 8
+	if knocked_over > 0:
+		base_offset = 15
 	var spacing = 24
 	if (statbook.sprite_index == 60):
 		spacing = 23
