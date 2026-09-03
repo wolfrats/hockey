@@ -76,7 +76,7 @@ func handle(_delta: float, curSkater: Skater) -> void:
 				var teammate = get_most_forward_teammate()
 				if teammate:
 					var pass_dir = (teammate.global_position - curSkater.global_position).normalized()
-					curSkater.shoot(pass_dir, 1.0)
+					curSkater.shoot(pass_dir, 0.1)
 			else:
 				var closest_opp = get_closest_opponent()
 				if closest_opp and abs(closest_opp.global_position.x - defend_x) < 400:
@@ -88,7 +88,7 @@ func handle(_delta: float, curSkater: Skater) -> void:
 			if has_puck:
 				if abs(curSkater.global_position.x - attack_x) < 300:
 					var y_offset = (509 - curSkater.global_position.y) * 0.5
-					curSkater.shoot(Vector2(forward_dir, y_offset).normalized(), 1.0)
+					curSkater.shoot(Vector2(forward_dir, y_offset / 200).normalized(), 1.0)
 				else:
 					target_pos = Vector2(attack_x, 509)
 			else:
@@ -102,11 +102,11 @@ func handle(_delta: float, curSkater: Skater) -> void:
 				if abs(curSkater.global_position.x - attack_x) < 300:
 					if randf() > 0.05:
 						var y_offset = (509 - curSkater.global_position.y) * 0.5
-						curSkater.shoot(Vector2(forward_dir, y_offset).normalized(), 1.0)
+						curSkater.shoot(Vector2(forward_dir, y_offset / 509).normalized(), 1.0)
 					else:
 						var teammate = get_most_forward_teammate()
 						if teammate:
-							curSkater.shoot((teammate.global_position - curSkater.global_position).normalized(), 0.8)
+							curSkater.shoot((teammate.global_position - curSkater.global_position).normalized(), 0.4)
 				else:
 					target_pos = Vector2(attack_x, curSkater.global_position.y)
 			else:
@@ -135,7 +135,7 @@ func handle(_delta: float, curSkater: Skater) -> void:
 			if has_puck:
 				var teammate = get_most_forward_teammate()
 				if teammate:
-					curSkater.shoot((teammate.global_position - curSkater.global_position).normalized(), 1.0)
+					curSkater.shoot((teammate.global_position - curSkater.global_position).normalized(), 0.4)
 				else:
 					curSkater.shoot(Vector2(forward_dir, 0), 1.0)
 		_:
