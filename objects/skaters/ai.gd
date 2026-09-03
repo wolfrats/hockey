@@ -28,6 +28,22 @@ func get_closest_opponent() -> Node2D:
 				closest_opponent = node
 	return closest_opponent
 
+func is_delegated_chaser() -> bool:
+	if not puck:
+		return false
+	var nodes = get_tree().get_nodes_in_group("skaters")
+	var closest_teammate = null
+	var min_distance: float = INF
+	for node in nodes:
+		if node is Skater and node.home_team == skater.home_team:
+			var idx = node.get_index()
+			if idx in [1, 2, 3]:
+				var distance = node.global_position.distance_squared_to(puck.global_position)
+				if distance < min_distance:
+					min_distance = distance
+					closest_teammate = node
+	return closest_teammate == skater
+
 func get_most_forward_teammate() -> Node2D:
 	var nodes = get_tree().get_nodes_in_group("skaters")
 	var forward_teammate = null
@@ -76,7 +92,7 @@ func handle(_delta: float, curSkater: Skater) -> void:
 				else:
 					target_pos = Vector2(attack_x, 509)
 			else:
-				if puck:
+				if puck and is_delegated_chaser():
 					target_pos = puck.global_position
 				else:
 					target_pos = Vector2(attack_x - forward_dir * 200, 509)
@@ -94,7 +110,7 @@ func handle(_delta: float, curSkater: Skater) -> void:
 				else:
 					target_pos = Vector2(attack_x, curSkater.global_position.y)
 			else:
-				if puck and (puck.posessor == null or (puck.posessor is Skater and puck.posessor.home_team != curSkater.home_team)):
+				if puck and is_delegated_chaser() and (puck.posessor == null or (puck.posessor is Skater and puck.posessor.home_team != curSkater.home_team)):
 					target_pos = puck.global_position
 				else:
 					var y_offset = -150 if index == 2 else 150
