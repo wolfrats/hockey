@@ -23,6 +23,9 @@ func _process(_delta: float) -> void:
 		($CollisionShape2D).disabled = freeze 
 
 func _physics_process(_delta: float) -> void:
+	if global_position.x < -200 or global_position.x > 2200 or global_position.y < -200 or global_position.y > 1400:
+		home()
+
 	for body in get_colliding_bodies():
 		if body is Skater and (not blocklist.has(body.name) or blocklist[body.name] == 0) and colidable and not body.puck:
 			posessor = body
