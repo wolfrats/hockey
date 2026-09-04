@@ -18,7 +18,7 @@ func home() -> void:
 	needs_reset = true
 
 func _ready() -> void:
-	add_to_group("skaters")
+	# add_to_group("skaters")
 	home_x = global_position.x
 	$Sprite.texture = $Sprite.texture.duplicate()
 	#$Sprite.texture.atlas = $Sprite.texture.atlas.duplicate()

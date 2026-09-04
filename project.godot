@@ -13,7 +13,7 @@ config_version=5
 config/name="Hockey"
 run/main_scene="uid://tn613bbsa4xm"
 config/features=PackedStringArray("4.8", "Mobile")
-config/icon="res://sprites/icon.svg"
+config/icon="uid://hn52xdfjj5e6"
 
 [autoload]
 

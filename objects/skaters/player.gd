@@ -8,7 +8,7 @@ var shotDir: Vector2
 func _physics_process(_delta: float) -> void:
 	if not skater:
 		return
-	global_position = global_position.lerp(skater.global_position, 0.1)
+	global_position = skater.global_position#global_position.lerp(skater.global_position, 0.1)
 	if Input.is_action_just_pressed("swap"):
 		var Is = skater.get_parent().get_children().find(skater)
 		Is = (Is + 1) % 5

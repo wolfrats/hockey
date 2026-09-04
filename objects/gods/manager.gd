@@ -40,6 +40,10 @@ func setup_ui() -> void:
 	score_label.set_anchors_preset(Control.PRESET_TOP_WIDE)
 	score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	score_label.add_theme_font_size_override("font_size", 48)
+	score_label.label_settings = LabelSettings.new()
+	score_label.label_settings.outline_size = 6
+	score_label.label_settings.font_size = 64
+	score_label.label_settings.outline_color = Color.BLACK
 	ui_layer.add_child(score_label)
 
 	period_label = Label.new()
@@ -47,12 +51,17 @@ func setup_ui() -> void:
 	period_label.set_anchors_preset(Control.PRESET_TOP_LEFT)
 	period_label.add_theme_font_size_override("font_size", 32)
 	period_label.position = Vector2(20, 20)
+	period_label.label_settings = LabelSettings.new()
+	period_label.label_settings.outline_size = 6
+	period_label.label_settings.font_size = 32
+	period_label.label_settings.outline_color = Color.BLACK
 	ui_layer.add_child(period_label)
 
 	timer_label = Label.new()
 	timer_label.text = "2:00"
 	timer_label.set_anchors_preset(Control.PRESET_TOP_RIGHT)
 	timer_label.add_theme_font_size_override("font_size", 32)
+	timer_label.label_settings = period_label.label_settings
 	timer_label.position = Vector2(-20, 20)
 	timer_label.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	ui_layer.add_child(timer_label)

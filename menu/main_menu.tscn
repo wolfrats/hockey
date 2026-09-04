@@ -51,11 +51,12 @@ size_flags_horizontal = 20
 size_flags_vertical = 22
 text = "Match"
 
-[node name="Joystick" type="CheckButton" parent="Panel/ScrollContainer/VBoxContainer" unique_id=2056199114]
+[node name="JoystickToggle" type="CheckButton" parent="Panel/ScrollContainer/VBoxContainer" unique_id=2056199114]
+unique_name_in_owner = true
 layout_mode = 2
 theme = ExtResource("1_chmv6")
 text = "On-Screen Joystick"
 
 [connection signal="pressed" from="Panel/ScrollContainer/VBoxContainer/Practice" to="." method="_on_practice_pressed"]
 [connection signal="pressed" from="Panel/ScrollContainer/VBoxContainer/Match" to="." method="_on_match_pressed"]
-[connection signal="toggled" from="Panel/ScrollContainer/VBoxContainer/Joystick" to="." method="_on_joystick_toggled"]
+[connection signal="toggled" from="Panel/ScrollContainer/VBoxContainer/JoystickToggle" to="." method="_on_joystick_toggled"]

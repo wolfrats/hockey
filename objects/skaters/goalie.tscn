@@ -12,7 +12,7 @@ atlas = ExtResource("3_1mhwk")
 region = Rect2(4, 4, 528, 408)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]
-size = Vector2(10.25, 15.875)
+size = Vector2(15.75, 23.5)
 
 [node name="Goalie" type="RigidBody2D" unique_id=1515226953]
 y_sort_enabled = true
@@ -30,12 +30,13 @@ script = ExtResource("1_tat2j")
 [node name="Sprite" type="Sprite2D" parent="." unique_id=406336950]
 texture_filter = 1
 position = Vector2(-6, 2)
-scale = Vector2(4, 4)
+scale = Vector2(6, 6)
 texture = SubResource("AtlasTexture_arvj2")
 region_enabled = true
 region_rect = Rect2(84, 124, 24, 24)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1481518937]
-position = Vector2(-6.5, 1.75)
+z_index = 1
+position = Vector2(4.5, 2)
 scale = Vector2(4, 4)
 shape = SubResource("RectangleShape2D_est1s")

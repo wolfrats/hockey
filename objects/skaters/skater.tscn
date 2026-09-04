@@ -9,11 +9,11 @@ bounce = 0.5
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_arvj2"]
 atlas = ExtResource("2_0eafs")
-region = Rect2(4, 4, 528, 408)
+region = Rect2(8, 4, 528, 408)
 filter_clip = true
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]
-size = Vector2(9, 3.75)
+size = Vector2(12.5, 10.5625)
 
 [node name="Skater" type="RigidBody2D" unique_id=1515226953]
 y_sort_enabled = true
@@ -28,13 +28,12 @@ script = ExtResource("1_est1s")
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=406336950]
 texture_filter = 1
-position = Vector2(-16, -16)
-scale = Vector2(4, 4)
+scale = Vector2(6, 6)
 texture = SubResource("AtlasTexture_arvj2")
 region_enabled = true
 region_rect = Rect2(0, 0, 24, 24)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1481518937]
-position = Vector2(2, 24.5)
+position = Vector2(0, 51.125)
 scale = Vector2(4, 4)
 shape = SubResource("RectangleShape2D_est1s")

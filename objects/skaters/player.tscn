@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://7mux8lo0ke4"]
 
 [ext_resource type="Script" uid="uid://dker8e4fxhlf" path="res://objects/skaters/player.gd" id="1_uce12"]
+[ext_resource type="Texture2D" uid="uid://i5qm0g4tkuh0" path="res://sprites/character-arrow.svg" id="2_uce12"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5twmp"]
 bg_color = Color(0.6, 0.04832193, 0.18140903, 1)
@@ -29,3 +30,11 @@ points = PackedVector2Array(0, 0, 48, 0)
 width = 2.0
 default_color = Color(0.22035533, 1, 0.62395877, 1)
 end_cap_mode = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=810725406]
+modulate = Color(0.93142647, 1, 0.6463891, 1)
+z_index = 2
+z_as_relative = false
+position = Vector2(-0.5, -8.999998)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_uce12")

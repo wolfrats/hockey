@@ -49,7 +49,7 @@ func do_check() -> void:
 		checking = Globals.ticks + 30
 		var skaters = get_tree().get_nodes_in_group("skaters")
 		for s in skaters:
-			if s != self and global_position.distance_to(s.global_position) < 40:
+			if s != self and global_position.distance_to(s.global_position) < 80:
 				s.knocked_over = Globals.ticks + 120
 				s.checking = 0
 				s.charging = false
@@ -94,7 +94,7 @@ func _physics_process(delta: float) -> void:
 	var spacing = 24
 	if (statbook.sprite_index == 60):
 		spacing = 23
-	$Sprite.region_rect = Rect2(base_offset * spacing + 4, statbook.sprite_index, 24, 24)
+	$Sprite.region_rect = Rect2(base_offset * spacing + 0, statbook.sprite_index, 24, 24)
 	if abs(last_move.angle_to(linear_velocity)) > 3.1 and Globals.ticks > scrape_counter:
 		var s: Icesputter = preload("res://objects/environment/icesplutter.tscn").instantiate()
 		%Manager.add_child(s)
