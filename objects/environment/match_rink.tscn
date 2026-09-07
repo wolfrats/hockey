@@ -1138,7 +1138,7 @@ stats = 2
 [node name="Ghosts" type="Node2D" parent="Manager" unique_id=1359897304]
 
 [node name="Player" parent="Manager/Ghosts" unique_id=1253797390 instance=ExtResource("5_iroi8")]
-position = Vector2(264, 292)
+position = Vector2(1008, 471)
 
 [node name="Camera2D" type="Camera2D" parent="Manager/Ghosts/Player" unique_id=1537754657]
 

@@ -6,6 +6,7 @@ var charge: float = 0.03
 var shotDir: Vector2
 
 func _physics_process(_delta: float) -> void:
+	visible = (skater != null)
 	if not skater:
 		return
 	global_position = skater.global_position#global_position.lerp(skater.global_position, 0.1)
