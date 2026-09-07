@@ -16,6 +16,7 @@ var last_move: Vector2 = Vector2.ONE
 var scrape_counter: int = 0
 var initial_position: Vector2
 var needs_reset: bool = false
+var anim_state: String = ""
 
 enum LookDir {
 	SIDE,
@@ -55,7 +56,20 @@ func do_check() -> void:
 				s.charging = false
 
 func _physics_process(delta: float) -> void:
-	if ghost:
+	if anim_state == "skating_around":
+		if randf() < 0.05:
+			impulse(randf_range(-1, 1), randf_range(-1, 1))
+		var diff = initial_position - global_position
+		if diff.length() > 500:
+			impulse(diff.normalized().x, diff.normalized().y)
+	elif anim_state == "skating_out":
+		var target_y = -200
+		var diffy = target_y - global_position.y
+		if abs(diffy) > 10:
+			impulse(0, sign(diffy))
+		if randf() < 0.1:
+			impulse(randf_range(-0.5, 0.5), 0)
+	elif ghost:
 		ghost.handle(delta, self)
 	elif ai:
 		ai.handle(delta, self)
@@ -121,6 +135,14 @@ func shoot(dir: Vector2, power: float) -> void:
 		puck.shoot(name, vec2)
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	if anim_state == "lerping":
+		var trans = state.get_transform()
+		trans.origin = trans.origin.lerp(initial_position, 0.05)
+		state.set_transform(trans)
+		state.linear_velocity = Vector2.ZERO
+		state.angular_velocity = 0
+		return
+
 	if needs_reset:
 		var trans = state.get_transform()
 		trans.origin = initial_position

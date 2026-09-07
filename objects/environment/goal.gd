@@ -6,10 +6,13 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 			body.home.call_deferred()
 			return
 		%Manager.goal_scored(get_parent().name)
-		var pucks = get_tree().get_nodes_in_group("pucks")
-		for p in pucks:
-			p.home.call_deferred()
-		var skaters = get_tree().get_nodes_in_group("skaters")
-		for s in skaters:
-			if s.has_method("home"):
-				s.home.call_deferred()
+		if "anim_manager" in %Manager and %Manager.anim_manager != null:
+			%Manager.anim_manager.on_goal_scored()
+		else:
+			var pucks = get_tree().get_nodes_in_group("pucks")
+			for p in pucks:
+				p.home.call_deferred()
+			var skaters = get_tree().get_nodes_in_group("skaters")
+			for s in skaters:
+				if s.has_method("home"):
+					s.home.call_deferred()
