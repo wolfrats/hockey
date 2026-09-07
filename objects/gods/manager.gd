@@ -11,23 +11,22 @@ var ui_layer: CanvasLayer
 var score_label: Label
 var timer_label: Label
 var period_label: Label
+var anim_manager: AnimationManager
 
 func _ready() -> void:
 	if not is_practice:
+		anim_manager = AnimationManager.new()
+		add_child(anim_manager)
 		time_remaining = Globals.period_length
 		setup_ui()
 
 func _process(delta: float) -> void:
 	if not is_practice:
-		time_remaining -= delta
-		if time_remaining <= 0:
-			current_period += 1
-			if current_period > 3:
-				# Game Over logic could go here, for now just reset to 3rd period 0:00
-				current_period = 3
-				time_remaining = 0
-			else:
-				time_remaining = Globals.period_length
+		if anim_manager.current_phase == AnimationManager.Phase.PLAYING:
+			if current_period <= 3 and (current_period != 3 or time_remaining > 0):
+				time_remaining -= delta
+				if time_remaining <= 0:
+					anim_manager.on_period_end()
 
 		update_ui()
 
