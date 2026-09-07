@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://t5js756okfw6"
-path="res://.godot/imported/character-oval.svg-0d88999cb5fb8b1cc92a90997f17f9f5.ctex"
+uid="uid://rp72ibl1o7fv"
+path="res://.godot/imported/character-oval-outline.svg-56b9909a1be7738083b2d68c53b24e00.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/character-oval.svg"
-dest_files=["res://.godot/imported/character-oval.svg-0d88999cb5fb8b1cc92a90997f17f9f5.ctex"]
+source_file="res://sprites/character-oval-outline.svg"
+dest_files=["res://.godot/imported/character-oval-outline.svg-56b9909a1be7738083b2d68c53b24e00.ctex"]
 
 [params]
 

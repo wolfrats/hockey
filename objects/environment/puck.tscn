@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bl2luahqyy0ss" path="res://objects/environment/puck.gd" id="1_0yy2u"]
 [ext_resource type="Texture2D" uid="uid://bpwpivd4t5ca3" path="res://sprites/atlas.png" id="2_njx6u"]
+[ext_resource type="Texture2D" uid="uid://i5qm0g4tkuh0" path="res://sprites/character-arrow.svg" id="3_i0e0h"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_est1s"]
 friction = 0.1
@@ -37,14 +38,13 @@ texture = SubResource("AtlasTexture_arvj2")
 region_enabled = true
 region_rect = Rect2(224, 120, 24, 24)
 
-[node name="Sprite2" type="Sprite2D" parent="." unique_id=1198174074]
-texture_filter = 1
-scale = Vector2(4, 4)
-texture = SubResource("AtlasTexture_arvj2")
-region_enabled = true
-region_rect = Rect2(224, 120, 24, 24)
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1481518937]
 position = Vector2(0, 40)
 scale = Vector2(4, 4)
 shape = SubResource("RectangleShape2D_est1s")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1076896887]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(-1, -48.999996)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_i0e0h")
