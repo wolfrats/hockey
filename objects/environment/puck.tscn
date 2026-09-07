@@ -12,8 +12,8 @@ bounce = 0.9
 atlas = ExtResource("2_njx6u")
 region = Rect2(4, 4, 528, 408)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]
-size = Vector2(6, 4)
+[sub_resource type="CircleShape2D" id="CircleShape2D_0eafs"]
+radius = 3.259601
 
 [node name="Puck" type="RigidBody2D" unique_id=844181388 groups=["pucks"]]
 y_sort_enabled = true
@@ -41,7 +41,7 @@ region_rect = Rect2(224, 120, 24, 24)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1481518937]
 position = Vector2(0, 40)
 scale = Vector2(4, 4)
-shape = SubResource("RectangleShape2D_est1s")
+shape = SubResource("CircleShape2D_0eafs")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1076896887]
 modulate = Color(0, 0, 0, 1)

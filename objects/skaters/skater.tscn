@@ -12,8 +12,8 @@ atlas = ExtResource("2_0eafs")
 region = Rect2(8, 4, 528, 408)
 filter_clip = true
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]
-size = Vector2(12.5, 10.5625)
+[sub_resource type="CircleShape2D" id="CircleShape2D_h81v3"]
+radius = 6.5036798
 
 [node name="Skater" type="RigidBody2D" unique_id=1515226953]
 y_sort_enabled = true
@@ -36,4 +36,4 @@ region_rect = Rect2(0, 0, 24, 24)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1481518937]
 position = Vector2(0, 51.125)
 scale = Vector2(4, 4)
-shape = SubResource("RectangleShape2D_est1s")
+shape = SubResource("CircleShape2D_h81v3")
