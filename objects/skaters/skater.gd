@@ -17,6 +17,7 @@ var scrape_counter: int = 0
 var initial_position: Vector2
 var needs_reset: bool = false
 var anim_state: String = ""
+var health: float
 
 enum LookDir {
 	SIDE,
@@ -29,6 +30,7 @@ func _ready() -> void:
 	add_to_group("skaters")
 	statbook = StatBook.Classes[stats]
 	mass = statbook.weight
+	health = statbook.max_health
 	$Sprite.texture = $Sprite.texture.duplicate()
 	if home_team:
 		$Sprite.texture.atlas = Globals.home_texture
@@ -51,11 +53,22 @@ func do_check() -> void:
 		var skaters = get_tree().get_nodes_in_group("skaters")
 		for s in skaters:
 			if s != self and global_position.distance_to(s.global_position) < 80:
-				s.knocked_over = Globals.ticks + 120
-				s.checking = 0
-				s.charging = false
+				s.take_damage(statbook.check_damage * randf_range(0.8, 1.2))
+
+func take_damage(damage: float) -> void:
+	if knocked_over > Globals.ticks:
+		return
+	health -= damage
+	if health <= 0:
+		knocked_over = Globals.ticks + 120
+		checking = 0
+		charging = false
+		if puck:
+			puck.shoot(name, Vector2.ZERO)
 
 func _physics_process(delta: float) -> void:
+	if knocked_over <= Globals.ticks and health < statbook.max_health:
+		health = min(statbook.max_health, health + delta * 15.0) # Regenerate 15 hp per second
 	if anim_state == "skating_around":
 		if randf() < 0.05:
 			impulse(randf_range(-1, 1), randf_range(-1, 1))
@@ -155,8 +168,18 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	for i in range(state.get_contact_count()):
 		var myimpulse: Vector2 = state.get_contact_local_velocity_at_position(i)
 		var collider = state.get_contact_collider_object(i)
+		if collider is Goalie:
+			# Bounce away from goalie
+			var bounce_dir = (global_position - collider.global_position).normalized()
+			state.linear_velocity = bounce_dir * 300.0
+			continue
+
 		if "mass" in collider:
 			myimpulse *= 1 + (collider.mass - mass)
 		var impulse_strength: float = myimpulse.length()
 		if impulse_strength > 150.0:
 			rammed = true
+			if "statbook" in collider and collider.statbook:
+				take_damage(collider.statbook.check_damage * randf_range(0.8, 1.2) * 0.5) # Take half check damage when rammed hard by someone
+			else:
+				take_damage(10)
