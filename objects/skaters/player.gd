@@ -24,6 +24,9 @@ func handle(_delta: float, curSkater: Skater) -> void:
 
 	if Input.is_action_just_pressed("check"):
 		curSkater.do_check()
+		
+	if Input.is_action_just_pressed("grab"):
+		curSkater.do_grab()
 
 	if Input.is_action_just_pressed("shoot"):
 		shotDir = Vector2(dx, dy)

@@ -10,6 +10,7 @@ var rammed: bool = false
 var charging: bool = false
 var knocked_over: int = 0
 var checking: int = 0
+var holding: int = 0
 var puck: Puck = null
 var skate_dir: Vector2 = Vector2.ONE
 var last_move: Vector2 = Vector2.ONE
@@ -18,6 +19,7 @@ var initial_position: Vector2
 var needs_reset: bool = false
 var anim_state: String = ""
 var health: float
+var spring: DampedSpringJoint2D
 
 enum LookDir {
 	SIDE,
@@ -31,6 +33,9 @@ func _ready() -> void:
 	statbook = StatBook.Classes[stats]
 	mass = statbook.weight
 	health = statbook.max_health
+	spring = $Spring #DampedSpringJoint2D.new()
+	#add_child(spring)
+	spring.node_a = get_path()
 	$Sprite.texture = $Sprite.texture.duplicate()
 	if home_team:
 		$Sprite.texture.atlas = Globals.home_texture
@@ -54,6 +59,17 @@ func do_check() -> void:
 		for s in skaters:
 			if s != self and global_position.distance_to(s.global_position) < 80:
 				s.take_damage(statbook.check_damage * randf_range(0.8, 1.2))
+				s.spring.node_b = NodePath("")
+
+func do_grab() -> void:
+	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
+		checking = Globals.ticks + 30
+		var skaters = get_tree().get_nodes_in_group("skaters")
+		for s in skaters:
+			if s != self and global_position.distance_to(s.global_position) < 80:
+				spring.node_b = s.get_path()
+				holding = Globals.ticks + 120
+
 
 func take_damage(damage: float) -> void:
 	if knocked_over > Globals.ticks:
@@ -88,6 +104,9 @@ func _physics_process(delta: float) -> void:
 		ai.handle(delta, self)
 	var speed = linear_velocity.length()
 	var look_dir: LookDir = LookDir.SIDE
+	if not spring.node_b.is_empty() and holding <= Globals.ticks:
+		spring.node_b = NodePath("")
+
 	if knocked_over <= Globals.ticks and checking <= Globals.ticks:
 		$Sprite.flip_h = (linear_velocity.x > 0)
 	var base_offset = 0

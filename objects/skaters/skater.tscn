@@ -37,3 +37,8 @@ region_rect = Rect2(0, 0, 24, 24)
 position = Vector2(0, 51.125)
 scale = Vector2(4, 4)
 shape = SubResource("CircleShape2D_h81v3")
+
+[node name="Spring" type="DampedSpringJoint2D" parent="." unique_id=399379063]
+length = 7.0
+rest_length = 3.0
+stiffness = 40.0
