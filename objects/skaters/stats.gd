@@ -14,6 +14,8 @@ class StatBlock extends Node:
 	var shot_power: float      # maximum shot velocity
 	var snap_power: float      # shot velocity with 0 charge
 	var shot_variance: float   # cone of inaccuracy
+	var check_damage: float
+	var max_health: float
 	
 func _init() -> void:
 	for X in ClassTypes.values():
@@ -24,6 +26,8 @@ func _init() -> void:
 	Classes[ClassTypes.LIGHT].shot_power = 1.3
 	Classes[ClassTypes.LIGHT].snap_power = 0.4
 	Classes[ClassTypes.LIGHT].shot_variance = deg_to_rad(5)
+	Classes[ClassTypes.LIGHT].check_damage = 20.0
+	Classes[ClassTypes.LIGHT].max_health = 80.0
 	
 	Classes[ClassTypes.MEDIUM].weight = 1.5
 	Classes[ClassTypes.MEDIUM].speed = 5.5
@@ -31,6 +35,8 @@ func _init() -> void:
 	Classes[ClassTypes.MEDIUM].shot_power = 1
 	Classes[ClassTypes.MEDIUM].snap_power = 0.3
 	Classes[ClassTypes.MEDIUM].shot_variance = deg_to_rad(10)
+	Classes[ClassTypes.MEDIUM].check_damage = 30.0
+	Classes[ClassTypes.MEDIUM].max_health = 100.0
 	
 	Classes[ClassTypes.HEAVY].weight = 2
 	Classes[ClassTypes.HEAVY].speed = 6
@@ -38,3 +44,5 @@ func _init() -> void:
 	Classes[ClassTypes.HEAVY].shot_power = 1.3
 	Classes[ClassTypes.HEAVY].snap_power = 0.2
 	Classes[ClassTypes.HEAVY].shot_variance = deg_to_rad(30)
+	Classes[ClassTypes.HEAVY].check_damage = 45.0
+	Classes[ClassTypes.HEAVY].max_health = 130.0
