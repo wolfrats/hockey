@@ -116,6 +116,21 @@ func _physics_process(delta: float) -> void:
 		if (linear_velocity.y < 0):
 			base_offset = 11
 			look_dir = LookDir.UP
+
+	if not spring.node_b.is_empty():
+		var held = get_node_or_null(spring.node_b)
+		if held:
+			var diff = held.global_position - global_position
+			$Sprite.flip_h = (diff.x > 0)
+			if abs(diff.x) < abs(diff.y):
+				base_offset = 4
+				look_dir = LookDir.DOWN
+				if diff.y < 0:
+					base_offset = 11
+					look_dir = LookDir.UP
+			else:
+				base_offset = 0
+				look_dir = LookDir.SIDE
 	if speed > 5 or speed == 0:
 		linear_damp = 0.9
 	base_offset += int(counter / 10.0) % 3
