@@ -20,6 +20,8 @@ var needs_reset: bool = false
 var anim_state: String = ""
 var health: float
 var spring: DampedSpringJoint2D
+var penalty_time: float = 0.0
+var needs_penalty_reset: bool = false
 
 enum LookDir {
 	SIDE,
@@ -49,10 +51,22 @@ func home() -> void:
 	needs_reset = true
 	self.puck = null
 
+func penalty(duration: float) -> void:
+	penalty_time = duration
+	needs_penalty_reset = true
+	checking = 0
+	charging = false
+	if puck:
+		puck.shoot(name, Vector2.ZERO)
+	if not spring.node_b.is_empty():
+		spring.node_b = NodePath("")
+
 func _process(_delta: float) -> void:
 	pass
 	
 func do_check() -> void:
+	if penalty_time > 0:
+		return
 	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
 		checking = Globals.ticks + 30
 		var skaters = get_tree().get_nodes_in_group("skaters")
@@ -61,7 +75,15 @@ func do_check() -> void:
 				s.take_damage(statbook.check_damage * randf_range(0.8, 1.2))
 				s.spring.node_b = NodePath("")
 
+		var referees = get_tree().get_nodes_in_group("referees")
+		for ref in referees:
+			if ref.has_method("is_in_cone") and ref.is_in_cone(global_position):
+				if randf() < 0.3: # 30% chance to be sent to penalty box
+					penalty(30.0)
+
 func do_grab() -> void:
+	if penalty_time > 0:
+		return
 	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
 		checking = Globals.ticks + 30
 		var skaters = get_tree().get_nodes_in_group("skaters")
@@ -83,6 +105,12 @@ func take_damage(damage: float) -> void:
 			puck.shoot(name, Vector2.ZERO)
 
 func _physics_process(delta: float) -> void:
+	if penalty_time > 0:
+		penalty_time -= delta
+		if penalty_time <= 0:
+			needs_reset = true
+		return
+
 	if knocked_over <= Globals.ticks and health < statbook.max_health:
 		health = min(statbook.max_health, health + delta * 15.0) # Regenerate 15 hp per second
 	if anim_state == "skating_around":
@@ -168,13 +196,13 @@ func _physics_process(delta: float) -> void:
 	skate_dir = skate_dir.lerp(self.linear_velocity, 0.03)
 
 func impulse(dx: float, dy: float) -> void:
-	if knocked_over > Globals.ticks or checking > Globals.ticks:
+	if knocked_over > Globals.ticks or checking > Globals.ticks or penalty_time > 0:
 		return
 	last_move = Vector2(dx, dy)
 	apply_impulse(last_move * statbook.speed)
 
 func shoot(dir: Vector2, power: float) -> void:
-	if knocked_over > Globals.ticks or checking > Globals.ticks:
+	if knocked_over > Globals.ticks or checking > Globals.ticks or penalty_time > 0:
 		return
 	var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
 	var vec2 = vec.rotated(statbook.shot_variance * (1 - (2*randf())))
@@ -182,7 +210,7 @@ func shoot(dir: Vector2, power: float) -> void:
 		puck.shoot(name, vec2)
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
-	if anim_state == "lerping":
+	if anim_state == "lerping" and penalty_time <= 0:
 		var trans = state.get_transform()
 		trans.origin = trans.origin.lerp(initial_position, 0.05)
 		state.set_transform(trans)
@@ -197,6 +225,20 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		state.linear_velocity = Vector2.ZERO
 		state.angular_velocity = 0
 		needs_reset = false
+		return
+
+	if needs_penalty_reset:
+		var trans = state.get_transform()
+		trans.origin = Vector2(1000, 100) # Penalty box position
+		state.set_transform(trans)
+		state.linear_velocity = Vector2.ZERO
+		state.angular_velocity = 0
+		needs_penalty_reset = false
+		return
+
+	if penalty_time > 0:
+		state.linear_velocity = Vector2.ZERO
+		state.angular_velocity = 0
 		return
 
 	for i in range(state.get_contact_count()):
