@@ -8,6 +8,7 @@ var ai: Ghost
 var statbook: Stats.StatBlock
 var rammed: bool = false
 var charging: bool = false
+var started_charge: int = 0
 var knocked_over: int = 0
 var checking: int = 0
 var holding: int = 0
@@ -167,7 +168,11 @@ func _physics_process(delta: float) -> void:
 		if puck:
 			puck.shoot(name, Vector2.ZERO)
 	if charging:
-		base_offset = 26
+		if started_charge == 0:
+			started_charge = Globals.ticks
+		base_offset = 24 + min(int((Globals.ticks - started_charge) / 4.0), 2)
+	else:
+		started_charge = 0
 	if checking > Globals.ticks:
 		base_offset = 21
 		if look_dir == LookDir.UP:
