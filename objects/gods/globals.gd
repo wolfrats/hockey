@@ -6,12 +6,15 @@ var home_texture: Texture2D
 var away_texture: Texture2D
 var ticks: int = 0
 var period_length: float = 120.0
+var SHIRT_COLOR: Color = Color.from_rgba8(96, 176, 248)
+var HELMET_COLOR: Color = Color.from_rgba8(96, 176, 255)
+var SKATE_COLOR: Color = Color.from_rgba8(96, 255, 248)
 
 func _init() -> void:
 	home_color = Color(randf(), randf(), randf())
 	away_color = home_color.inverted()
-	home_texture = swap_color_in_texture(preload("res://sprites/atlas.png"), Color.from_rgba8(96, 176, 248), home_color)
-	away_texture = swap_color_in_texture(preload("res://sprites/atlas.png"), Color.from_rgba8(96, 176, 248), away_color)
+	home_texture = swap_colors_in_texture(preload("res://sprites/skater-all.png"), home_color)
+	away_texture = swap_colors_in_texture(preload("res://sprites/skater-all.png"), away_color)
 
 func _physics_process(_delta: float) -> void:
 	ticks += 1
@@ -33,6 +36,14 @@ func get_closest_node(from_position: Vector2, group_name: String) -> Node2D:
 			closest_node = node
 	return closest_node
 	
+func swap_colors_in_texture(tex: Texture2D, to_col: Color) -> ImageTexture:
+	return swap_color_in_texture(
+		swap_color_in_texture(
+			swap_color_in_texture(
+				tex, SHIRT_COLOR, to_col
+			), HELMET_COLOR, to_col.darkened(0.3)
+		), SKATE_COLOR, to_col.darkened(0.6)
+	)
 func swap_color_in_texture(tex: Texture2D, from_col: Color, to_col: Color) -> ImageTexture:
 	# Convert Texture2D to an Image you can edit 
 	var img: Image = tex.get_image()

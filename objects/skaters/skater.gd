@@ -137,12 +137,12 @@ func _physics_process(delta: float) -> void:
 
 	if knocked_over <= Globals.ticks and checking <= Globals.ticks:
 		$Sprite.flip_h = (linear_velocity.x > 0)
-	var base_offset = 0
+	var base_offset = 1
 	if (linear_velocity.abs().x < linear_velocity.abs().y):
-		base_offset = 4
+		base_offset = 8
 		look_dir = LookDir.DOWN
 		if (linear_velocity.y < 0):
-			base_offset = 11
+			base_offset = 15
 			look_dir = LookDir.UP
 
 	if not spring.node_b.is_empty():
@@ -151,39 +151,33 @@ func _physics_process(delta: float) -> void:
 			var diff = held.global_position - global_position
 			$Sprite.flip_h = (diff.x > 0)
 			if abs(diff.x) < abs(diff.y):
-				base_offset = 4
+				base_offset = 8
 				look_dir = LookDir.DOWN
 				if diff.y < 0:
-					base_offset = 11
+					base_offset = 17
 					look_dir = LookDir.UP
 			else:
 				base_offset = 0
 				look_dir = LookDir.SIDE
 	if speed > 5 or speed == 0:
 		linear_damp = 0.9
-	base_offset += int(counter / 10.0) % 3
+	base_offset += int(counter / 10.0) % 6
 	if rammed:
 		rammed = false
 		if puck:
 			puck.shoot(name, Vector2.ZERO)
 	if charging:
-		base_offset = 3
-		if look_dir == LookDir.UP:
-			base_offset = 14
-		elif look_dir == LookDir.DOWN:
-			base_offset = 10
+		base_offset = 26
 	if checking > Globals.ticks:
-		base_offset = 7
+		base_offset = 21
 		if look_dir == LookDir.UP:
-			base_offset = 9
+			base_offset = 23
 		elif look_dir == LookDir.DOWN:
-			base_offset = 8
+			base_offset = 22
 	if knocked_over > Globals.ticks:
-		base_offset = 19
-	var spacing = 24
-	if (statbook.sprite_index == 60):
-		spacing = 23
-	$Sprite.region_rect = Rect2(base_offset * spacing + 0, statbook.sprite_index, 24, 24)
+		base_offset = 0
+	var spacing = 192
+	$Sprite.region_rect = Rect2(base_offset * spacing + 0, 0, 192, 192) #statbook.sprite_index
 	if abs(last_move.angle_to(linear_velocity)) > 3.1 and Globals.ticks > scrape_counter:
 		var s: Icesputter = preload("res://objects/environment/icesplutter.tscn").instantiate()
 		%Manager.add_child(s)

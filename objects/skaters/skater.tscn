@@ -1,16 +1,15 @@
 [gd_scene format=3 uid="uid://dac22ju5kfqrs"]
 
 [ext_resource type="Script" uid="uid://5rd1s2njfu0n" path="res://objects/skaters/skater.gd" id="1_est1s"]
-[ext_resource type="Texture2D" uid="uid://bpwpivd4t5ca3" path="res://sprites/atlas.png" id="2_0eafs"]
+[ext_resource type="Texture2D" uid="uid://ck3e16inc2wj8" path="res://sprites/skater-all.png" id="2_0eafs"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_arvj2"]
 friction = 0.5
 bounce = 0.5
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_arvj2"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_0eafs"]
 atlas = ExtResource("2_0eafs")
-region = Rect2(8, 4, 528, 408)
-filter_clip = true
+region = Rect2(0, 0, 5184, 192)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_h81v3"]
 radius = 6.5036798
@@ -28,13 +27,12 @@ script = ExtResource("1_est1s")
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=406336950]
 texture_filter = 1
-scale = Vector2(6, 6)
-texture = SubResource("AtlasTexture_arvj2")
+texture = SubResource("AtlasTexture_0eafs")
 region_enabled = true
-region_rect = Rect2(0, 0, 24, 24)
+region_rect = Rect2(0, 0, 192, 192)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1481518937]
-position = Vector2(0, 51.125)
+position = Vector2(6, 30)
 scale = Vector2(4, 4)
 shape = SubResource("CircleShape2D_h81v3")
 
