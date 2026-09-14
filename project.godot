@@ -13,6 +13,7 @@ config_version=5
 config/name="Hockey"
 run/main_scene="uid://tn613bbsa4xm"
 config/features=PackedStringArray("4.8", "Mobile")
+boot_splash/bg_color=Color(0.9376526, 0.9376526, 0.9376526, 1)
 config/icon="uid://hn52xdfjj5e6"
 
 [autoload]
