@@ -50,6 +50,14 @@ func handle(_delta: float, curSkater: Skater) -> void:
 			power = 0
 			charge = -charge
 		$Power.value = power * 100
+		var style = $Power.get_theme_stylebox("fill").duplicate()
+		if power < 0.33:
+			style.bg_color = Color(0.2, 0.8, 0.2, 1.0)
+		elif power < 0.66:
+			style.bg_color = Color(0.8, 0.8, 0.2, 1.0)
+		else:
+			style.bg_color = Color(0.8, 0.2, 0.2, 1.0)
+		$Power.add_theme_stylebox_override("fill", style)
 		curSkater.charging = true
 		$Angle.set_point_position(1, shotDir.normalized() * 48)
 	if Input.is_action_just_released("shoot") and curSkater.puck:
