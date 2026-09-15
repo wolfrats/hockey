@@ -15,6 +15,7 @@ var holding: int = 0
 var puck: Puck = null
 var skate_dir: Vector2 = Vector2.ONE
 var last_move: Vector2 = Vector2.ONE
+var facing_dir: Vector2 = Vector2.ONE
 var scrape_counter: int = 0
 var initial_position: Vector2
 var needs_reset: bool = false
@@ -43,8 +44,10 @@ func _ready() -> void:
 	$Sprite.texture = $Sprite.texture.duplicate()
 	if home_team:
 		$Sprite.texture.atlas = Globals.home_texture
+		facing_dir = Vector2(1, 0)
 	else:
 		$Sprite.texture.atlas = Globals.away_texture
+		facing_dir = Vector2(-1, 0)
 	if not %Manager.is_practice:
 		ai = preload("res://objects/skaters/ai.tscn").instantiate()
 		add_child(ai)
@@ -167,12 +170,13 @@ func _physics_process(delta: float) -> void:
 		spring.node_b = NodePath("")
 
 	if knocked_over <= Globals.ticks and checking <= Globals.ticks:
-		$Sprite.flip_h = (linear_velocity.x > 0)
+		if facing_dir.x != 0:
+			$Sprite.flip_h = (facing_dir.x > 0)
 	var base_offset = 1
-	if (linear_velocity.abs().x < linear_velocity.abs().y):
+	if (abs(facing_dir.x) < abs(facing_dir.y)):
 		base_offset = 8
 		look_dir = LookDir.DOWN
-		if (linear_velocity.y < 0):
+		if (facing_dir.y < 0):
 			base_offset = 15
 			look_dir = LookDir.UP
 
@@ -231,6 +235,8 @@ func impulse(dx: float, dy: float) -> void:
 	if knocked_over > Globals.ticks or checking > Globals.ticks or penalty_time > 0:
 		return
 	last_move = Vector2(dx, dy)
+	if last_move.length_squared() > 0:
+		facing_dir = last_move.normalized()
 	apply_impulse(last_move * statbook.speed)
 
 func shoot(dir: Vector2, power: float) -> void:
@@ -240,6 +246,18 @@ func shoot(dir: Vector2, power: float) -> void:
 	var vec2 = vec.rotated(statbook.shot_variance * (1 - (2*randf())))
 	if puck:
 		puck.shoot(name, vec2)
+
+		var s: GPUParticles2D = preload("res://objects/environment/icesplutter.tscn").instantiate()
+		get_parent().add_child(s)
+		s.global_position = (global_position + dir.normalized() * 16)
+
+		var camera = get_viewport().get_camera_2d()
+		if camera:
+			var shake_amount = 2.0 + (power * 8.0)
+			var shake_tween = create_tween()
+			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount, shake_amount), randf_range(-shake_amount, shake_amount)), 0.05)
+			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount/2.0, shake_amount/2.0), randf_range(-shake_amount/2.0, shake_amount/2.0)), 0.05)
+			shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	if anim_state == "lerping" and penalty_time <= 0:
