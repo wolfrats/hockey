@@ -59,6 +59,11 @@ custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 text = "Match"
 
+[node name="Setup" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1144194094]
+custom_minimum_size = Vector2(300, 60)
+layout_mode = 2
+text = "Setup"
+
 [node name="JoystickToggle" type="CheckButton" parent="CenterContainer/VBoxContainer" unique_id=2056199114]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 60)
@@ -69,4 +74,5 @@ alignment = 1
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Practice" to="." method="_on_practice_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Match" to="." method="_on_match_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Setup" to="." method="_on_setup_pressed"]
 [connection signal="toggled" from="CenterContainer/VBoxContainer/JoystickToggle" to="." method="_on_joystick_toggled"]

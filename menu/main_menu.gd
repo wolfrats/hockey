@@ -49,6 +49,9 @@ func _on_practice_pressed() -> void:
 func _on_match_pressed() -> void:
 		get_tree().change_scene_to_file("res://objects/environment/match_rink.tscn")
 
+func _on_setup_pressed() -> void:
+	get_tree().change_scene_to_file("res://menu/player_setup.tscn")
+
 func _on_joystick_toggled(toggled_on: bool) -> void:
 	if Globals.get_node("Holder") == null && toggled_on:
 		Joy.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 150) 

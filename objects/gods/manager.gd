@@ -36,15 +36,20 @@ func _update_players() -> void:
 	if not player1:
 		return
 
-	var joypads = Input.get_connected_joypads()
-	var active_devices = []
-	for joy_id in joypads:
-		if active_devices.size() < 4:
-			active_devices.append(joy_id)
+	var active_devices = Globals.player_devices.duplicate()
 
-	# Ensure at least device 0 is active for keyboard/mouse if no controllers are plugged in
 	if active_devices.size() == 0:
-		active_devices.append(0)
+		var joypads = Input.get_connected_joypads()
+		for joy_id in joypads:
+			if active_devices.size() < 4:
+				active_devices.append(joy_id)
+
+		# Ensure at least device -2 is active for keyboard/mouse if no controllers are plugged in
+		if active_devices.size() == 0:
+			active_devices.append(-2)
+		else:
+			# Keyboard is not added if fallback triggers with at least 1 controller to preserve original behaviour where keyboard mapped to same actions as p1.
+			pass
 
 	var current_players = []
 	for child in ghosts_node.get_children():
@@ -79,6 +84,7 @@ func _update_players() -> void:
 		var p = current_players[i]
 		if i < active_devices.size():
 			p.device_id = active_devices[i]
+			p.set_color(Globals.player_colors[i])
 			# Ensure it's assigned to a skater
 			if i < skaters.size() and skaters[i].ghost != p:
 				skaters[i].ghost = p

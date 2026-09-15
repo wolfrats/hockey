@@ -28,22 +28,32 @@ func _update_buttons() -> void:
 
 		cur_button_state[action] = Input.is_joy_button_pressed(device_id, action_map[action])
 
+func set_color(c: Color) -> void:
+	if has_node("Sprite2D"):
+		$Sprite2D.modulate = c
+	if has_node("Sprite2D2"):
+		$Sprite2D2.modulate = c
+	if has_node("Sprite2D3"):
+		$Sprite2D3.modulate = c
+	if has_node("Angle"):
+		$Angle.default_color = c
+
 func is_action_just_pressed_custom(action: String) -> bool:
-	if device_id == 0 and Input.is_action_just_pressed(action):
+	if device_id == -2 and Input.is_action_just_pressed(action):
 		return true
 	if device_id >= 0 and cur_button_state.has(action):
 		return cur_button_state[action] and not prev_button_state[action]
 	return false
 
 func is_action_pressed_custom(action: String) -> bool:
-	if device_id == 0 and Input.is_action_pressed(action):
+	if device_id == -2 and Input.is_action_pressed(action):
 		return true
 	if device_id >= 0 and cur_button_state.has(action):
 		return cur_button_state[action]
 	return false
 
 func is_action_just_released_custom(action: String) -> bool:
-	if device_id == 0 and Input.is_action_just_released(action):
+	if device_id == -2 and Input.is_action_just_released(action):
 		return true
 	if device_id >= 0 and cur_button_state.has(action):
 		return not cur_button_state[action] and prev_button_state[action]
@@ -51,7 +61,7 @@ func is_action_just_released_custom(action: String) -> bool:
 
 func get_axis_custom(axis_name: String) -> float:
 	var val = 0.0
-	if device_id == 0:
+	if device_id == -2:
 		if axis_name == "skate_x":
 			val = Input.get_axis("skate_left", "skate_right")
 		elif axis_name == "skate_y":
