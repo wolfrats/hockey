@@ -4,13 +4,77 @@ var puck: Puck
 var power: float = 0
 var charge: float = 0.03
 var shotDir: Vector2
+@export var device_id: int = 0
+
+var prev_button_state = {}
+var cur_button_state = {}
+
+var action_map = {
+	"swap": JOY_BUTTON_Y,
+	"check": JOY_BUTTON_B,
+	"grab": JOY_BUTTON_RIGHT_SHOULDER,
+	"shoot": JOY_BUTTON_X,
+}
+
+func _update_buttons() -> void:
+	if device_id < 0:
+		return
+	for action in action_map.keys():
+		if not prev_button_state.has(action):
+			prev_button_state[action] = false
+			cur_button_state[action] = false
+		else:
+			prev_button_state[action] = cur_button_state[action]
+
+		cur_button_state[action] = Input.is_joy_button_pressed(device_id, action_map[action])
+
+func is_action_just_pressed_custom(action: String) -> bool:
+	if device_id == 0 and Input.is_action_just_pressed(action):
+		return true
+	if device_id >= 0 and cur_button_state.has(action):
+		return cur_button_state[action] and not prev_button_state[action]
+	return false
+
+func is_action_pressed_custom(action: String) -> bool:
+	if device_id == 0 and Input.is_action_pressed(action):
+		return true
+	if device_id >= 0 and cur_button_state.has(action):
+		return cur_button_state[action]
+	return false
+
+func is_action_just_released_custom(action: String) -> bool:
+	if device_id == 0 and Input.is_action_just_released(action):
+		return true
+	if device_id >= 0 and cur_button_state.has(action):
+		return not cur_button_state[action] and prev_button_state[action]
+	return false
+
+func get_axis_custom(axis_name: String) -> float:
+	var val = 0.0
+	if device_id == 0:
+		if axis_name == "skate_x":
+			val = Input.get_axis("skate_left", "skate_right")
+		elif axis_name == "skate_y":
+			val = Input.get_axis("skate_up", "skate_down")
+	if device_id >= 0:
+		var joy_val = 0.0
+		if axis_name == "skate_x":
+			joy_val = Input.get_joy_axis(device_id, JOY_AXIS_LEFT_X)
+		elif axis_name == "skate_y":
+			joy_val = Input.get_joy_axis(device_id, JOY_AXIS_LEFT_Y)
+
+		if abs(joy_val) > 0.2:
+			if abs(joy_val) > abs(val):
+				val = joy_val
+	return val
 
 func _physics_process(_delta: float) -> void:
+	_update_buttons()
 	visible = (skater != null)
 	if not skater:
 		return
 	global_position = skater.global_position#global_position.lerp(skater.global_position, 0.1)
-	if Input.is_action_just_pressed("swap"):
+	if is_action_just_pressed_custom("swap"):
 		var Is = skater.get_parent().get_children().find(skater)
 		Is = (Is + 1) % 5
 		skater.ghost = skater.get_parent().get_children()[Is].ghost
@@ -19,18 +83,18 @@ func _physics_process(_delta: float) -> void:
 	
 func handle(_delta: float, curSkater: Skater) -> void:
 	self.skater = curSkater
-	var dx = Input.get_axis("skate_left", "skate_right")
-	var dy = Input.get_axis("skate_up", "skate_down")
+	var dx = get_axis_custom("skate_x")
+	var dy = get_axis_custom("skate_y")
 
-	if Input.is_action_just_pressed("check"):
+	if is_action_just_pressed_custom("check"):
 		curSkater.do_check()
 		
-	if Input.is_action_just_pressed("grab"):
+	if is_action_just_pressed_custom("grab"):
 		curSkater.do_grab()
 
-	if Input.is_action_just_pressed("shoot"):
+	if is_action_just_pressed_custom("shoot"):
 		shotDir = Vector2(dx, dy)
-	if not Input.is_action_pressed("shoot"):
+	if not is_action_pressed_custom("shoot"):
 		if ((dx != 0) or (dy != 0)): curSkater.counter += 1
 		curSkater.impulse(dx, dy)
 		charge = 0.03
@@ -60,7 +124,7 @@ func handle(_delta: float, curSkater: Skater) -> void:
 		$Power.add_theme_stylebox_override("fill", style)
 		curSkater.charging = true
 		$Angle.set_point_position(1, shotDir.normalized() * 48)
-	if Input.is_action_just_released("shoot") and curSkater.puck:
+	if is_action_just_released_custom("shoot") and curSkater.puck:
 		curSkater.shoot(shotDir, power)
 		power = 0
 		

@@ -14,11 +14,80 @@ var period_label: Label
 var anim_manager: AnimationManager
 
 func _ready() -> void:
+	setup_multiplayer()
 	if not is_practice:
 		anim_manager = AnimationManager.new()
 		add_child(anim_manager)
 		time_remaining = Globals.period_length
 		setup_ui()
+
+func setup_multiplayer() -> void:
+	Input.joy_connection_changed.connect(_on_joy_connection_changed)
+	_update_players()
+
+func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
+	_update_players()
+
+func _update_players() -> void:
+	var ghosts_node = get_node_or_null("Ghosts")
+	if not ghosts_node:
+		return
+	var player1 = ghosts_node.get_node_or_null("Player")
+	if not player1:
+		return
+
+	var joypads = Input.get_connected_joypads()
+	var active_devices = []
+	for joy_id in joypads:
+		if active_devices.size() < 4:
+			active_devices.append(joy_id)
+
+	# Ensure at least device 0 is active for keyboard/mouse if no controllers are plugged in
+	if active_devices.size() == 0:
+		active_devices.append(0)
+
+	var current_players = []
+	for child in ghosts_node.get_children():
+		if child.name.begins_with("Player"):
+			current_players.append(child)
+
+	# Add new players
+	for i in range(current_players.size(), active_devices.size()):
+		var new_player = player1.duplicate()
+		new_player.name = "Player" + str(i + 1)
+
+		# Remove camera from duplicate players
+		var cam = new_player.get_node_or_null("Camera2D")
+		if cam:
+			new_player.remove_child(cam)
+			cam.queue_free()
+
+		ghosts_node.add_child(new_player)
+		current_players.append(new_player)
+
+		# Assign this new player ghost to an available skater on Team1
+		var team1 = get_node_or_null("Team1")
+		if team1:
+			var skaters = team1.get_children()
+			if i < skaters.size():
+				skaters[i].ghost = new_player
+
+	# Update device IDs and handle disconnected controllers
+	var team1 = get_node_or_null("Team1")
+	var skaters = team1.get_children() if team1 else []
+	for i in range(current_players.size()):
+		var p = current_players[i]
+		if i < active_devices.size():
+			p.device_id = active_devices[i]
+			# Ensure it's assigned to a skater
+			if i < skaters.size() and skaters[i].ghost != p:
+				skaters[i].ghost = p
+		else:
+			p.device_id = -1
+			# Unassign from skater to revert to AI
+			for skater in skaters:
+				if skater.ghost == p:
+					skater.ghost = null
 
 func _process(delta: float) -> void:
 	if not is_practice:
