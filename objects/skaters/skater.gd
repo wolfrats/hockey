@@ -216,8 +216,10 @@ func _physics_process(delta: float) -> void:
 	if knocked_over > Globals.ticks:
 		base_offset = 27
 		z_index = -1
+		$Sprite.position = Vector2(randf_range(-2.0, 2.0), randf_range(-2.0, 2.0))
 	else:
 		z_index = 0
+		$Sprite.position = Vector2.ZERO
 	var spacing = 192
 	$Sprite.region_rect = Rect2(base_offset * spacing + 0, 0, 192, 192) #statbook.sprite_index
 	if abs(last_move.angle_to(linear_velocity)) > 3.1 and Globals.ticks > scrape_counter:
