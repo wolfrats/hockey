@@ -7,6 +7,11 @@ var shotDir: Vector2
 var dx: float
 var dy: float
 
+var anger: float = 0.0
+var max_anger: float = 100.0
+var is_angry: bool = false
+var last_health: float = 0.0
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
@@ -64,6 +69,21 @@ func get_preferred_spot(attack: bool, index: int, attack_x: float, defend_x: flo
 
 func handle(_delta: float, curSkater: Skater) -> void:
 	self.skater = curSkater
+
+	if last_health == 0.0:
+		last_health = curSkater.health
+
+	if curSkater.health < last_health:
+		anger += (last_health - curSkater.health) * 3.0
+	last_health = curSkater.health
+
+	anger = max(0.0, anger - _delta * 10.0)
+
+	if anger >= max_anger:
+		is_angry = true
+	if anger <= 0.0:
+		is_angry = false
+
 	var forward_dir = 1.0 if skater.home_team else -1.0
 	var defend_x = 301.0 if skater.home_team else 1710.0
 	var attack_x = 1710.0 if skater.home_team else 301.0
@@ -82,7 +102,23 @@ func handle(_delta: float, curSkater: Skater) -> void:
 		else:
 			other_team_has_puck = true
 
-	if has_puck:
+	if is_angry:
+		var all_skaters = get_tree().get_nodes_in_group("skaters")
+		var target_skater = null
+		var min_dist = INF
+		for s in all_skaters:
+			if s is Skater and s.home_team != curSkater.home_team:
+				var d = curSkater.global_position.distance_squared_to(s.global_position)
+				if d < min_dist:
+					min_dist = d
+					target_skater = s
+		if target_skater:
+			target_pos = target_skater.global_position
+			if curSkater.global_position.distance_to(target_pos) < 60:
+				curSkater.do_check()
+				anger = 0.0
+				is_angry = false
+	elif has_puck:
 		if abs(curSkater.global_position.x - attack_x) < 300:
 			if randf() > 0.05 and index != 0:
 				var y_offset = (509 - curSkater.global_position.y) * 0.5
