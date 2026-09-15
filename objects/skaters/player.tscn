@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://i5qm0g4tkuh0" path="res://sprites/character-arrow.svg" id="2_uce12"]
 [ext_resource type="Texture2D" uid="uid://rp72ibl1o7fv" path="res://sprites/character-oval-outline.svg" id="3_bfqqb"]
 [ext_resource type="Texture2D" uid="uid://cem60sjvahuab" path="res://sprites/character-oval-inside.svg" id="4_dyjsn"]
+[ext_resource type="Texture2D" uid="uid://c8b74x1t8b2v" path="res://sprites/8bit_chevron.png" id="5_chevron"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0, 0, 0, 1)
@@ -43,12 +44,15 @@ value = 50.0
 show_percentage = false
 
 [node name="Angle" type="Line2D" parent="." unique_id=1653330159]
+texture_filter = 1
+texture_repeat = 2
 z_index = -5
 position = Vector2(0, 40)
 points = PackedVector2Array(0, 0, 48, 0)
-width = 2.0
+width = 16.0
 default_color = Color(0.22035533, 1, 0.62395877, 1)
-end_cap_mode = 2
+texture = ExtResource("5_chevron")
+texture_mode = 1
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=810725406]
 modulate = Color(0.93142647, 1, 0.6463891, 1)
