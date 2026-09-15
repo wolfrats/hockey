@@ -241,6 +241,18 @@ func shoot(dir: Vector2, power: float) -> void:
 	if puck:
 		puck.shoot(name, vec2)
 
+		var s: GPUParticles2D = preload("res://objects/environment/icesplutter.tscn").instantiate()
+		get_parent().add_child(s)
+		s.global_position = (global_position + dir.normalized() * 16)
+
+		var camera = get_viewport().get_camera_2d()
+		if camera:
+			var shake_amount = 2.0 + (power * 8.0)
+			var shake_tween = create_tween()
+			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount, shake_amount), randf_range(-shake_amount, shake_amount)), 0.05)
+			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount/2.0, shake_amount/2.0), randf_range(-shake_amount/2.0, shake_amount/2.0)), 0.05)
+			shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
+
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	if anim_state == "lerping" and penalty_time <= 0:
 		var trans = state.get_transform()
