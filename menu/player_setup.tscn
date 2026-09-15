@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://df7x8k1l2o3u"]
+
+[ext_resource type="Theme" uid="uid://c0b4q46jrp2me" path="res://menu/theme.tres" id="1_theme"]
+[ext_resource type="Script" uid="uid://cx6a4d7b1u2w" path="res://menu/player_setup.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://cg1i3w702x3cu" path="res://sprites/rink.png" id="3_rink"]
+
+[node name="PlayerSetup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_script")
+
+[node name="Background" type="TextureRect" parent="."]
+modulate = Color(0.5, 0.5, 0.5, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_rink")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "PLAYER SETUP"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 48
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+
+[node name="Instruction" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Press SPACE on Keyboard or A/X/Shoot on Gamepad to Join"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="P1Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "P1: Press Join"
+theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+
+[node name="P2Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "P2: Press Join"
+theme_override_colors/font_color = Color(0.3, 0.3, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+
+[node name="P3Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "P3: Press Join"
+theme_override_colors/font_color = Color(0.3, 1, 0.3, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+
+[node name="P4Label" type="Label" parent="VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "P4: Press Join"
+theme_override_colors/font_color = Color(1, 1, 0.3, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+
+[node name="Buttons" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 20
+
+[node name="Clear" type="Button" parent="VBoxContainer/Buttons"]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+text = "Clear"
+
+[node name="Back" type="Button" parent="VBoxContainer/Buttons"]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+text = "Back"
+
+[connection signal="pressed" from="VBoxContainer/Buttons/Clear" to="." method="_on_clear_pressed"]
+[connection signal="pressed" from="VBoxContainer/Buttons/Back" to="." method="_on_back_pressed"]
