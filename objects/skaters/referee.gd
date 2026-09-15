@@ -7,6 +7,7 @@ var skate_dir: Vector2 = Vector2.ONE
 var last_move: Vector2 = Vector2.ONE
 var counter = 0
 var anim_state: String = ""
+var target_pos: Vector2 = Vector2.ZERO
 
 # Cone of sight parameters
 var cone_angle: float = PI / 3.0 # 60 degrees
@@ -17,6 +18,7 @@ var cone_radius: float = 300.0
 
 func _ready() -> void:
 	initial_position = global_position
+	target_pos = initial_position
 	add_to_group("referees")
 	mass = 100
 	sprite.texture = swap_colors_in_texture(sprite.texture.duplicate())
@@ -36,12 +38,16 @@ func _physics_process(delta: float) -> void:
 			impulse(diff.normalized().x, diff.normalized().y)
 	else:
 		# Randomly skate around the rink
-		if randf() < 0.02:
+		var diff = target_pos - global_position
+		if diff.length() < 100 or randf() < 0.01:
 			# Rink dimensions roughly 300 to 1700 X, 200 to 800 Y
 			var target_x = randf_range(300, 1700)
 			var target_y = randf_range(200, 800)
-			var target = Vector2(target_x, target_y)
-			var diff = target - global_position
+			target_pos = Vector2(target_x, target_y)
+			diff = target_pos - global_position
+
+		# Occasionally push towards target to simulate skating strides
+		if randf() < 0.1:
 			impulse(diff.normalized().x, diff.normalized().y)
 
 	var speed = linear_velocity.length()
