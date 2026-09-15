@@ -216,7 +216,10 @@ func _physics_process(delta: float) -> void:
 	if knocked_over > Globals.ticks:
 		base_offset = 27
 		z_index = -1
-		$Sprite.position = Vector2(randf_range(-2.0, 2.0), randf_range(-2.0, 2.0))
+		if knocked_over - Globals.ticks > 60:
+			$Sprite.position = Vector2(randf_range(-2.0, 2.0), randf_range(-2.0, 2.0))
+		else:
+			$Sprite.position = Vector2.ZERO
 	else:
 		z_index = 0
 		$Sprite.position = Vector2.ZERO
