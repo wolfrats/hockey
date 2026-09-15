@@ -23,6 +23,7 @@ var health: float
 var spring: DampedSpringJoint2D
 var penalty_time: float = 0.0
 var needs_penalty_reset: bool = false
+var damage_tween: Tween
 
 enum LookDir {
 	SIDE,
@@ -98,6 +99,13 @@ func take_damage(damage: float) -> void:
 	if knocked_over > Globals.ticks:
 		return
 	health -= damage
+
+	if damage_tween and damage_tween.is_valid():
+		damage_tween.kill()
+	$Sprite.modulate = Color(1, 0, 0)
+	damage_tween = create_tween()
+	damage_tween.tween_property($Sprite, "modulate", Color.WHITE, 0.3)
+
 	if health <= 0:
 		knocked_over = Globals.ticks + 120
 		checking = 0
