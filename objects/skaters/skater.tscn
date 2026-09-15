@@ -9,7 +9,7 @@ bounce = 0.5
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0eafs"]
 atlas = ExtResource("2_0eafs")
-region = Rect2(0, 0, 5184, 192)
+region = Rect2(0, 0, 5376, 192)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_h81v3"]
 radius = 6.5036798

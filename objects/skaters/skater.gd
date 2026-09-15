@@ -180,7 +180,10 @@ func _physics_process(delta: float) -> void:
 		elif look_dir == LookDir.DOWN:
 			base_offset = 22
 	if knocked_over > Globals.ticks:
-		base_offset = 0
+		base_offset = 27
+		z_index = -1
+	else:
+		z_index = 0
 	var spacing = 192
 	$Sprite.region_rect = Rect2(base_offset * spacing + 0, 0, 192, 192) #statbook.sprite_index
 	if abs(last_move.angle_to(linear_velocity)) > 3.1 and Globals.ticks > scrape_counter:
