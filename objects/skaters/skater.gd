@@ -78,7 +78,7 @@ func do_check() -> void:
 			lunge_dir = Vector2.DOWN if last_move.y > 0 else Vector2.UP
 		elif last_move.length() > 0:
 			lunge_dir = last_move.normalized()
-		apply_impulse(lunge_dir * statbook.speed * 100.0)
+		apply_impulse(lunge_dir * statbook.speed * 10.0)
 
 		var hit_target = false
 		var skaters = get_tree().get_nodes_in_group("skaters")
@@ -90,15 +90,7 @@ func do_check() -> void:
 
 				# Knockback target
 				var knockback_dir = (s.global_position - global_position).normalized()
-				s.apply_impulse(knockback_dir * dmg * 15.0)
-
-				# Particle effect
-				var splutter = preload("res://objects/environment/icesplutter.tscn").instantiate()
-				get_parent().add_child(splutter)
-				splutter.global_position = s.global_position
-				var m: ParticleProcessMaterial = splutter.process_material
-				m.direction = Vector3(knockback_dir.x, knockback_dir.y, 0)
-
+				s.apply_impulse(knockback_dir * dmg * 1.0)
 				hit_target = true
 
 		if hit_target:
