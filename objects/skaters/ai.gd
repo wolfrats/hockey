@@ -7,6 +7,13 @@ var shotDir: Vector2
 var dx: float
 var dy: float
 
+static var team_strategies: Dictionary = {}
+static var next_strategy_switch: Dictionary = {}
+
+var current_random_spot: Vector2 = Vector2.ZERO
+var going_for_puck: bool = false
+var going_for_puck_timer: float = 0.0
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
@@ -45,6 +52,21 @@ func get_most_forward_teammate() -> Node2D:
 				forward_teammate = node
 	return forward_teammate
 
+func get_opponent_to_ram() -> Vector2:
+	var nodes = get_tree().get_nodes_in_group("skaters")
+	var opponents = []
+	for node in nodes:
+		if node is Skater and node.home_team != skater.home_team:
+			opponents.append(node)
+
+	if opponents.size() > 0:
+		var target_idx = skater.get_index() % opponents.size()
+		return opponents[target_idx].global_position
+
+	# Fallback if no matching opponent is found
+	var defend_x = 301.0 if skater.home_team else 1710.0
+	return Vector2(defend_x, 509)
+
 func get_preferred_spot(attack: bool, index: int, attack_x: float, defend_x: float, forward_dir: float) -> Vector2:
 	var base_x = attack_x if attack else defend_x
 	var dir = -forward_dir if attack else forward_dir
@@ -64,6 +86,17 @@ func get_preferred_spot(attack: bool, index: int, attack_x: float, defend_x: flo
 
 func handle(_delta: float, curSkater: Skater) -> void:
 	self.skater = curSkater
+
+	if not team_strategies.has(skater.home_team):
+		team_strategies[skater.home_team] = 4
+		next_strategy_switch[skater.home_team] = Globals.ticks + randi_range(600, 1200)
+
+	if Globals.ticks >= next_strategy_switch[skater.home_team]:
+		team_strategies[skater.home_team] = randi_range(1, 4)
+		next_strategy_switch[skater.home_team] = Globals.ticks + randi_range(600, 1200)
+
+	var current_strategy = team_strategies[skater.home_team]
+
 	var forward_dir = 1.0 if skater.home_team else -1.0
 	var defend_x = 301.0 if skater.home_team else 1710.0
 	var attack_x = 1710.0 if skater.home_team else 301.0
@@ -95,10 +128,37 @@ func handle(_delta: float, curSkater: Skater) -> void:
 					curSkater.shoot(Vector2(forward_dir, 0), 1.0)
 		else:
 			target_pos = Vector2(attack_x, curSkater.global_position.y)
-	elif not team_has_puck and is_delegated_chaser() and not other_team_has_puck:
-		target_pos = puck.global_position
 	else:
-		target_pos = get_preferred_spot(team_has_puck, index, attack_x, defend_x, forward_dir)
+		match current_strategy:
+			1:
+				if is_delegated_chaser():
+					target_pos = puck.global_position if puck else curSkater.global_position
+				else:
+					if current_random_spot == Vector2.ZERO or curSkater.global_position.distance_to(current_random_spot) < 50:
+						current_random_spot = Vector2(
+							randf_range(min(attack_x, defend_x), max(attack_x, defend_x)),
+							randf_range(100, 900)
+						)
+					target_pos = current_random_spot
+			2:
+				if is_delegated_chaser():
+					target_pos = puck.global_position if puck else curSkater.global_position
+				else:
+					target_pos = get_opponent_to_ram()
+			3:
+				going_for_puck_timer -= _delta
+				if going_for_puck_timer <= 0:
+					going_for_puck_timer = randf_range(0.5, 2.0)
+					going_for_puck = randf() < 0.3
+				if going_for_puck and puck:
+					target_pos = puck.global_position
+				else:
+					target_pos = curSkater.global_position # Stand still
+			_:
+				if not team_has_puck and is_delegated_chaser() and not other_team_has_puck:
+					target_pos = puck.global_position if puck else curSkater.global_position
+				else:
+					target_pos = get_preferred_spot(team_has_puck, index, attack_x, defend_x, forward_dir)
 
 	var dist = curSkater.global_position.distance_to(target_pos)
 	if dist > 10:
