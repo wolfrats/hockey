@@ -75,16 +75,29 @@ func do_check() -> void:
 	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
 		checking = Globals.ticks + 20
 
+		# Find nearest opposing skater
+		var nearest_skater: Skater = null
+		var min_dist: float = INF
+		var skaters = get_tree().get_nodes_in_group("skaters")
+		for s in skaters:
+			if s.home_team != home_team and s != self:
+				var dist = global_position.distance_to(s.global_position)
+				if dist < min_dist:
+					min_dist = dist
+					nearest_skater = s
+
 		# Lunge forward
 		var lunge_dir = Vector2.RIGHT if $Sprite.flip_h else Vector2.LEFT
-		if abs(last_move.y) > abs(last_move.x):
-			lunge_dir = Vector2.DOWN if last_move.y > 0 else Vector2.UP
-		elif last_move.length() > 0:
-			lunge_dir = last_move.normalized()
+		if nearest_skater:
+			lunge_dir = (nearest_skater.global_position - global_position).normalized()
+		else:
+			if abs(last_move.y) > abs(last_move.x):
+				lunge_dir = Vector2.DOWN if last_move.y > 0 else Vector2.UP
+			elif last_move.length() > 0:
+				lunge_dir = last_move.normalized()
 		apply_impulse(lunge_dir * statbook.speed * 10.0)
 
 		var hit_target = false
-		var skaters = get_tree().get_nodes_in_group("skaters")
 		for s in skaters:
 			if s != self and global_position.distance_to(s.global_position) < 80:
 				var dmg = statbook.check_damage * randf_range(0.8, 1.2)
@@ -120,6 +133,22 @@ func do_grab() -> void:
 			if s != self and global_position.distance_to(s.global_position) < 80:
 				spring.node_b = s.get_path()
 				holding = Globals.ticks + 120
+
+				# Visual feedback for grabbing
+				if damage_tween and damage_tween.is_valid():
+					damage_tween.kill()
+				$Sprite.modulate = Color(1, 1, 0)
+				damage_tween = create_tween()
+				damage_tween.tween_property($Sprite, "modulate", Color.WHITE, 0.3)
+
+				# Camera shake feedback
+				var camera = get_viewport().get_camera_2d()
+				if camera:
+					var shake_tween = create_tween()
+					shake_tween.tween_property(camera, "offset", Vector2(randf_range(-5, 5), randf_range(-5, 5)), 0.05)
+					shake_tween.tween_property(camera, "offset", Vector2(randf_range(-2, 2), randf_range(-2, 2)), 0.05)
+					shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
+				break
 
 
 func take_damage(damage: float) -> void:
