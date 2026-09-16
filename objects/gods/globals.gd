@@ -12,6 +12,7 @@ var SKATE_COLOR: Color = Color.from_rgba8(96, 255, 248)
 
 var player_devices: Array[int] = []
 var player_teams: Array[int] = []
+var player_auto_swap: Array[bool] = []
 var player_colors: Array[Color] = [Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW]
 
 func _init() -> void:
