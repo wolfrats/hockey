@@ -89,8 +89,10 @@ func _physics_process(_delta: float) -> void:
 	if is_action_just_pressed_custom("swap"):
 		var Is = skater.get_parent().get_children().find(skater)
 		Is = (Is + 1) % 5
-		skater.ghost = skater.get_parent().get_children()[Is].ghost
-		skater.get_parent().get_children()[Is].ghost = self
+		var newskater = skater.get_parent().get_children()[Is]
+		skater.ghost = newskater.ghost
+		newskater.ghost = self
+		skater = newskater
 		return
 	
 func get_nearest_teammate(curSkater: Skater) -> Node2D:

@@ -1555,7 +1555,6 @@ sources/0 = SubResource("TileSetAtlasSource_vqtge")
 sources/1 = SubResource("TileSetAtlasSource_ka43y")
 
 [node name="Node2D" type="Node2D" unique_id=608511731]
-position = Vector2(1, 0)
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=2112835940]
 z_index = -100
@@ -1640,10 +1639,12 @@ unique_name_in_owner = true
 position = Vector2(1007, 486)
 
 [node name="Boards" type="StaticBody2D" parent="." unique_id=897642293]
+unique_name_in_owner = true
 collision_layer = 22
 collision_mask = 31
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Boards" unique_id=1201619783]
+[node name="BoardsCollision" type="CollisionPolygon2D" parent="Boards" unique_id=1201619783]
+unique_name_in_owner = true
 visible = false
 build_mode = 1
 polygon = PackedVector2Array(106, 305, 104, 725, 144, 857, 262, 936, 1725, 929, 1834, 894, 1909, 792, 1918, 724, 1921, 269, 1845, 181, 1755, 138, 1685, 136, 286, 134, 206, 157, 152, 208)

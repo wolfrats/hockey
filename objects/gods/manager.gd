@@ -203,7 +203,7 @@ func update_ui() -> void:
 	score_label.text = "%d - %d" % [home_score, away_score]
 	period_label.text = "Period %d" % current_period
 
-	var mins = int(time_remaining) / 60
+	var mins = int(time_remaining / 60)
 	var secs = int(time_remaining) % 60
 	timer_label.text = "%d:%02d" % [mins, secs]
 
