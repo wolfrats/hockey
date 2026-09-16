@@ -77,12 +77,18 @@ func do_check() -> void:
 	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
 		checking = Globals.ticks + 20
 
-		# Find nearest opposing skater
-		var nearest_skater: Skater = null
+		# Find nearest opposing skater or referee
+		var nearest_skater: Node2D = null
 		var min_dist: float = INF
 		var skaters = get_tree().get_nodes_in_group("skaters")
-		for s in skaters:
-			if s.home_team != home_team and s != self:
+		var referees = get_tree().get_nodes_in_group("referees")
+		var checkable_targets = skaters + referees
+		for s in checkable_targets:
+			var is_opponent = true
+			if "home_team" in s:
+				is_opponent = s.home_team != home_team
+
+			if is_opponent and s != self:
 				var dist = global_position.distance_to(s.global_position)
 				if dist < min_dist:
 					min_dist = dist
@@ -100,15 +106,19 @@ func do_check() -> void:
 		apply_impulse(lunge_dir * statbook.speed * 10.0)
 
 		var hit_target = false
-		for s in skaters:
+		for s in checkable_targets:
 			if s != self and global_position.distance_to(s.global_position) < 80:
 				var dmg = statbook.check_damage * randf_range(0.8, 1.2)
-				s.take_damage(dmg)
-				s.spring.node_b = NodePath("")
+				if s.has_method("take_damage"):
+					s.take_damage(dmg)
+				if "spring" in s and s.spring:
+					s.spring.node_b = NodePath("")
 
 				# Knockback target
 				var knockback_dir = (s.global_position - global_position).normalized()
-				s.apply_impulse(knockback_dir * dmg * 1.0)
+				var mass_ratio = s.mass / mass if s is RigidBody2D else 1.0
+				if s is RigidBody2D:
+					s.apply_impulse(knockback_dir * dmg * 1.0 * mass_ratio)
 				hit_target = true
 
 		if hit_target:
