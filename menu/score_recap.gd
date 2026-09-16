@@ -5,9 +5,9 @@ extends Control
 
 func _ready() -> void:
 	$CenterContainer/VBoxContainer/Buttons/Rematch.grab_focus()
-
+	
 	score_label.text = "%d - %d" % [Globals.match_home_score, Globals.match_away_score]
-
+	
 	var all_players = []
 	for p in Globals.scorer_stats.keys():
 		if not all_players.has(p):
@@ -15,7 +15,7 @@ func _ready() -> void:
 	for p in Globals.assist_stats.keys():
 		if not all_players.has(p):
 			all_players.append(p)
-
+			
 	if all_players.size() == 0:
 		var empty_label = Label.new()
 		empty_label.text = "No stats recorded."
@@ -29,9 +29,15 @@ func _ready() -> void:
 			var a = 0
 			if Globals.assist_stats.has(p):
 				a = Globals.assist_stats[p]
-
+			
+			var display_name = p
+			if display_name == "Player":
+				display_name = "Player 1"
+			elif display_name.begins_with("Player"):
+				display_name = "Player " + display_name.trim_prefix("Player")
+				
 			var stat_label = Label.new()
-			stat_label.text = "%s: %d Goals, %d Assists" % [p, g, a]
+			stat_label.text = "%s: %d Goals, %d Assists" % [display_name, g, a]
 			stat_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			stats_container.add_child(stat_label)
 

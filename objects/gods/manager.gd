@@ -214,12 +214,12 @@ func goal_scored(goal_name: String, scorer: String = "", assister: String = "") 
 		away_score += 1
 	elif goal_name == "AwayGoal":
 		home_score += 1
-
+		
 	if scorer != "":
 		if not Globals.scorer_stats.has(scorer):
 			Globals.scorer_stats[scorer] = 0
 		Globals.scorer_stats[scorer] += 1
-
+		
 	if assister != "":
 		if not Globals.assist_stats.has(assister):
 			Globals.assist_stats[assister] = 0

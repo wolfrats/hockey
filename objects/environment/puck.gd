@@ -38,14 +38,8 @@ func _physics_process(_delta: float) -> void:
 
 	for body in get_colliding_bodies():
 		if body is Skater and (not blocklist.has(body.name) or blocklist[body.name] == 0) and colidable and not body.puck:
-			if posessor != body:
-				if body.home_team == possessor_team and body.name != last_possessor:
-					assist_possessor = last_possessor
-				elif body.home_team != possessor_team:
-					assist_possessor = ""
-				last_possessor = body.name
-				possessor_team = body.home_team
-
+			var prev_possessor = posessor
+			
 			posessor = body
 			posessor.puck = self
 			if posessor.ghost == null:
@@ -67,6 +61,18 @@ func _physics_process(_delta: float) -> void:
 							old_skater.ghost = null
 						posessor.ghost = closest_player
 						closest_player.skater = posessor
+			
+			var current_name = posessor.name
+			if posessor.ghost:
+				current_name = posessor.ghost.name
+				
+			if prev_possessor != posessor:
+				if posessor.home_team == possessor_team and current_name != last_possessor:
+					assist_possessor = last_possessor
+				elif posessor.home_team != possessor_team:
+					assist_possessor = ""
+				last_possessor = current_name
+				possessor_team = posessor.home_team
 			
 func shoot(shooter, vector) -> void:
 	if not posessor or shooter != posessor.name:
