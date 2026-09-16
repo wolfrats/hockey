@@ -39,6 +39,7 @@ func _ready() -> void:
 	Slash.position = Vector2(-175, -200)
 	Slash.scale = Vector2.ONE*(128.0/320.0)
 	%JoystickToggle.button_pressed = Globals.has_node("Holder")
+	$CenterContainer/VBoxContainer/Practice.grab_focus()
 
 
 

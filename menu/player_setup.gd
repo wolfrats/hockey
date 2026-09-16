@@ -6,6 +6,7 @@ extends Control
 @onready var p4_label: Label = %P4Label
 
 func _ready() -> void:
+	$VBoxContainer/Buttons/Clear.grab_focus()
 	update_ui()
 
 func _unhandled_input(event: InputEvent) -> void:
