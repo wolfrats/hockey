@@ -5,6 +5,7 @@ var power: float = 0
 var charge: float = 0.03
 var shotDir: Vector2
 @export var device_id: int = 0
+var player_index: int = -1
 
 var prev_button_state = {}
 var cur_button_state = {}
