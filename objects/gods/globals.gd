@@ -15,6 +15,11 @@ var player_teams: Array[int] = []
 var player_auto_swap: Array[bool] = []
 var player_colors: Array[Color] = [Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW]
 
+var scorer_stats: Dictionary = {}
+var assist_stats: Dictionary = {}
+var match_home_score: int = 0
+var match_away_score: int = 0
+
 func _init() -> void:
 	home_color = Color(randf(), randf(), randf())
 	away_color = home_color.inverted()

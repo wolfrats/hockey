@@ -5,7 +5,7 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 		if %Manager.is_practice:
 			body.home.call_deferred()
 			return
-		%Manager.goal_scored(get_parent().name)
+		%Manager.goal_scored(get_parent().name, body.last_possessor, body.assist_possessor)
 		if "anim_manager" in %Manager and %Manager.anim_manager != null:
 			%Manager.anim_manager.on_goal_scored()
 		else:
