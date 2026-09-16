@@ -12,9 +12,25 @@ var score_label: Label
 var timer_label: Label
 var period_label: Label
 var anim_manager: AnimationManager
+var main_camera: Camera2D
 
 func _ready() -> void:
+	# Create a new detached Camera for the Manager
+	main_camera = Camera2D.new()
+	add_child(main_camera)
+	main_camera.make_current()
+
 	setup_multiplayer()
+
+	# Find and remove any existing Camera2D nodes from Player ghosts to ensure our new camera is the only one
+	var ghosts_node = get_node_or_null("Ghosts")
+	if ghosts_node:
+		for child in ghosts_node.get_children():
+			if child.name.begins_with("Player"):
+				var cam = child.get_node_or_null("Camera2D")
+				if cam:
+					child.remove_child(cam)
+					cam.queue_free()
 	if not is_practice:
 		anim_manager = AnimationManager.new()
 		add_child(anim_manager)
@@ -70,30 +86,41 @@ func _update_players() -> void:
 		ghosts_node.add_child(new_player)
 		current_players.append(new_player)
 
-		# Assign this new player ghost to an available skater on Team1
-		var team1 = get_node_or_null("Team1")
-		if team1:
-			var skaters = team1.get_children()
-			if i < skaters.size():
-				skaters[i].ghost = new_player
-
 	# Update device IDs and handle disconnected controllers
 	var team1 = get_node_or_null("Team1")
-	var skaters = team1.get_children() if team1 else []
+	var team2 = get_node_or_null("Team2")
+	var home_skaters = team1.get_children() if team1 else []
+	var away_skaters = team2.get_children() if team2 else []
+
+	# Keep track of assigned indices per team so we don't assign multiple players to the same skater
+	var home_assigned_count = 0
+	var away_assigned_count = 0
+
+	# First, unassign all ghosts
+	for skater in home_skaters + away_skaters:
+		skater.ghost = null
+
 	for i in range(current_players.size()):
 		var p = current_players[i]
 		if i < active_devices.size():
 			p.device_id = active_devices[i]
 			p.set_color(Globals.player_colors[i])
-			# Ensure it's assigned to a skater
-			if i < skaters.size() and skaters[i].ghost != p:
-				skaters[i].ghost = p
+
+			# Determine which team this player belongs to based on Globals.player_teams
+			var team_choice = 0
+			if i < Globals.player_teams.size():
+				team_choice = Globals.player_teams[i]
+
+			if team_choice == 0:
+				if home_assigned_count < home_skaters.size():
+					home_skaters[home_assigned_count].ghost = p
+					home_assigned_count += 1
+			else:
+				if away_assigned_count < away_skaters.size():
+					away_skaters[away_assigned_count].ghost = p
+					away_assigned_count += 1
 		else:
 			p.device_id = -1
-			# Unassign from skater to revert to AI
-			for skater in skaters:
-				if skater.ghost == p:
-					skater.ghost = null
 
 func _process(delta: float) -> void:
 	if not is_practice:
@@ -104,6 +131,38 @@ func _process(delta: float) -> void:
 					anim_manager.on_period_end()
 
 		update_ui()
+
+	# Update Camera Position
+	if main_camera:
+		var target_pos = Vector2.ZERO
+		var target_count = 0
+
+		# Add active player positions based on skaters that have ghosts assigned
+		var team1 = get_node_or_null("Team1")
+		var team2 = get_node_or_null("Team2")
+		var all_skaters = []
+		if team1:
+			all_skaters += team1.get_children()
+		if team2:
+			all_skaters += team2.get_children()
+
+		for skater in all_skaters:
+			if skater.ghost != null:
+				target_pos += skater.global_position
+				target_count += 1
+
+		# Add puck position (weighted more if desired, here just 1x)
+		var pucks_node = get_node_or_null("Pucks")
+		if pucks_node:
+			for puck in pucks_node.get_children():
+				if puck is Puck:
+					target_pos += puck.global_position
+					target_count += 1
+					break # Just track the first puck
+
+		if target_count > 0:
+			target_pos /= target_count
+			main_camera.global_position = main_camera.global_position.lerp(target_pos, 5.0 * delta)
 
 func setup_ui() -> void:
 	ui_layer = CanvasLayer.new()
