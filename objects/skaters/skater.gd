@@ -73,7 +73,7 @@ func do_check() -> void:
 	if penalty_time > 0:
 		return
 	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
-		checking = Globals.ticks + 30
+		checking = Globals.ticks + 20
 
 		# Lunge forward
 		var lunge_dir = Vector2.RIGHT if $Sprite.flip_h else Vector2.LEFT
@@ -216,7 +216,7 @@ func _physics_process(delta: float) -> void:
 	if knocked_over > Globals.ticks:
 		base_offset = 27
 		z_index = -1
-		if knocked_over - Globals.ticks > 60:
+		if knocked_over - Globals.ticks > 90:
 			$Sprite.position = Vector2(randf_range(-2.0, 2.0), randf_range(-2.0, 2.0))
 		else:
 			$Sprite.position = Vector2.ZERO
@@ -240,6 +240,8 @@ func impulse(dx: float, dy: float) -> void:
 	if knocked_over > Globals.ticks or checking > Globals.ticks or penalty_time > 0:
 		return
 	last_move = Vector2(dx, dy)
+	if last_move.length() > 0:
+		counter += 1
 	if last_move.length_squared() > 0:
 		facing_dir = last_move.normalized()
 	apply_impulse(last_move * statbook.speed)
@@ -253,7 +255,7 @@ func shoot(dir: Vector2, power: float) -> void:
 		puck.shoot(name, vec2)
 
 		var s: GPUParticles2D = preload("res://objects/environment/icesplutter.tscn").instantiate()
-		get_parent().add_child(s)
+		%Manager.add_child(s)
 		s.global_position = (global_position + dir.normalized() * 16)
 
 		var camera = get_viewport().get_camera_2d()

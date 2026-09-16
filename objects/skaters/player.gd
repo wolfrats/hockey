@@ -105,7 +105,7 @@ func handle(_delta: float, curSkater: Skater) -> void:
 	if is_action_just_pressed_custom("shoot"):
 		shotDir = Vector2(dx, dy)
 	if not is_action_pressed_custom("shoot"):
-		if ((dx != 0) or (dy != 0)): curSkater.counter += 1
+		#if ((dx != 0) or (dy != 0)): curSkater.counter += 1
 		curSkater.impulse(dx, dy)
 		charge = 0.03
 		$Power.visible = false

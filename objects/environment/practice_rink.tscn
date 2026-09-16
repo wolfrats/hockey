@@ -1068,7 +1068,7 @@ texture = ExtResource("1_jdhqj")
 [sub_resource type="TileSet" id="TileSet_arvj2"]
 sources/0 = SubResource("TileSetAtlasSource_vqtge")
 
-[node name="Node2D" type="Node2D" unique_id=608511731]
+[node name="Root" type="Node2D" unique_id=608511731]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=2112835940]
 z_index = -100
