@@ -15,6 +15,7 @@ var action_map = {
 	"check": JOY_BUTTON_B,
 	"grab": JOY_BUTTON_RIGHT_SHOULDER,
 	"shoot": JOY_BUTTON_X,
+	"pass": JOY_BUTTON_A,
 }
 
 func _update_buttons() -> void:
@@ -92,6 +93,18 @@ func _physics_process(_delta: float) -> void:
 		skater.get_parent().get_children()[Is].ghost = self
 		return
 	
+func get_nearest_teammate(curSkater: Skater) -> Node2D:
+	var nodes = get_tree().get_nodes_in_group("skaters")
+	var closest_teammate = null
+	var min_distance: float = INF
+	for node in nodes:
+		if node is Skater and node.home_team == curSkater.home_team and node != curSkater:
+			var distance = curSkater.global_position.distance_squared_to(node.global_position)
+			if distance < min_distance:
+				min_distance = distance
+				closest_teammate = node
+	return closest_teammate
+
 func handle(_delta: float, curSkater: Skater) -> void:
 	self.skater = curSkater
 	var dx = get_axis_custom("skate_x")
@@ -102,6 +115,12 @@ func handle(_delta: float, curSkater: Skater) -> void:
 		
 	if is_action_just_pressed_custom("grab"):
 		curSkater.do_grab()
+
+	if is_action_just_pressed_custom("pass") and curSkater.puck:
+		var teammate = get_nearest_teammate(curSkater)
+		if teammate:
+			var dir = (teammate.global_position - curSkater.global_position).normalized()
+			curSkater.shoot(dir, 0.2)
 
 	if is_action_just_pressed_custom("shoot"):
 		shotDir = Vector2(dx, dy)
