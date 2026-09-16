@@ -28,6 +28,10 @@ func _physics_process(_delta: float) -> void:
 		home()
 	if Globals.ticks > block_all:
 		set_collision_mask_value(4, true)
+	for key in blocklist:
+		blocklist[key] -= 1
+		if blocklist[key] <= 0:
+			blocklist.erase(key)
 
 	for body in get_colliding_bodies():
 		if body is Skater and (not blocklist.has(body.name) or blocklist[body.name] == 0) and colidable and not body.puck:
@@ -52,11 +56,6 @@ func _physics_process(_delta: float) -> void:
 							old_skater.ghost = null
 						posessor.ghost = closest_player
 						closest_player.skater = posessor
-
-	for key in blocklist:
-		blocklist[key] -= 1
-		if blocklist[key] <= 0:
-			blocklist.erase(key)
 			
 func shoot(shooter, vector) -> void:
 	if not posessor or shooter != posessor.name:

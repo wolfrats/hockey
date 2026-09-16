@@ -53,8 +53,6 @@ pass={
 "script": null
 )]
 }
-
-
 skate_left={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,
