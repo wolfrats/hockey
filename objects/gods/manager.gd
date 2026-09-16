@@ -105,7 +105,6 @@ func _update_players() -> void:
 		if i < active_devices.size():
 			p.device_id = active_devices[i]
 			p.set_color(Globals.player_colors[i])
-
 			# Determine which team this player belongs to based on Globals.player_teams
 			var team_choice = 0
 			if i < Globals.player_teams.size():
