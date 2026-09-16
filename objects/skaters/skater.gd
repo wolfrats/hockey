@@ -55,6 +55,8 @@ func _ready() -> void:
 func home() -> void:
 	needs_reset = true
 	self.puck = null
+	health = statbook.max_health
+	penalty_time = 0.0
 
 func penalty(duration: float) -> void:
 	penalty_time = duration
@@ -183,6 +185,8 @@ func _physics_process(delta: float) -> void:
 			impulse(0, sign(diffy))
 		if randf() < 0.1:
 			impulse(randf_range(-0.5, 0.5), 0)
+		if global_position.y < 200:
+			$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta)
 	elif ghost:
 		ghost.handle(delta, self)
 	elif ai:
@@ -296,6 +300,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		state.set_transform(trans)
 		state.linear_velocity = Vector2.ZERO
 		state.angular_velocity = 0
+		$Sprite.modulate.a = min(1.0, $Sprite.modulate.a + state.step * 2.0)
 		return
 
 	if needs_reset:
