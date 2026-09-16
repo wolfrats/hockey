@@ -74,8 +74,10 @@ func _update_players() -> void:
 		var team1 = get_node_or_null("Team1")
 		if team1:
 			var skaters = team1.get_children()
-			if i < skaters.size():
-				skaters[i].ghost = new_player
+			for skater in skaters:
+				if skater.ghost == null:
+					skater.ghost = new_player
+					break
 
 	# Update device IDs and handle disconnected controllers
 	var team1 = get_node_or_null("Team1")
@@ -86,8 +88,16 @@ func _update_players() -> void:
 			p.device_id = active_devices[i]
 			p.set_color(Globals.player_colors[i])
 			# Ensure it's assigned to a skater
-			if i < skaters.size() and skaters[i].ghost != p:
-				skaters[i].ghost = p
+			var is_assigned = false
+			for skater in skaters:
+				if skater.ghost == p:
+					is_assigned = true
+					break
+			if not is_assigned:
+				for skater in skaters:
+					if skater.ghost == null:
+						skater.ghost = p
+						break
 		else:
 			p.device_id = -1
 			# Unassign from skater to revert to AI
