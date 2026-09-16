@@ -50,11 +50,12 @@ func _process(delta: float) -> void:
 				# Move to next period
 				manager.current_period += 1
 				if manager.current_period > 3:
-					manager.current_period = 3
-					manager.time_remaining = 0
+					Globals.match_home_score = manager.home_score
+					Globals.match_away_score = manager.away_score
+					get_tree().change_scene_to_file("res://menu/score_recap.tscn")
 				else:
 					manager.time_remaining = Globals.period_length
-				set_phase(Phase.PLAYING)
+					set_phase(Phase.PLAYING)
 
 func set_phase(new_phase: Phase) -> void:
 	current_phase = new_phase

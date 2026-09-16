@@ -5,6 +5,9 @@ var colidable: bool = true
 var initial_position: Vector2
 var needs_reset: bool = false
 var block_all: int = 0
+var last_possessor: String = ""
+var assist_possessor: String = ""
+var possessor_team: bool = false
 
 func _ready() -> void:
 	initial_position = global_position
@@ -35,6 +38,14 @@ func _physics_process(_delta: float) -> void:
 
 	for body in get_colliding_bodies():
 		if body is Skater and (not blocklist.has(body.name) or blocklist[body.name] == 0) and colidable and not body.puck:
+			if posessor != body:
+				if body.home_team == possessor_team and body.name != last_possessor:
+					assist_possessor = last_possessor
+				elif body.home_team != possessor_team:
+					assist_possessor = ""
+				last_possessor = body.name
+				possessor_team = body.home_team
+
 			posessor = body
 			posessor.puck = self
 			if posessor.ghost == null:
