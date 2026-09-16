@@ -208,6 +208,8 @@ func update_ui() -> void:
 	timer_label.text = "%d:%02d" % [mins, secs]
 
 func goal_scored(goal_name: String) -> void:
+	if anim_manager.current_phase != AnimationManager.Phase.PLAYING:
+		return
 	if goal_name == "HomeGoal":
 		away_score += 1
 	elif goal_name == "AwayGoal":

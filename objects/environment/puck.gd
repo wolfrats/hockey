@@ -4,6 +4,7 @@ var blocklist: Dictionary[String, int] = {}
 var colidable: bool = true
 var initial_position: Vector2
 var needs_reset: bool = false
+var block_all: int = 0
 
 func _ready() -> void:
 	initial_position = global_position
@@ -25,6 +26,8 @@ func _process(_delta: float) -> void:
 func _physics_process(_delta: float) -> void:
 	if global_position.x < -200 or global_position.x > 2200 or global_position.y < -200 or global_position.y > 1400:
 		home()
+	if Globals.ticks > block_all:
+		set_collision_mask_value(4, true)
 
 	for body in get_colliding_bodies():
 		if body is Skater and (not blocklist.has(body.name) or blocklist[body.name] == 0) and colidable and not body.puck:
@@ -61,7 +64,8 @@ func shoot(shooter, vector) -> void:
 	posessor.puck = null
 	posessor = null
 	blocklist[shooter] = 15
-	get_tree().create_timer(1.0/60.0).timeout.connect(_enable_collision)
+	block_all = Globals.ticks + 1
+	#get_tree().create_timer(1.0/60.0).timeout.connect(_enable_collision)
 	set_collision_mask_value(4, false)
 	freeze = false
 	apply_impulse(vector)
