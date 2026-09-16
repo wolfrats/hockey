@@ -12,7 +12,7 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	var device_joined = -1
 
-	if event.is_action_pressed("shoot") and not event is InputEventJoypadButton:
+	if event.is_action_pressed("check") and not event is InputEventJoypadButton:
 		# Keyboard is always -2 now for custom setup logic
 		device_joined = -2
 	elif event is InputEventJoypadButton and event.pressed:

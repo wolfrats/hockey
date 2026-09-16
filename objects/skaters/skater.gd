@@ -133,14 +133,8 @@ func do_grab() -> void:
 			if s != self and global_position.distance_to(s.global_position) < 80:
 				spring.node_b = s.get_path()
 				holding = Globals.ticks + 120
-
-				# Visual feedback for grabbing
-				if damage_tween and damage_tween.is_valid():
-					damage_tween.kill()
-				$Sprite.modulate = Color(1, 1, 0)
-				damage_tween = create_tween()
-				damage_tween.tween_property($Sprite, "modulate", Color.WHITE, 0.3)
-
+				s.take_damage(0, Color.DIM_GRAY)
+				
 				# Camera shake feedback
 				var camera = get_viewport().get_camera_2d()
 				if camera:
@@ -151,13 +145,13 @@ func do_grab() -> void:
 				break
 
 
-func take_damage(damage: float) -> void:
+func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
 	if knocked_over > Globals.ticks:
 		return
 	health -= damage
 	if damage_tween and damage_tween.is_valid():
 		damage_tween.kill()
-	$Sprite.modulate = Color(1, 0, 0)
+	$Sprite.modulate = color
 	damage_tween = create_tween()
 	damage_tween.tween_property($Sprite, "modulate", Color.WHITE, 0.3)
 	if health <= 0:
