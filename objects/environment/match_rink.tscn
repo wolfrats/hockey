@@ -1641,6 +1641,8 @@ unique_name_in_owner = true
 
 [node name="Puck" parent="Manager/Pucks" unique_id=1068731431 instance=ExtResource("7_xvcn5")]
 position = Vector2(1007, 486)
+continuous_cd = 1
+max_contacts_reported = 18
 
 [node name="Boards" type="StaticBody2D" parent="." unique_id=897642293]
 unique_name_in_owner = true
