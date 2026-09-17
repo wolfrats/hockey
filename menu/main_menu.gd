@@ -48,7 +48,7 @@ func _on_practice_pressed() -> void:
 
 
 func _on_match_pressed() -> void:
-		get_tree().change_scene_to_file("res://objects/environment/match_rink.tscn")
+		get_tree().change_scene_to_file("res://menu/team_setup.tscn")
 
 func _on_setup_pressed() -> void:
 	get_tree().change_scene_to_file("res://menu/player_setup.tscn")
