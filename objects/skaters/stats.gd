@@ -46,3 +46,59 @@ func _init() -> void:
 	Classes[ClassTypes.HEAVY].shot_variance = deg_to_rad(30)
 	Classes[ClassTypes.HEAVY].check_damage = 45.0
 	Classes[ClassTypes.HEAVY].max_health = 130.0
+
+
+const TEAMS = [
+	{
+		"name": "Wide Street Wackos",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.7, 0.4, 0),
+		"body_color": Color(0, 0, 0),
+		"foot_color": Color(0.8, 0.4, 0),
+	},
+	{
+		"name": "Blue Feathers",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.3, 0.4, 1),
+		"body_color": Color(0.2, 0.2, 0.5),
+		"foot_color": Color(0.5, 0.5, 1),
+	},
+	{
+		"name": "Flightless Birds",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.8, 0.8, 0.3),
+		"body_color": Color(0.8, 0.8, 0.8),
+		"foot_color": Color(0.2, 0.2, 0.2),
+	},
+	{
+		"name": "Candy Canes",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(1, 0.5, 0.6),
+		"body_color": Color(1, 1, 1),
+		"foot_color": Color(1, 0.5, 0.6),
+	}
+]
