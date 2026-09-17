@@ -151,8 +151,29 @@ func handle(_delta: float, curSkater: Skater) -> void:
 	elif has_puck:
 		if abs(curSkater.global_position.x - attack_x) < 300:
 			if randf() > 0.05 and index != 0:
-				var y_offset = (509 - curSkater.global_position.y) * 0.5
-				curSkater.shoot(Vector2(forward_dir, y_offset / 509).normalized(), 1.0)
+				var target_y = 509.0
+				var manager = curSkater.get_parent().get_parent()
+				var target_goalie = null
+				if manager:
+					for child in manager.get_children():
+						if child is Goalie and child.home_team != curSkater.home_team:
+							target_goalie = child
+							break
+
+				if target_goalie:
+					var top_post = 458.0
+					var bottom_post = 560.0
+					var goalie_y = target_goalie.global_position.y
+					var top_gap = goalie_y - top_post
+					var bottom_gap = bottom_post - goalie_y
+
+					if top_gap > bottom_gap:
+						target_y = top_post + (top_gap / 2.0)
+					else:
+						target_y = bottom_post - (bottom_gap / 2.0)
+
+				var aim_dir = Vector2(attack_x - curSkater.global_position.x, target_y - curSkater.global_position.y).normalized()
+				curSkater.shoot(aim_dir, 1.0)
 			else:
 				var teammate = get_most_forward_teammate()
 				if teammate:
