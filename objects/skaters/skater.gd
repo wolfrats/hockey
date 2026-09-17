@@ -12,6 +12,7 @@ var started_charge: int = 0
 var knocked_over: int = 0
 var checking: int = 0
 var holding: int = 0
+var swapping: int = 0
 var puck: Puck = null
 var skate_dir: Vector2 = Vector2.ONE
 var last_move: Vector2 = Vector2.ONE
@@ -187,6 +188,17 @@ func _physics_process(delta: float) -> void:
 			impulse(randf_range(-0.5, 0.5), 0)
 		if global_position.y < 200:
 			$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta)
+	elif anim_state == "swapping":
+		swapping += 1
+		if swapping < 60:
+			$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta)
+			impulse(0, -0.1)
+		else:
+			$Sprite.modulate.a = min(1.0, $Sprite.modulate.a + delta)
+			impulse(0, 0.1)
+		if swapping > 120:
+			swapping = 0
+			anim_state = ""
 	elif ghost:
 		ghost.handle(delta, self)
 	elif ai:

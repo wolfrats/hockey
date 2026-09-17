@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://087q0jqlan76" path="res://objects/environment/puck.tscn" id="7_xvcn5"]
 [ext_resource type="PackedScene" uid="uid://dcs1p006dc6l1" path="res://objects/environment/Goal.tscn" id="8_6d2ki"]
 [ext_resource type="PackedScene" uid="uid://c7t4freferee" path="res://objects/skaters/referee.tscn" id="9_ref"]
+[ext_resource type="Script" uid="uid://carxvn5etqhdd" path="res://objects/environment/bench.gd" id="10_jkole"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vqtge"]
 texture = ExtResource("1_6v86d")
@@ -1554,6 +1555,9 @@ texture = ExtResource("2_jkole")
 sources/0 = SubResource("TileSetAtlasSource_vqtge")
 sources/1 = SubResource("TileSetAtlasSource_ka43y")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4jwb7"]
+size = Vector2(125.5, 45)
+
 [node name="Node2D" type="Node2D" unique_id=608511731]
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=2112835940]
@@ -1672,3 +1676,25 @@ polygon = PackedVector2Array(329, 434, 289, 437, 268, 468, 260, 515, 268, 563, 2
 
 [node name="Goal2" parent="AwayGoal" unique_id=289303226 instance=ExtResource("8_6d2ki")]
 position = Vector2(1710, 516)
+
+[node name="HomeBench" type="Area2D" parent="." unique_id=191701502]
+collision_layer = 9
+collision_mask = 9
+script = ExtResource("10_jkole")
+home = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HomeBench" unique_id=2107940131]
+position = Vector2(554.25, 137.5)
+shape = SubResource("RectangleShape2D_4jwb7")
+
+[node name="AwayBench" type="Area2D" parent="." unique_id=274359506]
+collision_layer = 9
+collision_mask = 9
+script = ExtResource("10_jkole")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AwayBench" unique_id=131011547]
+position = Vector2(1452, 151)
+shape = SubResource("RectangleShape2D_4jwb7")
+
+[connection signal="body_entered" from="HomeBench" to="HomeBench" method="_on_bench_body_entered"]
+[connection signal="body_entered" from="AwayBench" to="AwayBench" method="_on_bench_body_entered"]
