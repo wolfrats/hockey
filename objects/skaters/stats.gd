@@ -100,5 +100,57 @@ const TEAMS = [
 		"head_color": Color(1, 0.5, 0.6),
 		"body_color": Color(1, 1, 1),
 		"foot_color": Color(1, 0.5, 0.6),
+	},
+	{
+		"name": "Toronto Syrups",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM
+		],
+		"head_color": Color(0, 0, 1),
+		"body_color": Color(1, 1, 1),
+		"foot_color": Color(0, 0, 1),
+	},
+	{
+		"name": "Boston Bruisers",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY
+		],
+		"head_color": Color(0, 0, 0),
+		"body_color": Color(1, 0.84, 0),
+		"foot_color": Color(0, 0, 0),
+	},
+	{
+		"name": "Motor City Red Wheels",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(1, 0, 0),
+		"body_color": Color(1, 1, 1),
+		"foot_color": Color(1, 0, 0),
+	},
+	{
+		"name": "Montreal Poutines",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(1, 0, 0),
+		"body_color": Color(0, 0, 1),
+		"foot_color": Color(1, 1, 1),
 	}
 ]
