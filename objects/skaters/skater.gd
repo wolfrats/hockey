@@ -61,7 +61,7 @@ func home() -> void:
 
 func penalty(duration: float) -> void:
 	penalty_time = duration
-	needs_penalty_reset = true
+	anim_state = "entering_penalty"
 	checking = 0
 	charging = false
 	if puck:
@@ -73,7 +73,7 @@ func _process(_delta: float) -> void:
 	pass
 	
 func do_check() -> void:
-	if penalty_time > 0:
+	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return
 	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
 		checking = Globals.ticks + 20
@@ -137,7 +137,7 @@ func do_check() -> void:
 					penalty(30.0)
 
 func do_grab() -> void:
-	if penalty_time > 0:
+	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return
 	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
 		checking = Globals.ticks + 30
@@ -159,7 +159,7 @@ func do_grab() -> void:
 
 
 func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
-	if knocked_over > Globals.ticks:
+	if knocked_over > Globals.ticks or anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return
 	health -= damage
 	if damage_tween and damage_tween.is_valid():
@@ -175,15 +175,34 @@ func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
 			puck.shoot(name, Vector2.ZERO)
 
 func _physics_process(delta: float) -> void:
-	if penalty_time > 0:
-		penalty_time -= delta
-		if penalty_time <= 0:
-			needs_reset = true
-		return
+
 
 	if knocked_over <= Globals.ticks and health < statbook.max_health:
 		health = min(statbook.max_health, health + delta * 15.0) # Regenerate 15 hp per second
-	if anim_state == "skating_around":
+	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
+		if anim_state == "entering_penalty":
+			linear_velocity = Vector2(0, -100)
+			$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta * 1.5)
+			if $Sprite.modulate.a <= 0.0:
+				anim_state = "in_penalty"
+				needs_penalty_reset = true
+		elif anim_state == "in_penalty":
+			$Sprite.modulate.a = min(1.0, $Sprite.modulate.a + delta * 2.0)
+			if penalty_time > 0:
+				penalty_time -= delta
+				if penalty_time <= 0:
+					anim_state = "leaving_penalty"
+		elif anim_state == "leaving_penalty":
+			linear_velocity = Vector2(0, 100)
+			$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta * 1.5)
+			if $Sprite.modulate.a <= 0.0:
+				anim_state = "return_from_penalty"
+				needs_reset = true
+		elif anim_state == "return_from_penalty":
+			$Sprite.modulate.a = min(1.0, $Sprite.modulate.a + delta * 2.0)
+			if $Sprite.modulate.a >= 1.0:
+				anim_state = ""
+	elif anim_state == "skating_around":
 		if randf() < 0.05:
 			impulse(randf_range(-1, 1), randf_range(-1, 1))
 		var diff = initial_position - global_position
@@ -286,7 +305,7 @@ func _physics_process(delta: float) -> void:
 	skate_dir = skate_dir.lerp(self.linear_velocity, 0.03)
 
 func impulse(dx: float, dy: float) -> void:
-	if knocked_over > Globals.ticks or checking > Globals.ticks or penalty_time > 0:
+	if knocked_over > Globals.ticks or checking > Globals.ticks or anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return
 	last_move = Vector2(dx, dy)
 	if last_move.length() > 0:
@@ -296,7 +315,7 @@ func impulse(dx: float, dy: float) -> void:
 	apply_impulse(last_move * statbook.speed)
 
 func shoot(dir: Vector2, power: float) -> void:
-	if knocked_over > Globals.ticks or checking > Globals.ticks or penalty_time > 0:
+	if knocked_over > Globals.ticks or checking > Globals.ticks or anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return
 	var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
 	var vec2 = vec.rotated(statbook.shot_variance * (1 - (2*randf())))
@@ -343,7 +362,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		needs_penalty_reset = false
 		return
 
-	if penalty_time > 0:
+	if anim_state == "in_penalty":
 		state.linear_velocity = Vector2.ZERO
 		state.angular_velocity = 0
 		return
