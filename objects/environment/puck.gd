@@ -31,10 +31,14 @@ func _physics_process(_delta: float) -> void:
 		home()
 	if Globals.ticks > block_all:
 		set_collision_mask_value(4, true)
+	var to_erase: Array[String] = []
 	for key in blocklist:
 		blocklist[key] -= 1
 		if blocklist[key] <= 0:
-			blocklist.erase(key)
+			to_erase.append(key)
+
+	for key in to_erase:
+		blocklist.erase(key)
 
 	for body in get_colliding_bodies():
 		if body is Skater and (not blocklist.has(body.name) or blocklist[body.name] == 0) and colidable and not body.puck:
