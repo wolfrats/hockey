@@ -130,7 +130,6 @@ func do_check() -> void:
 				shake_tween.tween_property(camera, "offset", Vector2(randf_range(-5, 5), randf_range(-5, 5)), 0.05)
 				shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
 
-		var referees = get_tree().get_nodes_in_group("referees")
 		for ref in referees:
 			if ref.has_method("is_in_cone") and ref.is_in_cone(global_position):
 				if randf() < 0.3: # 30% chance to be sent to penalty box

@@ -1677,15 +1677,15 @@ polygon = PackedVector2Array(329, 434, 289, 437, 268, 468, 260, 515, 268, 563, 2
 [node name="Goal2" parent="AwayGoal" unique_id=289303226 instance=ExtResource("8_6d2ki")]
 position = Vector2(1710, 516)
 
-[node name="PenaltyBox" type="StaticBody2D" parent="."]
+[node name="PenaltyBox" type="StaticBody2D" parent="." unique_id=1714978849]
 collision_layer = 22
 collision_mask = 31
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="PenaltyBox"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="PenaltyBox" unique_id=1474749175]
 build_mode = 1
 polygon = PackedVector2Array(900, 135, 900, 50, 1100, 50, 1100, 135)
 
-[node name="Line2D" type="Line2D" parent="PenaltyBox"]
+[node name="Line2D" type="Line2D" parent="PenaltyBox" unique_id=969076514]
 points = PackedVector2Array(900, 135, 900, 50, 1100, 50, 1100, 135)
 width = 5.0
 default_color = Color(0, 0, 0, 1)
