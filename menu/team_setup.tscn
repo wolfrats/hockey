@@ -1,0 +1,182 @@
+[gd_scene format=3 uid="uid://dd8f1k3l4o5u"]
+
+[ext_resource type="Theme" uid="uid://c0b4q46jrp2me" path="res://menu/theme.tres" id="1_theme"]
+[ext_resource type="Script" uid="uid://ded0tfejrehm0" path="res://menu/team_setup.gd" id="2_script"]
+[ext_resource type="Texture2D" uid="uid://cg1i3w702x3cu" path="res://sprites/rink.png" id="3_rink"]
+
+[node name="TeamSetup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_script")
+
+[node name="Background" type="TextureRect" parent="."]
+modulate = Color(0.5, 0.5, 0.5, 1)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_rink")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 10
+theme_override_font_sizes/font_size = 48
+text = "TEAM SETUP"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 100
+alignment = 1
+
+[node name="HomeTeam" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Title" type="Label" parent="VBoxContainer/HBoxContainer/HomeTeam"]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+text = "Home Team"
+horizontal_alignment = 1
+
+[node name="HomeLabel" type="Label" parent="VBoxContainer/HBoxContainer/HomeTeam"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+text = "Team 1"
+horizontal_alignment = 1
+
+[node name="Colors" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/HomeTeam"]
+layout_mode = 2
+theme_override_constants/separation = 5
+alignment = 1
+
+[node name="HomeHead" type="ColorRect" parent="VBoxContainer/HBoxContainer/HomeTeam/Colors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="HomeBody" type="ColorRect" parent="VBoxContainer/HBoxContainer/HomeTeam/Colors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="HomeFoot" type="ColorRect" parent="VBoxContainer/HBoxContainer/HomeTeam/Colors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/HomeTeam"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Prev" type="Button" parent="VBoxContainer/HBoxContainer/HomeTeam/Buttons"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "<"
+
+[node name="Next" type="Button" parent="VBoxContainer/HBoxContainer/HomeTeam/Buttons"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = ">"
+
+[node name="AwayTeam" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Title" type="Label" parent="VBoxContainer/HBoxContainer/AwayTeam"]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+text = "Away Team"
+horizontal_alignment = 1
+
+[node name="AwayLabel" type="Label" parent="VBoxContainer/HBoxContainer/AwayTeam"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+text = "Team 2"
+horizontal_alignment = 1
+
+[node name="Colors" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/AwayTeam"]
+layout_mode = 2
+theme_override_constants/separation = 5
+alignment = 1
+
+[node name="AwayHead" type="ColorRect" parent="VBoxContainer/HBoxContainer/AwayTeam/Colors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="AwayBody" type="ColorRect" parent="VBoxContainer/HBoxContainer/AwayTeam/Colors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="AwayFoot" type="ColorRect" parent="VBoxContainer/HBoxContainer/AwayTeam/Colors"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+
+[node name="Buttons" type="HBoxContainer" parent="VBoxContainer/HBoxContainer/AwayTeam"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Prev" type="Button" parent="VBoxContainer/HBoxContainer/AwayTeam/Buttons"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = "<"
+
+[node name="Next" type="Button" parent="VBoxContainer/HBoxContainer/AwayTeam/Buttons"]
+custom_minimum_size = Vector2(100, 40)
+layout_mode = 2
+text = ">"
+
+[node name="Buttons" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="Back" type="Button" parent="VBoxContainer/Buttons"]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+text = "Back"
+
+[node name="Play" type="Button" parent="VBoxContainer/Buttons"]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+text = "Play"
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/HomeTeam/Buttons/Prev" to="." method="_on_home_prev_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/HomeTeam/Buttons/Next" to="." method="_on_home_next_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/AwayTeam/Buttons/Prev" to="." method="_on_away_prev_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/AwayTeam/Buttons/Next" to="." method="_on_away_next_pressed"]
+[connection signal="pressed" from="VBoxContainer/Buttons/Back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="VBoxContainer/Buttons/Play" to="." method="_on_play_pressed"]

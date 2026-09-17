@@ -20,11 +20,21 @@ var assist_stats: Dictionary = {}
 var match_home_score: int = 0
 var match_away_score: int = 0
 
+var home_team_index: int = 0
+var away_team_index: int = 1
+
 func _init() -> void:
-	home_color = Color(randf(), randf(), randf())
-	away_color = home_color.inverted()
-	home_texture = swap_colors_in_texture(preload("res://sprites/skater-all.png"), home_color)
-	away_texture = swap_colors_in_texture(preload("res://sprites/skater-all.png"), away_color)
+	update_team_textures()
+
+func update_team_textures() -> void:
+	var home_team = StatBook.TEAMS[home_team_index]
+	var away_team = StatBook.TEAMS[away_team_index]
+
+	home_color = home_team["body_color"]
+	away_color = away_team["body_color"]
+
+	home_texture = swap_colors_in_texture_multi(preload("res://sprites/skater-all.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"])
+	away_texture = swap_colors_in_texture_multi(preload("res://sprites/skater-all.png"), away_team["head_color"], away_team["body_color"], away_team["foot_color"])
 
 func _physics_process(_delta: float) -> void:
 	ticks += 1
@@ -47,12 +57,15 @@ func get_closest_node(from_position: Vector2, group_name: String) -> Node2D:
 	return closest_node
 	
 func swap_colors_in_texture(tex: Texture2D, to_col: Color) -> ImageTexture:
+	return swap_colors_in_texture_multi(tex, to_col.darkened(0.3), to_col, to_col.darkened(0.6))
+
+func swap_colors_in_texture_multi(tex: Texture2D, head: Color, body: Color, foot: Color) -> ImageTexture:
 	return swap_color_in_texture(
 		swap_color_in_texture(
 			swap_color_in_texture(
-				tex, SHIRT_COLOR, to_col
-			), HELMET_COLOR, to_col.darkened(0.3)
-		), SKATE_COLOR, to_col.darkened(0.6)
+				tex, SHIRT_COLOR, body
+			), HELMET_COLOR, head
+		), SKATE_COLOR, foot
 	)
 func swap_color_in_texture(tex: Texture2D, from_col: Color, to_col: Color) -> ImageTexture:
 	# Convert Texture2D to an Image you can edit 
