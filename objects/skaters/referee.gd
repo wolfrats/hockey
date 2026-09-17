@@ -8,6 +8,9 @@ var last_move: Vector2 = Vector2.ONE
 var counter = 0
 var anim_state: String = ""
 var target_pos: Vector2 = Vector2.ZERO
+var health: float = 100.0
+var knocked_over: int = 0
+var damage_tween: Tween
 
 # Cone of sight parameters
 var cone_angle: float = PI / 3.0 # 60 degrees
@@ -15,6 +18,18 @@ var cone_radius: float = 300.0
 
 @onready var sprite = $Sprite
 @onready var sight_polygon = $SightCone
+
+func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
+	if knocked_over > Globals.ticks:
+		return
+	health -= damage
+	if damage_tween and damage_tween.is_valid():
+		damage_tween.kill()
+	$Sprite.modulate = color
+	damage_tween = create_tween()
+	damage_tween.tween_property($Sprite, "modulate", Color.WHITE, 0.3)
+	if health <= 0:
+		knocked_over = Globals.ticks + 120
 
 func _ready() -> void:
 	initial_position = global_position
@@ -30,6 +45,19 @@ func home() -> void:
 	needs_reset = true
 
 func _physics_process(delta: float) -> void:
+	if knocked_over <= Globals.ticks and health < 100.0:
+		health += delta * 5.0
+		if health > 100.0:
+			health = 100.0
+
+	if knocked_over > Globals.ticks:
+		linear_damp = 3.0
+		var spacing = 192
+		var base_offset = 27
+		sprite.region_rect = Rect2(base_offset * spacing, 0, 192, 192)
+		_update_cone_visuals()
+		return
+
 	if anim_state == "skating_around":
 		if randf() < 0.05:
 			impulse(randf_range(-1, 1), randf_range(-1, 1))
@@ -81,6 +109,11 @@ func impulse(dx: float, dy: float) -> void:
 func _update_cone_visuals():
 	if not sight_polygon:
 		return
+	if knocked_over > Globals.ticks:
+		sight_polygon.visible = false
+		return
+	sight_polygon.visible = true
+
 	var facing_dir = linear_velocity.normalized()
 	if facing_dir.length_squared() < 0.1:
 		facing_dir = last_move.normalized()
@@ -99,6 +132,8 @@ func _update_cone_visuals():
 	sight_polygon.polygon = points
 
 func is_in_cone(point: Vector2) -> bool:
+	if knocked_over > Globals.ticks:
+		return false
 	var diff = point - global_position
 	if diff.length() > cone_radius:
 		return false
