@@ -1180,3 +1180,16 @@ position = Vector2(2023, 1051)
 scale = Vector2(-1, -1)
 build_mode = 1
 polygon = PackedVector2Array(329, 434, 289, 437, 268, 468, 260, 515, 268, 563, 272, 597, 298, 621, 325, 633, 328, 629, 282, 594, 277, 565, 272, 512, 277, 475, 292, 448)
+
+[node name="PenaltyBox" type="StaticBody2D" parent="."]
+collision_layer = 22
+collision_mask = 31
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="PenaltyBox"]
+build_mode = 1
+polygon = PackedVector2Array(900, 135, 900, 50, 1100, 50, 1100, 135)
+
+[node name="Line2D" type="Line2D" parent="PenaltyBox"]
+points = PackedVector2Array(900, 135, 900, 50, 1100, 50, 1100, 135)
+width = 5.0
+default_color = Color(0, 0, 0, 1)
