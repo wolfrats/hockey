@@ -61,6 +61,9 @@ const TEAMS = [
 		"head_color": Color(0.7, 0.4, 0),
 		"body_color": Color(0, 0, 0),
 		"foot_color": Color(0.8, 0.4, 0),
+		"away_head_color": Color(0.7, 0.4, 0),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.8, 0.4, 0),
 	},
 	{
 		"name": "Blue Feathers",
@@ -74,6 +77,9 @@ const TEAMS = [
 		"head_color": Color(0.3, 0.4, 1),
 		"body_color": Color(0.2, 0.2, 0.5),
 		"foot_color": Color(0.5, 0.5, 1),
+		"away_head_color": Color(0.3, 0.4, 1),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.5, 0.5, 1),
 	},
 	{
 		"name": "Flightless Birds",
@@ -87,6 +93,9 @@ const TEAMS = [
 		"head_color": Color(0.8, 0.8, 0.3),
 		"body_color": Color(0.8, 0.8, 0.8),
 		"foot_color": Color(0.2, 0.2, 0.2),
+		"away_head_color": Color(0.8, 0.8, 0.3),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.2, 0.2, 0.2),
 	},
 	{
 		"name": "Candy Canes",
@@ -100,5 +109,8 @@ const TEAMS = [
 		"head_color": Color(1, 0.5, 0.6),
 		"body_color": Color(1, 1, 1),
 		"foot_color": Color(1, 0.5, 0.6),
+		"away_head_color": Color(1, 0.5, 0.6),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(1, 0.5, 0.6),
 	}
 ]

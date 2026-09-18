@@ -27,9 +27,9 @@ func update_ui() -> void:
 	home_foot.color = home_team["foot_color"]
 
 	away_label.text = away_team["name"]
-	away_head.color = away_team["head_color"]
-	away_body.color = away_team["body_color"]
-	away_foot.color = away_team["foot_color"]
+	away_head.color = away_team.get("away_head_color", away_team["head_color"])
+	away_body.color = away_team.get("away_body_color", away_team["body_color"])
+	away_foot.color = away_team.get("away_foot_color", away_team["foot_color"])
 
 func _on_home_prev_pressed() -> void:
 	home_idx -= 1
