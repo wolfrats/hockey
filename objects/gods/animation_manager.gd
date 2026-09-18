@@ -89,6 +89,7 @@ func set_phase(new_phase: Phase) -> void:
 					s.anim_state = "lerping"
 
 		Phase.PLAYING:
+			($"../../Boards/BoardsCollision").disabled = false
 			for s in skaters:
 				if "anim_state" in s:
 					s.anim_state = ""
@@ -123,7 +124,6 @@ func set_phase(new_phase: Phase) -> void:
 			for s in skaters:
 				if "anim_state" in s:
 					s.anim_state = "skating_out"
-			print(($"../../Boards/BoardsCollision"))
 			($"../../Boards/BoardsCollision").disabled = true
 			for p in pucks:
 				p.visible = false
@@ -145,7 +145,6 @@ func set_phase(new_phase: Phase) -> void:
 
 		Phase.PRE_PERIOD_LERP:
 			phase_timer = 1.5
-			($"../../Boards/BoardsCollision").disabled = false
 			for s in skaters:
 				if "anim_state" in s:
 					s.anim_state = "lerping"
