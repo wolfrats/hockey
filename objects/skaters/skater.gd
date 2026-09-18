@@ -36,6 +36,12 @@ enum LookDir {
 func _ready() -> void:
 	initial_position = global_position
 	add_to_group("skaters")
+
+	var team_data = StatBook.TEAMS[Globals.home_team_index] if home_team else StatBook.TEAMS[Globals.away_team_index]
+	var index = get_index()
+	if index >= 0 and index < team_data["composition"].size():
+		stats = team_data["composition"][index]
+
 	statbook = StatBook.Classes[stats]
 	mass = statbook.weight
 	health = statbook.max_health
