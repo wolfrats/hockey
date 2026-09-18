@@ -14,6 +14,7 @@ var player_devices: Array[int] = []
 var player_teams: Array[int] = []
 var player_auto_swap: Array[bool] = []
 var player_colors: Array[Color] = [Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW]
+var player_colors_map = {}
 
 var scorer_stats: Dictionary = {}
 var assist_stats: Dictionary = {}
@@ -25,6 +26,9 @@ var away_team_index: int = 1
 
 func _init() -> void:
 	update_team_textures()
+	for x in range(0, len(player_colors)):
+		player_colors_map["Player %d" % [x + 1]] = player_colors[x].to_html(false)
+
 
 func update_team_textures() -> void:
 	var home_team = StatBook.TEAMS[home_team_index]

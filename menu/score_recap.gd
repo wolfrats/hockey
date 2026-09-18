@@ -35,9 +35,10 @@ func _ready() -> void:
 				display_name = "Player 1"
 			elif display_name.begins_with("Player"):
 				display_name = "Player " + display_name.trim_prefix("Player")
-				
-			var stat_label = Label.new()
-			stat_label.text = "%s: %d Goals, %d Assists" % [display_name, g, a]
+			var display_color_code = Globals.player_colors_map.get(display_name, "white")
+			var stat_label = RichTextLabel.new()
+			stat_label.bbcode_enabled = true
+			stat_label.text = "[color=#%s]%s[/color]: %d Goals, %d Assists" % [display_color_code, display_name, g, a]
 			stat_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			stats_container.add_child(stat_label)
 

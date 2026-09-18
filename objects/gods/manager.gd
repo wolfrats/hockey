@@ -36,6 +36,8 @@ func _ready() -> void:
 		add_child(anim_manager)
 		time_remaining = Globals.period_length
 		setup_ui()
+		Globals.scorer_stats.clear()
+		Globals.assist_stats.clear()
 
 func setup_multiplayer() -> void:
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)

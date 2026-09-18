@@ -1,6 +1,6 @@
 class_name Puck extends RigidBody2D
 @export var posessor: Skater
-var blocklist: Dictionary[String, int] = {}
+var blocklist: Dictionary[String, float] = {}
 var colidable: bool = true
 var initial_position: Vector2
 var needs_reset: bool = false
@@ -17,7 +17,7 @@ func home() -> void:
 	self.posessor = null
 	self.freeze = false
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if posessor:
 		freeze = true
 		($CollisionShape2D).disabled = freeze 
@@ -25,23 +25,23 @@ func _process(_delta: float) -> void:
 	else:
 		freeze = false
 		($CollisionShape2D).disabled = freeze 
-
-func _physics_process(_delta: float) -> void:
-	if global_position.x < -200 or global_position.x > 2200 or global_position.y < -200 or global_position.y > 1400:
-		home()
 	if Globals.ticks > block_all:
 		set_collision_mask_value(4, true)
 	var to_erase: Array[String] = []
 	for key in blocklist:
-		blocklist[key] -= 1
+		blocklist[key] -= delta
 		if blocklist[key] <= 0:
 			to_erase.append(key)
 
 	for key in to_erase:
 		blocklist.erase(key)
 
+func _physics_process(_delta: float) -> void:
+	if global_position.x < -200 or global_position.x > 2200 or global_position.y < -200 or global_position.y > 1400:
+		home()
+
 	for body in get_colliding_bodies():
-		if body is Skater and (not blocklist.has(body.name) or blocklist[body.name] == 0) and colidable and not body.puck:
+		if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck:
 			var prev_possessor = posessor
 			
 			posessor = body
@@ -66,7 +66,7 @@ func _physics_process(_delta: float) -> void:
 						posessor.ghost = closest_player
 						closest_player.skater = posessor
 			
-			var current_name = posessor.name
+			var current_name = ("Home AI" if posessor.home_team else "Away AI")
 			if posessor.ghost:
 				current_name = posessor.ghost.name
 				
@@ -83,7 +83,7 @@ func shoot(shooter, vector) -> void:
 		return
 	posessor.puck = null
 	posessor = null
-	blocklist[shooter] = 15
+	blocklist[shooter] = 0.25
 	block_all = Globals.ticks + 1
 	#get_tree().create_timer(1.0/60.0).timeout.connect(_enable_collision)
 	set_collision_mask_value(4, false)
