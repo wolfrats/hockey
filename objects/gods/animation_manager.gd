@@ -9,6 +9,7 @@ enum Phase {
 	POST_GOAL_LERP,
 	POST_PERIOD_SKATE_OUT,
 	POST_PERIOD_WAIT,
+	PRE_PERIOD_SKATE,
 	PRE_PERIOD_LERP
 }
 
@@ -44,18 +45,22 @@ func _process(delta: float) -> void:
 				set_phase(Phase.POST_PERIOD_WAIT)
 		Phase.POST_PERIOD_WAIT:
 			if phase_timer <= 0:
+				if manager.current_period >= 3:
+					manager.current_period += 1
+					Globals.match_home_score = manager.home_score
+					Globals.match_away_score = manager.away_score
+					get_tree().change_scene_to_file("res://menu/score_recap.tscn")
+				else:
+					set_phase(Phase.PRE_PERIOD_SKATE)
+		Phase.PRE_PERIOD_SKATE:
+			if phase_timer <= 0:
 				set_phase(Phase.PRE_PERIOD_LERP)
 		Phase.PRE_PERIOD_LERP:
 			if phase_timer <= 0:
 				# Move to next period
 				manager.current_period += 1
-				if manager.current_period > 3:
-					Globals.match_home_score = manager.home_score
-					Globals.match_away_score = manager.away_score
-					get_tree().change_scene_to_file("res://menu/score_recap.tscn")
-				else:
-					manager.time_remaining = Globals.period_length
-					set_phase(Phase.PLAYING)
+				manager.time_remaining = Globals.period_length
+				set_phase(Phase.PLAYING)
 
 func set_phase(new_phase: Phase) -> void:
 	current_phase = new_phase
@@ -66,9 +71,11 @@ func set_phase(new_phase: Phase) -> void:
 	match current_phase:
 		Phase.PRE_GAME_SKATE:
 			phase_timer = 3.0
+			var circle = true
 			for s in skaters:
 				if "anim_state" in s:
-					s.anim_state = "skating_around"
+					s.anim_state = "skating_circle" if circle else "skating_figure8"
+					circle = not circle
 			for p in pucks:
 				p.visible = false
 				p.freeze = true
@@ -127,6 +134,14 @@ func set_phase(new_phase: Phase) -> void:
 		Phase.POST_PERIOD_WAIT:
 			phase_timer = 3.5
 			# Wait a bit before coming back
+
+		Phase.PRE_PERIOD_SKATE:
+			phase_timer = 4.0
+			var circle = true
+			for s in skaters:
+				if "anim_state" in s:
+					s.anim_state = "skating_circle" if circle else "skating_figure8"
+					circle = not circle
 
 		Phase.PRE_PERIOD_LERP:
 			phase_timer = 1.5

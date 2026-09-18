@@ -211,6 +211,20 @@ func _physics_process(delta: float) -> void:
 		var diff = initial_position - global_position
 		if diff.length() > 500:
 			impulse(diff.normalized().x, diff.normalized().y)
+	elif anim_state == "skating_circle" or anim_state == "skating_figure8":
+		var time_offset = float(get_instance_id() % 1000)
+		var time = (Globals.ticks + time_offset) / 20.0
+		var target_dir = Vector2.ZERO
+		if anim_state == "skating_circle":
+			target_dir = Vector2(cos(time), sin(time))
+		else:
+			target_dir = Vector2(cos(time), sin(time * 2.0) * 0.8)
+		if randf() < 0.1:
+			impulse(target_dir.x, target_dir.y)
+		var diff = initial_position - global_position
+		if diff.length() > 400:
+			if randf() < 0.1:
+				impulse(diff.normalized().x, diff.normalized().y)
 	elif anim_state == "skating_out":
 		var target_y = -200
 		var diffy = target_y - global_position.y
