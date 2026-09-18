@@ -6,6 +6,9 @@ var charge: float = 0.03
 var shotDir: Vector2
 var dx: float
 var dy: float
+var is_charging: bool = false
+var target_power: float = 0.0
+var shot_aim_dir: Vector2 = Vector2.ZERO
 
 static var team_strategies: Dictionary = {}
 static var next_strategy_switch: Dictionary = {}
@@ -149,7 +152,15 @@ func handle(_delta: float, curSkater: Skater) -> void:
 				anger = 0.0
 				is_angry = false
 	elif has_puck:
-		if abs(curSkater.global_position.x - attack_x) < 300:
+		if is_charging:
+			power += charge
+			curSkater.charging = true
+			if power >= target_power:
+				curSkater.shoot(shot_aim_dir, power)
+				power = 0
+				is_charging = false
+				curSkater.charging = false
+		elif abs(curSkater.global_position.x - attack_x) < 300:
 			if randf() > 0.05 and index != 0:
 				var target_y = 509.0
 				var manager = curSkater.get_parent().get_parent()
@@ -172,17 +183,30 @@ func handle(_delta: float, curSkater: Skater) -> void:
 					else:
 						target_y = bottom_post - (bottom_gap / 2.0)
 
-				var aim_dir = Vector2(attack_x - curSkater.global_position.x, target_y - curSkater.global_position.y).normalized()
-				curSkater.shoot(aim_dir, 1.0)
+				shot_aim_dir = Vector2(attack_x - curSkater.global_position.x, target_y - curSkater.global_position.y).normalized()
+				target_power = 1.0
+				is_charging = true
+				power = 0.0
 			else:
 				var teammate = get_most_forward_teammate()
 				if teammate:
-					curSkater.shoot((teammate.global_position - curSkater.global_position).normalized(), 0.4)
+					shot_aim_dir = (teammate.global_position - curSkater.global_position).normalized()
+					target_power = 0.4
+					is_charging = true
+					power = 0.0
 				else:
-					curSkater.shoot(Vector2(forward_dir, 0), 1.0)
+					shot_aim_dir = Vector2(forward_dir, 0)
+					target_power = 1.0
+					is_charging = true
+					power = 0.0
 		else:
 			target_pos = Vector2(attack_x, curSkater.global_position.y)
 	else:
+		if is_charging:
+			is_charging = false
+			power = 0.0
+			curSkater.charging = false
+
 		match current_strategy:
 			1:
 				if is_delegated_chaser():
