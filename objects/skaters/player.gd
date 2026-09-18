@@ -87,13 +87,18 @@ func _physics_process(_delta: float) -> void:
 		return
 	global_position = skater.global_position#global_position.lerp(skater.global_position, 0.1)
 	if is_action_just_pressed_custom("swap"):
-		var Is = skater.get_parent().get_children().find(skater)
-		Is = (Is + 1) % 5
-		var newskater = skater.get_parent().get_children()[Is]
-		skater.ghost = newskater.ghost
-		newskater.ghost = self
-		skater = newskater
-		return
+		var siblings = skater.get_parent().get_children()
+		var num_siblings = siblings.size()
+		var current_idx = siblings.find(skater)
+
+		for i in range(1, num_siblings):
+			var idx = (current_idx + i) % num_siblings
+			var newskater = siblings[idx]
+			if newskater.ghost == null:
+				skater.ghost = null
+				newskater.ghost = self
+				skater = newskater
+				return
 	
 func get_nearest_teammate(curSkater: Skater) -> Node2D:
 	var nodes = get_tree().get_nodes_in_group("skaters")
