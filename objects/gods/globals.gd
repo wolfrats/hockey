@@ -5,7 +5,7 @@ var away_color: Color
 var home_texture: Texture2D
 var away_texture: Texture2D
 var ticks: int = 0
-var period_length: float = 120.0
+var period_length: float = 20.0
 var SHIRT_COLOR: Color = Color.from_rgba8(96, 176, 248)
 var HELMET_COLOR: Color = Color.from_rgba8(16, 100, 174)
 var SKATE_COLOR: Color = Color.from_rgba8(96, 255, 248)
