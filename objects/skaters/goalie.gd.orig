@@ -31,7 +31,7 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
 	pass
-	
+
 func _physics_process(delta: float) -> void:
 	if ghost:
 		ghost.handle(delta, self)
@@ -65,17 +65,8 @@ var charging = false
 
 func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 	if puck:
-		var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
-		var vec2 = vec.rotated(inaccuracy_modifier * statbook.shot_variance * (1 - (2*randf())))
-		puck.shoot(name, vec2)
-
-		var camera = get_viewport().get_camera_2d()
-		if camera:
-			var shake_amount = 2.0 + (power * 8.0)
-			var shake_tween = create_tween()
-			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount, shake_amount), randf_range(-shake_amount, shake_amount)), 0.05)
-			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount/2.0, shake_amount/2.0), randf_range(-shake_amount/2.0, shake_amount/2.0)), 0.05)
-			shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
+		var vec = dir.normalized() * 200 * power * 2
+		puck.shoot(name, vec)
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	if needs_reset:
@@ -88,7 +79,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		return
 
 	for i in range(state.get_contact_count()):
-		 # Get the impulse vector for this specific contact point 
+		 # Get the impulse vector for this specific contact point
 		#var myimpulse: Vector2 = state.get_contact_impulse(i)
 		var myimpulse: Vector2 = state.get_contact_local_velocity_at_position(i)
 		var collider = state.get_contact_collider_object(i)
@@ -96,5 +87,5 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 			myimpulse *= 1 + (collider.mass - mass)
 		var impulse_strength: float = myimpulse.length()
 		if impulse_strength > 150.0:
-		 	# drop the puck
+			# drop the puck
 			rammed = true

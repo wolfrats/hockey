@@ -1,7 +1,7 @@
 class_name Skater
 extends RigidBody2D
 var counter = 0
-@export var ghost: Ghost
+@export var ghost
 var ai: Ghost
 @export var home_team: bool
 @export var stats: Stats.ClassTypes
