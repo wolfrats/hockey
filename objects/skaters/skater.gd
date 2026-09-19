@@ -183,6 +183,8 @@ func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
 
 func _physics_process(delta: float) -> void:
 	set_collision_layer_value(4, true)
+	if puck and puck.posessor != self:
+		puck = null
 	if faceoff_shake > 0:
 		faceoff_shake -= delta
 	if faceoff_cooldown > 0:
@@ -337,6 +339,7 @@ func _physics_process(delta: float) -> void:
 		rammed = false
 		if puck:
 			puck.shoot(name, Vector2.ZERO)
+			#puck = null
 	if charging:
 		if started_charge == 0:
 			started_charge = Globals.ticks
