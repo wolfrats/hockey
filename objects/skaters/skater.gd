@@ -19,6 +19,7 @@ var last_move: Vector2 = Vector2.ONE
 var facing_dir: Vector2 = Vector2.ONE
 var scrape_counter: int = 0
 var faceoff_cooldown: float = 0.0
+var faceoff_shake: float = 0.0
 var initial_position: Vector2
 var needs_reset: bool = false
 var anim_state: String = ""
@@ -181,6 +182,8 @@ func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
 			puck.shoot(name, Vector2.ZERO)
 
 func _physics_process(delta: float) -> void:
+	if faceoff_shake > 0:
+		faceoff_shake -= delta
 	if faceoff_cooldown > 0:
 		faceoff_cooldown -= delta
 	if knocked_over <= Globals.ticks and health < statbook.max_health:
@@ -266,6 +269,9 @@ func _physics_process(delta: float) -> void:
 					if randf() < chance:
 						tried_faceoff = true
 
+			if tried_faceoff:
+				faceoff_shake = 0.15
+
 			if tried_faceoff and faceoff_cooldown <= 0:
 				var pucks = get_tree().get_nodes_in_group("pucks")
 				if pucks.size() > 0:
@@ -289,10 +295,6 @@ func _physics_process(delta: float) -> void:
 						# Too early
 						faceoff_cooldown = 1.0
 
-		if faceoff_cooldown > 0:
-			$Sprite.position = Vector2(randf_range(-3.0, 3.0), randf_range(-3.0, 3.0))
-		else:
-			$Sprite.position = Vector2.ZERO
 	elif ghost:
 		ghost.handle(delta, self)
 	elif ai:
@@ -355,7 +357,10 @@ func _physics_process(delta: float) -> void:
 			$Sprite.position = Vector2.ZERO
 	else:
 		z_index = 0
-		$Sprite.position = Vector2.ZERO
+		if faceoff_shake > 0:
+			$Sprite.position = Vector2(randf_range(-3.0, 3.0), randf_range(-3.0, 3.0))
+		else:
+			$Sprite.position = Vector2.ZERO
 	var spacing = 192
 	$Sprite.region_rect = Rect2(base_offset * spacing + 0, 0, 192, 192) #statbook.sprite_index
 	if abs(last_move.angle_to(linear_velocity)) > 3.1 and Globals.ticks > scrape_counter:
