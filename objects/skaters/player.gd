@@ -84,6 +84,7 @@ func _physics_process(_delta: float) -> void:
 	if not skater:
 		return
 	global_position = skater.global_position#global_position.lerp(skater.global_position, 0.1)
+	_update_pointer()
 	if is_action_just_pressed_custom("swap"):
 		var siblings = %Manager.get_node("Team1").get_children() if skater.home_team else %Manager.get_node("Team2").get_children() 
 		if Globals.allow_goalie_control:
@@ -172,3 +173,31 @@ func handle(_delta: float, curSkater) -> void:
 		curSkater.shoot(shotDir, power)
 		power = 0
 		
+
+
+func _update_pointer() -> void:
+	if not has_node("Pointer"):
+		return
+	var pointer = $Pointer
+	var viewport = get_viewport()
+	var canvas_transform = viewport.get_canvas_transform()
+	var screen_pos = canvas_transform * global_position
+	var viewport_rect = viewport.get_visible_rect()
+
+	var margin = 40.0
+	var bounds = viewport_rect.grow(-margin)
+
+	if bounds.has_point(screen_pos):
+		pointer.visible = false
+	else:
+		pointer.visible = true
+
+		var clamped_pos = screen_pos
+		clamped_pos.x = clamp(screen_pos.x, bounds.position.x, bounds.end.x)
+		clamped_pos.y = clamp(screen_pos.y, bounds.position.y, bounds.end.y)
+
+		pointer.global_position = canvas_transform.affine_inverse() * clamped_pos
+
+		var point_dir = (screen_pos - clamped_pos).normalized()
+		if point_dir.length_squared() > 0:
+			pointer.global_rotation = point_dir.angle() + PI/2
