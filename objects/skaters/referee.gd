@@ -44,6 +44,14 @@ func _ready() -> void:
 func home() -> void:
 	needs_reset = true
 
+func shake() -> void:
+	if knocked_over > Globals.ticks:
+		return
+	var shake_tween = create_tween()
+	for _i in range(6):
+		shake_tween.tween_property($Sprite, "position", Vector2(randf_range(-3, 3), randf_range(-3, 3)), 0.05)
+	shake_tween.tween_property($Sprite, "position", Vector2.ZERO, 0.05)
+
 func _physics_process(delta: float) -> void:
 	if knocked_over <= Globals.ticks and health < 100.0:
 		health += delta * 5.0

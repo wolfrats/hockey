@@ -83,6 +83,12 @@ func _process(delta: float) -> void:
 				manager.time_remaining = Globals.period_length
 				set_phase(Phase.FACE_OFF)
 		Phase.FACE_OFF:
+			if phase_timer <= 1.0 and phase_timer + delta > 1.0:
+				var referees = get_tree().get_nodes_in_group("referees")
+				for ref in referees:
+					if ref.has_method("shake"):
+						ref.shake()
+
 			if phase_timer <= 0:
 				var pucks = get_tree().get_nodes_in_group("pucks")
 				for p in pucks:
@@ -126,7 +132,7 @@ func set_phase(new_phase: Phase) -> void:
 					p.colidable = true
 
 		Phase.FACE_OFF:
-			phase_timer = randf_range(1.5, 3.0)
+			phase_timer = randf_range(5.0, 10.0)
 			for s in skaters:
 				if "anim_state" in s:
 					s.anim_state = "face_off"
