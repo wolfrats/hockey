@@ -1579,7 +1579,7 @@ home_team = true
 y_sort_enabled = true
 
 [node name="Team1_1" parent="Manager/Team1" unique_id=149229949 instance=ExtResource("4_ka43y")]
-position = Vector2(890, 349)
+position = Vector2(917, 499)
 home_team = true
 
 [node name="Team1_2" parent="Manager/Team1" unique_id=885562940 instance=ExtResource("4_ka43y")]
@@ -1597,7 +1597,7 @@ position = Vector2(793, 576)
 home_team = true
 
 [node name="Team1_5" parent="Manager/Team1" unique_id=505868705 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
-position = Vector2(950, 500)
+position = Vector2(907, 340)
 ghost = NodePath("../../Ghosts/Player")
 home_team = true
 stats = 1
@@ -1620,14 +1620,14 @@ position = Vector2(1149, 631)
 stats = 1
 
 [node name="Team2_4" parent="Manager/Team2" unique_id=1656323142 instance=ExtResource("4_ka43y")]
-position = Vector2(1063, 498)
+position = Vector2(1091, 500)
 
 [node name="Team2_5" parent="Manager/Team2" unique_id=351450480 instance=ExtResource("4_ka43y")]
 position = Vector2(1232, 558)
 stats = 2
 
 [node name="Referee" parent="Manager" unique_id=193240579 instance=ExtResource("9_ref")]
-position = Vector2(1000, 300)
+position = Vector2(1003, 412)
 
 [node name="Ghosts" type="Node2D" parent="Manager" unique_id=1359897304]
 
