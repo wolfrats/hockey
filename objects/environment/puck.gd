@@ -41,7 +41,7 @@ func _physics_process(_delta: float) -> void:
 		home()
 
 	for body in get_colliding_bodies():
-		if ("puck" in body) and (not blocklist.has(body.name)) and colidable and not body.puck:
+		if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck:
 			var prev_possessor = posessor
 			
 			posessor = body

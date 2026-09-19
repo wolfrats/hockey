@@ -2,7 +2,7 @@ class_name Goalie
 extends RigidBody2D
 var counter = 0
 const OFFSET: int = 32
-@export var ghost
+@export var ghost: Ghost
 @export var home_team: bool
 @export var stats: Stats.ClassTypes
 @export var max_y: float = 650
@@ -61,7 +61,6 @@ func do_grab() -> void:
 	pass
 
 var puck = null
-var charging = false
 
 func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 	if puck:

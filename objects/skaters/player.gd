@@ -87,9 +87,9 @@ func _physics_process(_delta: float) -> void:
 		return
 	global_position = skater.global_position#global_position.lerp(skater.global_position, 0.1)
 	if is_action_just_pressed_custom("swap"):
-		var siblings = skater.get_parent().get_children()
+		var siblings = %Manager.get_node("Team1").get_children() if skater.home_team else %Manager.get_node("Team2").get_children() 
 		if Globals.allow_goalie_control:
-			var manager = skater.get_parent().get_parent()
+			var manager = %Manager
 			if manager:
 				for child in manager.get_children():
 					if child is Goalie and child.home_team == skater.home_team:
