@@ -23,6 +23,7 @@ var match_away_score: int = 0
 
 var home_team_index: int = 0
 var away_team_index: int = 1
+var allow_goalie_control: bool = false
 
 func _init() -> void:
 	update_team_textures()

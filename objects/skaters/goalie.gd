@@ -2,7 +2,7 @@ class_name Goalie
 extends RigidBody2D
 var counter = 0
 const OFFSET: int = 32
-@export var ghost: Ghost
+@export var ghost
 @export var home_team: bool
 @export var stats: Stats.ClassTypes
 @export var max_y: float = 650
@@ -35,16 +35,47 @@ func _process(_delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	if ghost:
 		ghost.handle(delta, self)
-		return
-	var diffx = global_position.x - home_x
-	if abs(diffx) > 4:
-		apply_impulse(Vector2.LEFT * diffx)
-	var puck = Globals.get_closest_node(global_position, "pucks")
-	if puck:
-		var diffy = global_position.y - clamp(puck.global_position.y + OFFSET, min_y, max_y)
-		if abs(diffy) > 4:
-			apply_impulse(Vector2.UP * diffy)
+	else:
+		var diffx = global_position.x - home_x
+		if abs(diffx) > 4:
+			apply_impulse(Vector2.LEFT * diffx)
+		var puck_node = Globals.get_closest_node(global_position, "pucks")
+		if puck_node:
+			var diffy = global_position.y - clamp(puck_node.global_position.y + OFFSET, min_y, max_y)
+			if abs(diffy) > 4:
+				apply_impulse(Vector2.UP * diffy)
 	#counter += 1
+
+func impulse(dx: float, dy: float) -> void:
+	# Ensure Goalies can be pushed freely by ghosts, without being forced to clamp back to net
+	var impulse_vec = Vector2(dx, dy) * 20.0
+
+	if impulse_vec.length() > 0:
+		counter += 1
+	apply_impulse(impulse_vec)
+
+func do_check() -> void:
+	pass
+
+func do_grab() -> void:
+	pass
+
+var puck = null
+var charging = false
+
+func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
+	if puck:
+		var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
+		var vec2 = vec.rotated(inaccuracy_modifier * statbook.shot_variance * (1 - (2*randf())))
+		puck.shoot(name, vec2)
+
+		var camera = get_viewport().get_camera_2d()
+		if camera:
+			var shake_amount = 2.0 + (power * 8.0)
+			var shake_tween = create_tween()
+			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount, shake_amount), randf_range(-shake_amount, shake_amount)), 0.05)
+			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount/2.0, shake_amount/2.0), randf_range(-shake_amount/2.0, shake_amount/2.0)), 0.05)
+			shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	if needs_reset:

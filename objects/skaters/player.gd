@@ -1,5 +1,5 @@
 extends Ghost
-var skater: Skater
+var skater
 var puck: Puck
 var power: float = 0
 var charge: float = 0.03
@@ -88,19 +88,27 @@ func _physics_process(_delta: float) -> void:
 	global_position = skater.global_position#global_position.lerp(skater.global_position, 0.1)
 	if is_action_just_pressed_custom("swap"):
 		var siblings = skater.get_parent().get_children()
+		if Globals.allow_goalie_control:
+			var manager = skater.get_parent().get_parent()
+			if manager:
+				for child in manager.get_children():
+					if child is Goalie and child.home_team == skater.home_team:
+						if not siblings.has(child):
+							siblings.append(child)
+
 		var num_siblings = siblings.size()
 		var current_idx = siblings.find(skater)
 
 		for i in range(1, num_siblings):
 			var idx = (current_idx + i) % num_siblings
 			var newskater = siblings[idx]
-			if newskater.ghost == null:
+			if ("ghost" in newskater) and newskater.ghost == null:
 				skater.ghost = null
 				newskater.ghost = self
 				skater = newskater
 				return
 	
-func get_nearest_teammate(curSkater: Skater) -> Node2D:
+func get_nearest_teammate(curSkater) -> Node2D:
 	var nodes = get_tree().get_nodes_in_group("skaters")
 	var closest_teammate = null
 	var min_distance: float = INF
@@ -112,7 +120,7 @@ func get_nearest_teammate(curSkater: Skater) -> Node2D:
 				closest_teammate = node
 	return closest_teammate
 
-func handle(_delta: float, curSkater: Skater) -> void:
+func handle(_delta: float, curSkater) -> void:
 	self.skater = curSkater
 	var dx = get_axis_custom("skate_x")
 	var dy = get_axis_custom("skate_y")

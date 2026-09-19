@@ -14,6 +14,7 @@ var away_idx: int = 1
 @onready var away_foot = %AwayFoot
 
 func _ready() -> void:
+	%GoalieControl.button_pressed = Globals.allow_goalie_control
 	$VBoxContainer/Buttons/Play.grab_focus()
 	update_ui()
 
@@ -56,6 +57,7 @@ func _on_away_next_pressed() -> void:
 	update_ui()
 
 func _on_play_pressed() -> void:
+	Globals.allow_goalie_control = %GoalieControl.button_pressed
 	Globals.home_team_index = home_idx
 	Globals.away_team_index = away_idx
 	Globals.update_team_textures()

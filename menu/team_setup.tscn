@@ -159,6 +159,14 @@ custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 text = ">"
 
+[node name="GoalieControl" type="CheckBox" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+text = "Allow Goalie Control"
+
 [node name="Buttons" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 20

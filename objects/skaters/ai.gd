@@ -91,7 +91,7 @@ func get_preferred_spot(attack: bool, index: int, attack_x: float, defend_x: flo
 		_:
 			return Vector2(base_x + dir * 200, 509)
 
-func handle(_delta: float, curSkater: Skater) -> void:
+func handle(_delta: float, curSkater) -> void:
 	self.skater = curSkater
 
 	if not team_strategies.has(skater.home_team):
