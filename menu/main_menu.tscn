@@ -40,13 +40,16 @@ layout_mode = 2
 theme = ExtResource("1_chmv6")
 theme_override_constants/separation = 20
 
-[node name="Title" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1144194093]
+[node name="Title" type="RichTextLabel" parent="CenterContainer/VBoxContainer" unique_id=541593654]
 layout_mode = 2
-text = "HOCKEY"
-horizontal_alignment = 1
-theme_override_font_sizes/font_size = 64
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 10
+bbcode_enabled = true
+text = "[font_size=40]OPEN
+PRACTICE[/font_size]
+[font_size=20]A FOSS Hockey Game[/font_size]"
+fit_content = true
+horizontal_alignment = 1
 
 [node name="Practice" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1297484779]
 custom_minimum_size = Vector2(300, 60)
