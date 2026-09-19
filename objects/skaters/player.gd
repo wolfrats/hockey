@@ -31,12 +31,10 @@ func _update_buttons() -> void:
 		cur_button_state[action] = Input.is_joy_button_pressed(device_id, action_map[action])
 
 func set_color(c: Color) -> void:
-	if has_node("Sprite2D"):
-		$Sprite2D.modulate = c
-	if has_node("Sprite2D2"):
-		$Sprite2D2.modulate = c
-	if has_node("Sprite2D3"):
-		$Sprite2D3.modulate = c
+	if has_node("Pointer"):
+		$Pointer.modulate = c
+	if has_node("CircleFill"):
+		$CircleFill.modulate = c
 	if has_node("Angle"):
 		$Angle.default_color = c
 
