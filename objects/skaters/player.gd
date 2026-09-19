@@ -126,8 +126,8 @@ func handle(_delta: float, curSkater: Skater) -> void:
 	if is_action_just_pressed_custom("pass") and curSkater.puck:
 		var teammate = get_nearest_teammate(curSkater)
 		if teammate:
-			var dir = (teammate.global_position - curSkater.global_position).normalized()
-			curSkater.shoot(dir, 0.2)
+			var dir = ((teammate.global_position + Vector2(6, 30)) - curSkater.global_position).normalized()
+			curSkater.shoot(dir, 0.2, 0)
 
 	if is_action_just_pressed_custom("shoot"):
 		shotDir = Vector2(dx, dy)

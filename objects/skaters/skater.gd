@@ -379,11 +379,11 @@ func impulse(dx: float, dy: float) -> void:
 		facing_dir = last_move.normalized()
 	apply_impulse(last_move * statbook.speed)
 
-func shoot(dir: Vector2, power: float) -> void:
+func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 	if knocked_over > Globals.ticks or checking > Globals.ticks or anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return
 	var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
-	var vec2 = vec.rotated(statbook.shot_variance * (1 - (2*randf())))
+	var vec2 = vec.rotated(inaccuracy_modifier * statbook.shot_variance * (1 - (2*randf())))
 	if puck:
 		puck.shoot(name, vec2)
 
