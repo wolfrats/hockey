@@ -143,6 +143,7 @@ func handle(_delta: float, curSkater) -> void:
 		#if ((dx != 0) or (dy != 0)): curSkater.counter += 1
 		curSkater.impulse(dx, dy)
 		charge = 0.03
+		#power = 0
 		$Power.visible = false
 		$Angle.visible = false
 		curSkater.charging = false
@@ -154,7 +155,7 @@ func handle(_delta: float, curSkater) -> void:
 		power += charge
 		if power > 1:
 			power = 1
-			charge = -charge
+			#charge = -charge
 		elif power < 0:
 			power = 0
 			charge = -charge

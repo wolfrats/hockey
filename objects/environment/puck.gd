@@ -84,9 +84,9 @@ func shoot(shooter, vector) -> void:
 	posessor.puck = null
 	posessor = null
 	blocklist[shooter] = 0.25
-	block_all = Globals.ticks + 1
+	#block_all = Globals.ticks + 1
 	#get_tree().create_timer(1.0/60.0).timeout.connect(_enable_collision)
-	set_collision_mask_value(4, false)
+	#set_collision_mask_value(4, false)
 	freeze = false
 	apply_impulse(vector)
 	var new_transform = get_transform() 

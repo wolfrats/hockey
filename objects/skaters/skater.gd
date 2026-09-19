@@ -182,6 +182,7 @@ func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
 			puck.shoot(name, Vector2.ZERO)
 
 func _physics_process(delta: float) -> void:
+	set_collision_layer_value(4, true)
 	if faceoff_shake > 0:
 		faceoff_shake -= delta
 	if faceoff_cooldown > 0:
@@ -391,7 +392,7 @@ func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 	var vec2 = vec.rotated(inaccuracy_modifier * statbook.shot_variance * (1 - (2*randf())))
 	if puck:
 		puck.shoot(name, vec2)
-
+		set_collision_layer_value(4, false)
 		var s: GPUParticles2D = preload("res://objects/environment/icesplutter.tscn").instantiate()
 		%Manager.add_child(s)
 		s.global_position = (global_position + dir.normalized() * 16)
