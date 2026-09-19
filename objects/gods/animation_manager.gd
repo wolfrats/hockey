@@ -10,7 +10,8 @@ enum Phase {
 	POST_PERIOD_SKATE_OUT,
 	POST_PERIOD_WAIT,
 	PRE_PERIOD_SKATE,
-	PRE_PERIOD_LERP
+	PRE_PERIOD_LERP,
+	FACE_OFF
 }
 
 var current_phase: Phase = Phase.PRE_GAME_SKATE
@@ -29,17 +30,27 @@ func _process(delta: float) -> void:
 
 	match current_phase:
 		Phase.PRE_GAME_SKATE:
-			if phase_timer <= 0:
+			var start = false
+			if Input.is_action_just_pressed("ui_accept"):
+				start = true
+			for device in Globals.player_devices:
+				if device == -2:
+					if Input.is_action_just_pressed("pass") or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") or Input.is_action_just_pressed("check"):
+						start = true
+				else:
+					if Input.is_joy_button_pressed(device, JOY_BUTTON_A) or Input.is_joy_button_pressed(device, JOY_BUTTON_X) or Input.is_joy_button_pressed(device, JOY_BUTTON_Y) or Input.is_joy_button_pressed(device, JOY_BUTTON_B):
+						start = true
+			if start:
 				set_phase(Phase.PRE_GAME_LERP)
 		Phase.PRE_GAME_LERP:
 			if phase_timer <= 0:
-				set_phase(Phase.PLAYING)
+				set_phase(Phase.FACE_OFF)
 		Phase.POST_GOAL_SKATE:
 			if phase_timer <= 0:
 				set_phase(Phase.POST_GOAL_LERP)
 		Phase.POST_GOAL_LERP:
 			if phase_timer <= 0:
-				set_phase(Phase.PLAYING)
+				set_phase(Phase.FACE_OFF)
 		Phase.POST_PERIOD_SKATE_OUT:
 			if phase_timer <= 0:
 				set_phase(Phase.POST_PERIOD_WAIT)
@@ -53,14 +64,29 @@ func _process(delta: float) -> void:
 				else:
 					set_phase(Phase.PRE_PERIOD_SKATE)
 		Phase.PRE_PERIOD_SKATE:
-			if phase_timer <= 0:
+			var start = false
+			if Input.is_action_just_pressed("ui_accept"):
+				start = true
+			for device in Globals.player_devices:
+				if device == -2:
+					if Input.is_action_just_pressed("pass") or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") or Input.is_action_just_pressed("check"):
+						start = true
+				else:
+					if Input.is_joy_button_pressed(device, JOY_BUTTON_A) or Input.is_joy_button_pressed(device, JOY_BUTTON_X) or Input.is_joy_button_pressed(device, JOY_BUTTON_Y) or Input.is_joy_button_pressed(device, JOY_BUTTON_B):
+						start = true
+			if start:
 				set_phase(Phase.PRE_PERIOD_LERP)
 		Phase.PRE_PERIOD_LERP:
 			if phase_timer <= 0:
 				# Move to next period
 				manager.current_period += 1
 				manager.time_remaining = Globals.period_length
-				set_phase(Phase.PLAYING)
+				set_phase(Phase.FACE_OFF)
+		Phase.FACE_OFF:
+			if phase_timer <= 0:
+				var pucks = get_tree().get_nodes_in_group("pucks")
+				for p in pucks:
+					p.freeze = false
 
 func set_phase(new_phase: Phase) -> void:
 	current_phase = new_phase
@@ -93,14 +119,27 @@ func set_phase(new_phase: Phase) -> void:
 			for s in skaters:
 				if "anim_state" in s:
 					s.anim_state = ""
+
+			for p in pucks:
+				p.visible = true
+				if "colidable" in p:
+					p.colidable = true
+
+		Phase.FACE_OFF:
+			phase_timer = randf_range(1.5, 3.0)
+			for s in skaters:
+				if "anim_state" in s:
+					s.anim_state = "face_off"
 				if s.has_method("home"):
 					s.home()
 			for p in pucks:
 				p.visible = true
-				p.freeze = false
+				p.freeze = true
 				if "colidable" in p:
 					p.colidable = true
 				p.home()
+				# Set puck to center of the rink
+				p.global_position = Vector2(1005.5, 509)
 
 		Phase.POST_GOAL_SKATE:
 			phase_timer = 2.0

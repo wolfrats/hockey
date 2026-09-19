@@ -18,6 +18,7 @@ var skate_dir: Vector2 = Vector2.ONE
 var last_move: Vector2 = Vector2.ONE
 var facing_dir: Vector2 = Vector2.ONE
 var scrape_counter: int = 0
+var faceoff_cooldown: float = 0.0
 var initial_position: Vector2
 var needs_reset: bool = false
 var anim_state: String = ""
@@ -180,6 +181,8 @@ func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
 			puck.shoot(name, Vector2.ZERO)
 
 func _physics_process(delta: float) -> void:
+	if faceoff_cooldown > 0:
+		faceoff_cooldown -= delta
 	if knocked_over <= Globals.ticks and health < statbook.max_health:
 		health = min(statbook.max_health, health + delta * 15.0) # Regenerate 15 hp per second
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
@@ -213,7 +216,7 @@ func _physics_process(delta: float) -> void:
 			impulse(diff.normalized().x, diff.normalized().y)
 	elif anim_state == "skating_circle" or anim_state == "skating_figure8":
 		var time_offset = float(get_instance_id() % 1000)
-		var time = (Globals.ticks + time_offset) / 20.0
+		var time = (Globals.ticks + time_offset) / 40.0
 		var target_dir = Vector2.ZERO
 		if anim_state == "skating_circle":
 			target_dir = Vector2(cos(time), sin(time))
@@ -222,7 +225,7 @@ func _physics_process(delta: float) -> void:
 		if randf() < 0.1:
 			impulse(target_dir.x, target_dir.y)
 		var diff = initial_position - global_position
-		if diff.length() > 400:
+		if diff.length() > 800:
 			if randf() < 0.1:
 				impulse(diff.normalized().x, diff.normalized().y)
 	elif anim_state == "skating_out":
@@ -245,6 +248,51 @@ func _physics_process(delta: float) -> void:
 		if swapping > 120:
 			swapping = 0
 			anim_state = ""
+	elif anim_state == "face_off":
+		# Only players near center can take the face-off
+		if global_position.distance_to(Vector2(1005.5, 509)) < 150:
+			var tried_faceoff = false
+			if ghost:
+				if ghost.has_method("is_action_just_pressed_custom"):
+					if ghost.is_action_just_pressed_custom("pass"):
+						tried_faceoff = true
+			elif ai:
+				var pucks = get_tree().get_nodes_in_group("pucks")
+				if pucks.size() > 0:
+					var p = pucks[0]
+					var chance = 0.02
+					if not p.freeze:
+						chance = 0.2
+					if randf() < chance:
+						tried_faceoff = true
+
+			if tried_faceoff and faceoff_cooldown <= 0:
+				var pucks = get_tree().get_nodes_in_group("pucks")
+				if pucks.size() > 0:
+					var p = pucks[0]
+					if not p.freeze:
+						# Won the face-off
+						var backward_dir = Vector2(-1, randf_range(-0.5, 0.5)) if home_team else Vector2(1, randf_range(-0.5, 0.5))
+						var shoot_dir = backward_dir.normalized()
+						# Temporarily act like we have puck to shoot it
+						p.posessor = self
+						self.puck = p
+						shoot(shoot_dir, 0.5)
+
+						# Change phase to PLAYING
+						var anim_managers = get_parent().get_parent().get_children()
+						for child in anim_managers:
+							if child is AnimationManager:
+								child.set_phase(child.Phase.PLAYING)
+								break
+					else:
+						# Too early
+						faceoff_cooldown = 1.0
+
+		if faceoff_cooldown > 0:
+			$Sprite.position = Vector2(randf_range(-3.0, 3.0), randf_range(-3.0, 3.0))
+		else:
+			$Sprite.position = Vector2.ZERO
 	elif ghost:
 		ghost.handle(delta, self)
 	elif ai:
