@@ -143,13 +143,11 @@ func handle(_delta: float, curSkater) -> void:
 		curSkater.impulse(dx, dy)
 		charge = 0.03
 		#power = 0
-		$Power.visible = false
 		$Angle.visible = false
 		curSkater.charging = false
 	else:
 		if dx != 0 or dy != 0:
 			shotDir = shotDir.lerp(Vector2(dx, dy), 0.1)
-		$Power.visible = true
 		$Angle.visible = true
 		power += charge
 		if power > 1:
@@ -158,19 +156,17 @@ func handle(_delta: float, curSkater) -> void:
 		elif power < 0:
 			power = 0
 			charge = -charge
-		$Power.value = power * 100
-		var style = $Power.get_theme_stylebox("fill").duplicate()
 		if power < 0.33:
-			style.bg_color = Color(0.2, 0.8, 0.2, 1.0)
+			$Angle.default_color = Color(0.2, 0.8, 0.2, 1.0)
 		elif power < 0.66:
-			style.bg_color = Color(0.8, 0.8, 0.2, 1.0)
+			$Angle.default_color = Color(0.8, 0.8, 0.2, 1.0)
 		else:
-			style.bg_color = Color(0.8, 0.2, 0.2, 1.0)
-		$Power.add_theme_stylebox_override("fill", style)
+			$Angle.default_color = Color(0.8, 0.2, 0.2, 1.0)
 		curSkater.charging = true
-		$Angle.set_point_position(1, shotDir.normalized() * 48)
-	if is_action_just_released_custom("shoot") and curSkater.puck:
-		curSkater.shoot(shotDir, power)
+		$Angle.set_point_position(1, shotDir.normalized() * (power * 64 + 16))
+	if is_action_just_released_custom("shoot"):
+		if curSkater.puck:
+			curSkater.shoot(shotDir, power)
 		power = 0
 		
 

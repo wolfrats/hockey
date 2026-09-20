@@ -6,42 +6,11 @@
 [ext_resource type="Texture2D" uid="uid://cem60sjvahuab" path="res://sprites/character-oval-inside.svg" id="4_dyjsn"]
 [ext_resource type="Texture2D" uid="uid://c8b74x1t8b2v" path="res://sprites/8bit_chevron.png" id="5_chevron"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
-bg_color = Color(0, 0, 0, 1)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(1, 1, 1, 1)
-expand_margin_left = 4.0
-expand_margin_top = 4.0
-expand_margin_right = 4.0
-expand_margin_bottom = 4.0
-anti_aliasing = false
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fill"]
-bg_color = Color(0.9, 0.1, 0.1, 1)
-anti_aliasing = false
-
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_7fj4o"]
 
 [node name="Player" type="Node2D" unique_id=1253797390]
 z_index = 2
 script = ExtResource("1_uce12")
-
-[node name="Power" type="ProgressBar" parent="." unique_id=75025038]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -24.0
-offset_top = 48.0
-offset_right = 24.0
-offset_bottom = 56.0
-grow_horizontal = 2
-theme_override_styles/background = SubResource("StyleBoxFlat_bg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_fill")
-value = 50.0
-show_percentage = false
 
 [node name="Angle" type="Line2D" parent="." unique_id=1653330159]
 z_index = 2
