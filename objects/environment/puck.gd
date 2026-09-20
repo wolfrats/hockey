@@ -78,9 +78,9 @@ func _physics_process(_delta: float) -> void:
 				last_possessor = current_name
 				possessor_team = posessor.home_team
 			
-func shoot(shooter, vector) -> void:
+func shoot(shooter, vector) -> bool:
 	if not posessor or shooter != posessor.name:
-		return
+		return false
 	posessor.puck = null
 	posessor = null
 	blocklist[shooter] = 0.25
@@ -92,6 +92,7 @@ func shoot(shooter, vector) -> void:
 	var new_transform = get_transform() 
 	new_transform.origin = global_position
 	set_transform(new_transform)
+	return true
 
 func _enable_collision() -> void:
 	set_collision_mask_value(4, true)

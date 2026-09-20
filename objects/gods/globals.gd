@@ -24,12 +24,17 @@ var match_away_score: int = 0
 var home_team_index: int = 0
 var away_team_index: int = 1
 var allow_goalie_control: bool = false
+var sounds: Dictionary[String, AudioStreamPlayer2D] = {}
 
 func _init() -> void:
 	update_team_textures()
 	for x in range(0, len(player_colors)):
 		player_colors_map["Player %d" % [x + 1]] = player_colors[x].to_html(false)
+		
 
+func _ready() -> void:
+	for s in get_node("Sounds").get_children():
+		sounds[s.name] = s
 
 func update_team_textures() -> void:
 	var home_team = StatBook.TEAMS[home_team_index]
@@ -86,3 +91,7 @@ func swap_color_in_texture(tex: Texture2D, from_col: Color, to_col: Color) -> Im
 	#img.unlock() 
 	# Create a new ImageTexture from the modified Image 
 	return ImageTexture.create_from_image(img)
+	
+func play_sound_at(sound: String, place: Vector2) -> void:
+	sounds[sound].global_position = place
+	sounds[sound].play()

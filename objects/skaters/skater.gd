@@ -131,13 +131,15 @@ func do_check() -> void:
 				hit_target = true
 
 		if hit_target:
+			Globals.play_sound_at("Check", global_position)
 			var camera = get_viewport().get_camera_2d()
 			if camera:
 				var shake_tween = create_tween()
 				shake_tween.tween_property(camera, "offset", Vector2(randf_range(-10, 10), randf_range(-10, 10)), 0.05)
 				shake_tween.tween_property(camera, "offset", Vector2(randf_range(-5, 5), randf_range(-5, 5)), 0.05)
 				shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
-
+		else:
+			Globals.play_sound_at("CheckMiss", global_position)
 		for ref in referees:
 			if ref.has_method("is_in_cone") and ref.is_in_cone(global_position):
 				if randf() < 0.3: # 30% chance to be sent to penalty box
@@ -154,7 +156,7 @@ func do_grab() -> void:
 				spring.node_b = s.get_path()
 				holding = Globals.ticks + 120
 				s.take_damage(0, Color.DIM_GRAY)
-				
+				Globals.play_sound_at("Grab", global_position)
 				# Camera shake feedback
 				var camera = get_viewport().get_camera_2d()
 				if camera:
@@ -396,6 +398,12 @@ func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 	if puck:
 		puck.shoot(name, vec2)
 		set_collision_layer_value(4, false)
+		if power < 0.33:
+			Globals.play_sound_at("HitSlow", global_position)
+		elif power < 0.90:
+			Globals.play_sound_at("HitMedium", global_position)
+		else:
+			Globals.play_sound_at("HitFast", global_position)
 		var s: GPUParticles2D = preload("res://objects/environment/icesplutter.tscn").instantiate()
 		%Manager.add_child(s)
 		s.global_position = (global_position + dir.normalized() * 16)
@@ -448,6 +456,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 			# Bounce away from goalie
 			var bounce_dir = (global_position - collider.global_position).normalized()
 			state.linear_velocity = bounce_dir * 300.0
+			Globals.play_sound_at("Bump", global_position)
 			continue
 
 		if "mass" in collider:
@@ -457,5 +466,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 			rammed = true
 			if "statbook" in collider and collider.statbook:
 				take_damage(collider.statbook.check_damage * randf_range(0.8, 1.2) * 0.5) # Take half check damage when rammed hard by someone
+				Globals.play_sound_at("Bump", global_position)
 			else:
 				take_damage(10)
+				Globals.play_sound_at("Board", global_position)
