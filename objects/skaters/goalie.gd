@@ -35,11 +35,11 @@ func pull() -> void:
 	if home_team:
 		var team1 = manager.get_node_or_null("Team1")
 		if team1:
-			team1.add_child(extra_attacker)
+			team1.call_deferred("add_child", extra_attacker)
 	else:
 		var team2 = manager.get_node_or_null("Team2")
 		if team2:
-			team2.add_child(extra_attacker)
+			team2.call_deferred("add_child", extra_attacker)
 
 	# Transfer control if human player is controlling the goalie
 	if ghost:
@@ -51,7 +51,7 @@ func pull() -> void:
 
 	# Disable goalie visually and physically
 	visible = false
-	process_mode = Node.PROCESS_MODE_DISABLED
+	set_deferred("process_mode", Node.PROCESS_MODE_DISABLED)
 	set_deferred("freeze", true)
 
 func return_to_net() -> void:
@@ -60,7 +60,7 @@ func return_to_net() -> void:
 
 	# Enable goalie visually and physically
 	visible = true
-	process_mode = Node.PROCESS_MODE_INHERIT
+	set_deferred("process_mode", Node.PROCESS_MODE_INHERIT)
 	set_deferred("freeze", false)
 	needs_reset = true
 
