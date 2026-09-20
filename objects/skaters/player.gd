@@ -91,7 +91,7 @@ func _physics_process(_delta: float) -> void:
 			var manager = %Manager
 			if manager:
 				for child in manager.get_children():
-					if child is Goalie and child.home_team == skater.home_team:
+					if child is Goalie and child.home_team == skater.home_team and not child.pulled:
 						if not siblings.has(child):
 							siblings.append(child)
 

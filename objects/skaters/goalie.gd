@@ -13,9 +13,68 @@ var charging: bool = false
 var knocked_over: int = 0
 var home_x: float
 var needs_reset: bool = false
+var pulled: bool = false
+var extra_attacker: Skater = null
 
 func home() -> void:
 	needs_reset = true
+
+func pull() -> void:
+	if pulled: return
+	pulled = true
+
+	# Create an extra skater
+	var skater_scene = load("res://objects/skaters/skater.tscn")
+	extra_attacker = skater_scene.instantiate()
+	extra_attacker.home_team = home_team
+	extra_attacker.global_position = global_position
+	extra_attacker.stats = stats
+
+	# Add the extra attacker to the correct team node
+	var manager = get_parent()
+	if home_team:
+		var team1 = manager.get_node_or_null("Team1")
+		if team1:
+			team1.add_child(extra_attacker)
+	else:
+		var team2 = manager.get_node_or_null("Team2")
+		if team2:
+			team2.add_child(extra_attacker)
+
+	# Transfer control if human player is controlling the goalie
+	if ghost:
+		var temp_ghost = ghost
+		ghost.skater = null
+		ghost = null
+		temp_ghost.skater = extra_attacker
+		extra_attacker.ghost = temp_ghost
+
+	# Disable goalie visually and physically
+	visible = false
+	process_mode = Node.PROCESS_MODE_DISABLED
+	set_deferred("freeze", true)
+
+func return_to_net() -> void:
+	if not pulled: return
+	pulled = false
+
+	# Enable goalie visually and physically
+	visible = true
+	process_mode = Node.PROCESS_MODE_INHERIT
+	set_deferred("freeze", false)
+	needs_reset = true
+
+	if extra_attacker:
+		# If human is controlling the extra attacker, return control to goalie
+		if extra_attacker.ghost:
+			var temp_ghost = extra_attacker.ghost
+			extra_attacker.ghost.skater = null
+			extra_attacker.ghost = null
+			temp_ghost.skater = self
+			ghost = temp_ghost
+		extra_attacker.remove_from_group("skaters")
+		extra_attacker.queue_free()
+		extra_attacker = null
 
 func _ready() -> void:
 	# add_to_group("skaters")
