@@ -98,8 +98,13 @@ func _update_players() -> void:
 	var home_assigned_count = 0
 	var away_assigned_count = 0
 
+	var all_team_skaters = home_skaters + away_skaters
+	for child in get_children():
+		if child is Goalie:
+			all_team_skaters.append(child)
+
 	# First, unassign all ghosts
-	for skater in home_skaters + away_skaters:
+	for skater in all_team_skaters:
 		skater.ghost = null
 
 	for i in range(current_players.size()):
@@ -147,6 +152,9 @@ func _process(delta: float) -> void:
 			all_skaters += team1.get_children()
 		if team2:
 			all_skaters += team2.get_children()
+		for child in get_children():
+			if child is Goalie:
+				all_skaters.append(child)
 
 		for skater in all_skaters:
 			if skater.ghost != null:
