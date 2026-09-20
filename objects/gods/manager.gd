@@ -152,8 +152,9 @@ func _process(delta: float) -> void:
 			if skater.ghost != null:
 				target_pos += skater.global_position
 				target_count += 1
-
-		# Add puck position (weighted more if desired, here just 1x)
+		if target_count > 0:
+			target_pos /= target_count
+		target_count = 1
 		var pucks_node = get_node_or_null("Pucks")
 		if pucks_node:
 			for puck in pucks_node.get_children():

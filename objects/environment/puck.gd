@@ -20,11 +20,13 @@ func home() -> void:
 func _process(delta: float) -> void:
 	if posessor:
 		freeze = true
+		($PointerAbove).visible = true
 		($CollisionShape2D).disabled = freeze 
 		self.global_position = posessor.global_position
 	else:
 		freeze = false
 		($CollisionShape2D).disabled = freeze 
+		($PointerAbove).visible = false
 	if Globals.ticks > block_all:
 		set_collision_mask_value(4, true)
 	var to_erase: Array[String] = []
@@ -39,7 +41,7 @@ func _process(delta: float) -> void:
 func _physics_process(_delta: float) -> void:
 	if global_position.x < -200 or global_position.x > 2200 or global_position.y < -200 or global_position.y > 1400:
 		home()
-
+	_update_pointer()
 	for body in get_colliding_bodies():
 		if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck:
 			var prev_possessor = posessor
@@ -105,3 +107,31 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		state.linear_velocity = Vector2.ZERO
 		state.angular_velocity = 0
 		needs_reset = false
+		
+		
+func _update_pointer() -> void:
+	if not has_node("Pointer"):
+		return
+	var pointer = $Pointer
+	var viewport = get_viewport()
+	var canvas_transform = viewport.get_canvas_transform()
+	var screen_pos = canvas_transform * global_position
+	var viewport_rect = viewport.get_visible_rect()
+
+	var margin = 40.0
+	var bounds = viewport_rect.grow(-margin)
+
+	if bounds.has_point(screen_pos):
+		pointer.visible = false
+	else:
+		pointer.visible = true
+
+		var clamped_pos = screen_pos
+		clamped_pos.x = clamp(screen_pos.x, bounds.position.x, bounds.end.x)
+		clamped_pos.y = clamp(screen_pos.y, bounds.position.y, bounds.end.y)
+
+		pointer.global_position = canvas_transform.affine_inverse() * clamped_pos
+
+		var point_dir = (screen_pos - clamped_pos).normalized()
+		if point_dir.length_squared() > 0:
+			pointer.global_rotation = point_dir.angle() - PI/2
