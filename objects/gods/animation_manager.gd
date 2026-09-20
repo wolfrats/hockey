@@ -133,6 +133,11 @@ func set_phase(new_phase: Phase) -> void:
 
 		Phase.FACE_OFF:
 			phase_timer = randf_range(5.0, 10.0)
+			if manager:
+				for child in manager.get_children():
+					if child is Goalie and child.pulled:
+						child.return_to_net()
+			skaters = get_tree().get_nodes_in_group("skaters") # refresh in case extra attackers were removed
 			for s in skaters:
 				if "anim_state" in s:
 					s.anim_state = "face_off"
