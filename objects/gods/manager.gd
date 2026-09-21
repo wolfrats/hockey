@@ -14,6 +14,9 @@ var period_label: Label
 var anim_manager: AnimationManager
 var main_camera: Camera2D
 
+func _enter_tree() -> void:
+	Globals.manager = self
+
 func _ready() -> void:
 	# Create a new detached Camera for the Manager
 	main_camera = Camera2D.new()
