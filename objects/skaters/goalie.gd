@@ -29,7 +29,6 @@ func pull() -> void:
 	extra_attacker.home_team = home_team
 	extra_attacker.global_position = global_position
 	extra_attacker.stats = stats
-	extra_attacker.owner = get_tree().current_scene 
 	# Add the extra attacker to the correct team node
 	var manager = get_parent()
 	if home_team:

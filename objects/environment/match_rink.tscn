@@ -1633,6 +1633,7 @@ position = Vector2(1003, 412)
 
 [node name="Player" parent="Manager/Ghosts" unique_id=1253797390 instance=ExtResource("5_iroi8")]
 position = Vector2(1008, 471)
+device_id = null
 
 [node name="Camera2D" type="Camera2D" parent="Manager/Ghosts/Player" unique_id=1537754657]
 

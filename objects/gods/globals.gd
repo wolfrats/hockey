@@ -26,6 +26,7 @@ var away_team_index: int = 1
 var allow_goalie_control: bool = false
 var sounds: Dictionary[String, AudioStreamPlayer2D] = {}
 var menu_opened: bool = false
+var manager: Node2D = null
 
 func _init() -> void:
 	update_team_textures()
