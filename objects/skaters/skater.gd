@@ -57,7 +57,7 @@ func _ready() -> void:
 	else:
 		$Sprite.texture.atlas = Globals.away_texture
 		facing_dir = Vector2(-1, 0)
-	if not %Manager.is_practice:
+	if not Globals.manager.is_practice:
 		ai = preload("res://objects/skaters/ai.tscn").instantiate()
 		add_child(ai)
 
@@ -371,7 +371,7 @@ func _physics_process(delta: float) -> void:
 	$Sprite.region_rect = Rect2(base_offset * spacing + 0, 0, 192, 192) #statbook.sprite_index
 	if abs(last_move.angle_to(linear_velocity)) > 3.1 and Globals.ticks > scrape_counter:
 		var s: Icesputter = preload("res://objects/environment/icesplutter.tscn").instantiate()
-		%Manager.add_child(s)
+		Globals.manager.add_child(s)
 		skate_dir = linear_velocity
 		scrape_counter = Globals.ticks + 20
 		if linear_velocity.x > 0:
@@ -405,7 +405,7 @@ func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 		else:
 			Globals.play_sound_at("HitFast", global_position)
 		var s: GPUParticles2D = preload("res://objects/environment/icesplutter.tscn").instantiate()
-		%Manager.add_child(s)
+		Globals.manager.add_child(s)
 		s.global_position = (global_position + dir.normalized() * 16)
 
 		var camera = get_viewport().get_camera_2d()
