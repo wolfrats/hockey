@@ -40,6 +40,10 @@ func _ready() -> void:
 	Slash.scale = Vector2.ONE*(128.0/320.0)
 	%JoystickToggle.button_pressed = Globals.has_node("Holder")
 	$CenterContainer/VBoxContainer/Practice.grab_focus()
+	if not Globals.menu_opened:
+		Globals.menu_opened = true
+		if DisplayServer.is_touchscreen_available():
+			_on_joystick_toggled(true)
 
 
 

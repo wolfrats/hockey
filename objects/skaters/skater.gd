@@ -57,7 +57,7 @@ func _ready() -> void:
 	else:
 		$Sprite.texture.atlas = Globals.away_texture
 		facing_dir = Vector2(-1, 0)
-	if not %Manager.is_practice:
+	if not get_node("%Manager").is_practice:
 		ai = preload("res://objects/skaters/ai.tscn").instantiate()
 		add_child(ai)
 
