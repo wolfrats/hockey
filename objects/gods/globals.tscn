@@ -11,6 +11,8 @@
 [ext_resource type="AudioStream" uid="uid://8tqgrvihderr" path="res://sounds/Board.wav" id="8_ky27o"]
 [ext_resource type="AudioStream" uid="uid://ddc6l51myte7e" path="res://sounds/Blip.wav" id="9_dayrt"]
 [ext_resource type="AudioStream" uid="uid://bh4q8xaiqnmmo" path="res://sounds/Blip2.wav" id="10_fejva"]
+[ext_resource type="AudioStream" uid="uid://cuwk8lf5okqg8" path="res://sounds/sad.wav" id="12_7c7ov"]
+[ext_resource type="AudioStream" uid="uid://6tmn3dhrgepe" path="res://sounds/horn.wav" id="12_15ko5"]
 
 [node name="Globals" type="CanvasLayer" unique_id=654117998]
 script = ExtResource("1_c42sn")
@@ -46,3 +48,9 @@ stream = ExtResource("9_dayrt")
 
 [node name="Blip2" type="AudioStreamPlayer2D" parent="Sounds" unique_id=1078156414]
 stream = ExtResource("10_fejva")
+
+[node name="GoalAway" type="AudioStreamPlayer2D" parent="Sounds" unique_id=119238210]
+stream = ExtResource("12_7c7ov")
+
+[node name="GoalHome" type="AudioStreamPlayer2D" parent="Sounds" unique_id=395123061]
+stream = ExtResource("12_15ko5")

@@ -226,8 +226,10 @@ func goal_scored(goal_name: String, scorer: String = "", assister: String = "") 
 		return
 	if goal_name == "HomeGoal":
 		away_score += 1
+		Globals.play_sound_at("GoalAway", global_position)
 	elif goal_name == "AwayGoal":
 		home_score += 1
+		Globals.play_sound_at("GoalHome", global_position)
 		
 	if scorer != "":
 		if not Globals.scorer_stats.has(scorer):
