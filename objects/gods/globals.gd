@@ -4,6 +4,8 @@ var home_color: Color
 var away_color: Color
 var home_texture: Texture2D
 var away_texture: Texture2D
+var home_goalie_texture: Texture2D
+var away_goalie_texture: Texture2D
 var ticks: int = 0
 var period_length: float = 120.0
 var SHIRT_COLOR: Color = Color.from_rgba8(96, 176, 248)
@@ -47,6 +49,8 @@ func update_team_textures() -> void:
 
 	home_texture = swap_colors_in_texture_multi(preload("res://sprites/skater-all.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"])
 	away_texture = swap_colors_in_texture_multi(preload("res://sprites/skater-all.png"), away_team.get("away_head_color", away_team["head_color"]), away_team.get("away_body_color", away_team["body_color"]), away_team.get("away_foot_color", away_team["foot_color"]))
+	home_goalie_texture = swap_colors_in_texture_multi(preload("res://sprites/goalie.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"])
+	away_goalie_texture = swap_colors_in_texture_multi(preload("res://sprites/goalie.png"), away_team.get("away_head_color", away_team["head_color"]), away_team.get("away_body_color", away_team["body_color"]), away_team.get("away_foot_color", away_team["foot_color"]))
 
 func _physics_process(_delta: float) -> void:
 	ticks += 1
