@@ -134,6 +134,11 @@ func set_phase(new_phase: Phase) -> void:
 						continue
 					s.anim_state = ""
 
+			var referees = get_tree().get_nodes_in_group("referees")
+			for ref in referees:
+				if "anim_state" in ref:
+					ref.anim_state = ""
+
 			for p in pucks:
 				p.visible = true
 				if "colidable" in p:
@@ -169,13 +174,23 @@ func set_phase(new_phase: Phase) -> void:
 							break
 					if penalized_skater:
 						if penalized_skater.home_team:
-							p.global_position = Vector2(400, 109) # Home side faceoff dot (approx)
+							p.global_position = Vector2(400, 300) # Home side defensive zone faceoff dot
 						else:
-							p.global_position = Vector2(1600, 909) # Away side faceoff dot (approx)
+							p.global_position = Vector2(1600, 700) # Away side defensive zone faceoff dot
 					else:
 						p.global_position = Vector2(1005.5, 509)
 				else:
 					p.global_position = Vector2(1005.5, 509)
+
+			var faceoff_pos = Vector2(1005.5, 509)
+			if pucks.size() > 0:
+				faceoff_pos = pucks[0].global_position
+
+			var referees = get_tree().get_nodes_in_group("referees")
+			for ref in referees:
+				if "anim_state" in ref:
+					ref.anim_state = "skate_to"
+					ref.target_pos = faceoff_pos
 
 			for s in skaters:
 				if "anim_state" in s and s.anim_state == "face_off" and s.has_method("home") and "initial_position" in s:
@@ -273,13 +288,23 @@ func set_phase(new_phase: Phase) -> void:
 							break
 					if penalized_skater:
 						if penalized_skater.home_team:
-							p.global_position = Vector2(500, 109) # Home side faceoff dot (approx)
+							p.global_position = Vector2(400, 300) # Home side defensive zone faceoff dot
 						else:
-							p.global_position = Vector2(1600, 909) # Away side faceoff dot (approx)
+							p.global_position = Vector2(1600, 700) # Away side defensive zone faceoff dot
 					else:
 						p.global_position = Vector2(1005.5, 509)
 				else:
 					p.global_position = Vector2(1005.5, 509)
+
+			var faceoff_pos = Vector2(1005.5, 509)
+			if pucks.size() > 0:
+				faceoff_pos = pucks[0].global_position
+
+			var referees = get_tree().get_nodes_in_group("referees")
+			for ref in referees:
+				if "anim_state" in ref:
+					ref.anim_state = "skate_to"
+					ref.target_pos = faceoff_pos
 
 			for s in skaters:
 				if "anim_state" in s and s.anim_state != "entering_penalty" and s.anim_state != "in_penalty" and s.anim_state != "leaving_penalty" and s.anim_state != "return_from_penalty" and s.has_method("home") and "initial_position" in s:
@@ -291,7 +316,8 @@ func set_phase(new_phase: Phase) -> void:
 					if x_offset != 0 and abs(x_offset) > 10:
 						if not s.has_meta("base_initial_position"):
 							s.set_meta("base_initial_position", s.initial_position)
-						s.initial_position = Vector2(s.get_meta("base_initial_position").x + x_offset, s.get_meta("base_initial_position").y)
+						var target_x = clamp(s.get_meta("base_initial_position").x + x_offset, 250, 1750)
+						s.initial_position = Vector2(target_x, s.get_meta("base_initial_position").y)
 					elif s.has_meta("base_initial_position"):
 						s.initial_position = s.get_meta("base_initial_position")
 
