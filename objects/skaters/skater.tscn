@@ -2,10 +2,14 @@
 
 [ext_resource type="Script" uid="uid://5rd1s2njfu0n" path="res://objects/skaters/skater.gd" id="1_est1s"]
 [ext_resource type="Texture2D" uid="uid://ck3e16inc2wj8" path="res://sprites/skater-all.png" id="2_0eafs"]
+[ext_resource type="Shader" uid="uid://1myt0j0tbias" path="res://shaders/outline.gdshader" id="2_e6fq4"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_arvj2"]
 friction = 0.5
 bounce = 0.5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vuibl"]
+shader = ExtResource("2_e6fq4")
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0eafs"]
 atlas = ExtResource("2_0eafs")
@@ -27,6 +31,7 @@ script = ExtResource("1_est1s")
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=406336950]
 texture_filter = 1
+material = SubResource("ShaderMaterial_vuibl")
 texture = SubResource("AtlasTexture_0eafs")
 region_enabled = true
 region_rect = Rect2(0, 0, 192, 192)
