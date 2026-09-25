@@ -61,8 +61,7 @@ func _physics_process(delta: float) -> void:
 	if knocked_over > Globals.ticks:
 		linear_damp = 3.0
 		var spacing = 192
-		var base_offset = 27
-		sprite.region_rect = Rect2(base_offset * spacing, 0, 192, 192)
+		sprite.region_rect = Rect2(27 * spacing, 0, 192, 192)
 		_update_cone_visuals()
 		return
 
@@ -172,6 +171,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		state.angular_velocity = 0
 		needs_reset = false
 		return
+
 func swap_colors_in_texture(tex: Texture2D) -> ImageTexture:
 	return swap_color_in_texture(
 		swap_color_in_texture(
@@ -190,7 +190,7 @@ func swap_color_in_texture(tex: Texture2D, from_col: Color) -> ImageTexture:
 			var current_color = img.get_pixel(x, y) 
 			# Optional: add a small tolerance check if dealing with compressed/anti-aliased art 
 			if current_color.is_equal_approx(from_col): 
-				var to_col = Color.BLACK
+				var to_col = Color(0.01, 0.01, 0.01)
 				if int(x / 6.0) % 2 == 0 and y > 95 and y < 120:
 					to_col = Color.LIGHT_GRAY
 				img.set_pixel(x, y, to_col) 
