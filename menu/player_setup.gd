@@ -9,10 +9,25 @@ func _ready() -> void:
 	$VBoxContainer/Buttons/Clear.grab_focus()
 	update_ui()
 
+func _process(_delta: float) -> void:
+
+	for i in range(Globals.player_devices.size()):
+		var dev = Globals.player_devices[i]
+		if dev == -2: # Keyboard / Virtual Joystick
+			if Input.is_action_just_pressed("skate_left"):
+				Globals.player_teams[i] = 0
+				update_ui()
+			elif Input.is_action_just_pressed("skate_right"):
+				Globals.player_teams[i] = 1
+				update_ui()
+			elif Input.is_action_just_pressed("skate_up") or Input.is_action_just_pressed("skate_down"):
+				Globals.player_auto_swap[i] = not Globals.player_auto_swap[i]
+				update_ui()
+
 func _unhandled_input(event: InputEvent) -> void:
 	var device_joined = -1
 
-	if event.is_action_pressed("check") and not event is InputEventJoypadButton:
+	if (event.is_action_pressed("check") or event.is_action_pressed("ui_accept")) and not event is InputEventJoypadButton:
 		# Keyboard is always -2 now for custom setup logic
 		device_joined = -2
 	elif event is InputEventJoypadButton and event.pressed:
@@ -28,17 +43,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	# Handle Team Switching and AutoSwap
 	for i in range(Globals.player_devices.size()):
 		var dev = Globals.player_devices[i]
-		if dev == -2: # Keyboard
-			if event.is_action_pressed("skate_left"):
-				Globals.player_teams[i] = 0
-				update_ui()
-			elif event.is_action_pressed("skate_right"):
-				Globals.player_teams[i] = 1
-				update_ui()
-			elif event.is_action_pressed("skate_up") or event.is_action_pressed("skate_down"):
-				Globals.player_auto_swap[i] = not Globals.player_auto_swap[i]
-				update_ui()
-		elif dev >= 0 and event is InputEventJoypadButton and event.device == dev:
+		if dev >= 0 and event is InputEventJoypadButton and event.device == dev:
 			if event.button_index == JOY_BUTTON_DPAD_LEFT and event.pressed:
 				Globals.player_teams[i] = 0
 				update_ui()

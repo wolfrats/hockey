@@ -33,13 +33,10 @@ func _process(delta: float) -> void:
 	match current_phase:
 		Phase.PRE_GAME_SKATE:
 			var start = false
-			if Input.is_action_just_pressed("ui_accept"):
+			if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("pass") or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") or Input.is_action_just_pressed("check"):
 				start = true
 			for device in Globals.player_devices:
-				if device == -2:
-					if Input.is_action_just_pressed("pass") or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") or Input.is_action_just_pressed("check"):
-						start = true
-				else:
+				if device >= 0:
 					if Input.is_joy_button_pressed(device, JOY_BUTTON_A) or Input.is_joy_button_pressed(device, JOY_BUTTON_X) or Input.is_joy_button_pressed(device, JOY_BUTTON_Y) or Input.is_joy_button_pressed(device, JOY_BUTTON_B):
 						start = true
 			if start:
@@ -67,13 +64,10 @@ func _process(delta: float) -> void:
 					set_phase(Phase.PRE_PERIOD_SKATE)
 		Phase.PRE_PERIOD_SKATE:
 			var start = false
-			if Input.is_action_just_pressed("ui_accept"):
+			if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("pass") or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") or Input.is_action_just_pressed("check"):
 				start = true
 			for device in Globals.player_devices:
-				if device == -2:
-					if Input.is_action_just_pressed("pass") or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") or Input.is_action_just_pressed("check"):
-						start = true
-				else:
+				if device >= 0:
 					if Input.is_joy_button_pressed(device, JOY_BUTTON_A) or Input.is_joy_button_pressed(device, JOY_BUTTON_X) or Input.is_joy_button_pressed(device, JOY_BUTTON_Y) or Input.is_joy_button_pressed(device, JOY_BUTTON_B):
 						start = true
 			if start:
