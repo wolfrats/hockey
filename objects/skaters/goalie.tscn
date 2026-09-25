@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://nueihv38xcpj" path="res://objects/skaters/goalie.gd" id="1_tat2j"]
 [ext_resource type="Texture2D" uid="uid://dto2aeu1rlv8r" path="res://sprites/goalie.png" id="2_k1fhr"]
+[ext_resource type="Material" uid="uid://1eoo1pqelk1h" path="res://shaders/outline_shader_material.tres" id="2_tat2j"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_arvj2"]
 friction = 0.5
@@ -25,6 +26,7 @@ script = ExtResource("1_tat2j")
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=406336950]
 texture_filter = 1
+material = ExtResource("2_tat2j")
 texture = ExtResource("2_k1fhr")
 region_rect = Rect2(84, 124, 24, 24)
 
