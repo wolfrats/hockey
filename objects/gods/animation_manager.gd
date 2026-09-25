@@ -169,9 +169,9 @@ func set_phase(new_phase: Phase) -> void:
 							break
 					if penalized_skater:
 						if penalized_skater.home_team:
-							p.global_position = Vector2(400, 509) # Home side faceoff dot (approx)
+							p.global_position = Vector2(400, 109) # Home side faceoff dot (approx)
 						else:
-							p.global_position = Vector2(1600, 509) # Away side faceoff dot (approx)
+							p.global_position = Vector2(1600, 909) # Away side faceoff dot (approx)
 					else:
 						p.global_position = Vector2(1005.5, 509)
 				else:
@@ -273,9 +273,9 @@ func set_phase(new_phase: Phase) -> void:
 							break
 					if penalized_skater:
 						if penalized_skater.home_team:
-							p.global_position = Vector2(400, 509) # Home side faceoff dot (approx)
+							p.global_position = Vector2(500, 109) # Home side faceoff dot (approx)
 						else:
-							p.global_position = Vector2(1600, 509) # Away side faceoff dot (approx)
+							p.global_position = Vector2(1600, 909) # Away side faceoff dot (approx)
 					else:
 						p.global_position = Vector2(1005.5, 509)
 				else:
