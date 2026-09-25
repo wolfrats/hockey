@@ -28,12 +28,15 @@ var spring: DampedSpringJoint2D
 var penalty_time: float = 0.0
 var needs_penalty_reset: bool = false
 var damage_tween: Tween
+var anim_manager = null
 
 enum LookDir {
 	SIDE,
 	DOWN,
 	UP
 }
+
+	var anim_manager = null
 
 func _ready() -> void:
 	initial_position = global_position
@@ -60,6 +63,11 @@ func _ready() -> void:
 	if not Globals.manager.is_practice:
 		ai = preload("res://objects/skaters/ai.tscn").instantiate()
 		add_child(ai)
+		var anim_managers = get_parent().get_parent().get_children()
+		for child in anim_managers:
+			if child is AnimationManager:
+				anim_manager = child
+				break
 
 func home() -> void:
 	needs_reset = true
@@ -144,6 +152,12 @@ func do_check() -> void:
 			if ref.has_method("is_in_cone") and ref.is_in_cone(global_position):
 				if randf() < 0.3: # 30% chance to be sent to penalty box
 					penalty(30.0)
+					if anim_manager:
+						anim_manager.set_phase(AnimationManager.Phase.PRE_PENALTY_SKATE)
+						if ref:
+							ref.anim_state = "skate_to"
+							ref.target_pos = Vector2(1005.5, 509)
+
 
 func do_grab() -> void:
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
@@ -203,7 +217,8 @@ func _physics_process(delta: float) -> void:
 		elif anim_state == "in_penalty":
 			$Sprite.modulate.a = min(1.0, $Sprite.modulate.a + delta * 2.0)
 			if penalty_time > 0:
-				penalty_time -= delta
+				if anim_manager and anim_manager.current_phase == AnimationManager.Phase.PLAYING:
+					penalty_time -= delta
 				if penalty_time <= 0:
 					anim_state = "leaving_penalty"
 		elif anim_state == "leaving_penalty":
@@ -258,14 +273,18 @@ func _physics_process(delta: float) -> void:
 			anim_state = ""
 	elif anim_state == "face_off":
 		# Only players near center can take the face-off
-		if global_position.distance_to(Vector2(1005.5, 509)) < 150:
+		var faceoff_pos = Vector2(1005.5, 509)
+		var pucks = get_tree().get_nodes_in_group("pucks")
+		if pucks.size() > 0:
+			faceoff_pos = pucks[0].global_position
+
+		if global_position.distance_to(faceoff_pos) < 150:
 			var tried_faceoff = false
 			if ghost:
 				if ghost.has_method("is_action_just_pressed_custom"):
 					if ghost.is_action_just_pressed_custom("pass"):
 						tried_faceoff = true
 			elif ai:
-				var pucks = get_tree().get_nodes_in_group("pucks")
 				if pucks.size() > 0:
 					var p = pucks[0]
 					var chance = 0.02
