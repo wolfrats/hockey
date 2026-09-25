@@ -114,7 +114,7 @@ func set_phase(new_phase: Phase) -> void:
 			var circle = true
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "skating_circle" if circle else "skating_figure8"
 					circle = not circle
@@ -128,7 +128,7 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 1.5
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "lerping"
 
@@ -136,7 +136,7 @@ func set_phase(new_phase: Phase) -> void:
 			($"../../Boards/BoardsCollision").disabled = false
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = ""
 
@@ -155,7 +155,7 @@ func set_phase(new_phase: Phase) -> void:
 			var team_has_penalty = false
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						team_has_penalty = true
 						continue
 					s.anim_state = "face_off"
@@ -192,7 +192,7 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 2.0
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "skating_around"
 
@@ -200,7 +200,7 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 1.5
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "lerping"
 			for p in pucks:
@@ -213,7 +213,7 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 2.5
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "skating_out"
 			($"../../Boards/BoardsCollision").disabled = true
@@ -232,7 +232,7 @@ func set_phase(new_phase: Phase) -> void:
 			var circle = true
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "skating_circle" if circle else "skating_figure8"
 					circle = not circle
@@ -241,14 +241,14 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 1.5
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "lerping"
 		Phase.PRE_PENALTY_SKATE:
 			phase_timer = 2.0
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "entering_penalty" or s.anim_state == "in_penalty":
+					if s.anim_state == "entering_penalty" or s.anim_state == "in_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "skating_around"
 			for p in pucks:
@@ -261,7 +261,7 @@ func set_phase(new_phase: Phase) -> void:
 			var team_has_penalty = false
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "entering_penalty" or s.anim_state == "in_penalty":
+					if s.anim_state == "entering_penalty" or s.anim_state == "in_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						team_has_penalty = true
 						continue
 					s.anim_state = "lerping"
@@ -288,7 +288,7 @@ func set_phase(new_phase: Phase) -> void:
 					p.global_position = Vector2(1005.5, 509)
 
 			for s in skaters:
-				if "anim_state" in s and s.anim_state != "entering_penalty" and s.anim_state != "in_penalty" and s.has_method("home") and "initial_position" in s:
+				if "anim_state" in s and s.anim_state != "entering_penalty" and s.anim_state != "in_penalty" and s.anim_state != "leaving_penalty" and s.anim_state != "return_from_penalty" and s.has_method("home") and "initial_position" in s:
 					var x_offset = 0
 					if pucks.size() > 0:
 						x_offset = pucks[0].global_position.x - 1005.5
