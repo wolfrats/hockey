@@ -4,7 +4,10 @@ var Joy: VirtualJoystick
 var Shoot: TouchScreenButton
 var Swap: TouchScreenButton
 var Slash: TouchScreenButton
+var Pass: TouchScreenButton
+var Back: TouchScreenButton
 var Holder: Control
+var BackHolder: Control
 
 func _ready() -> void:
 	Joy = VirtualJoystick.new()
@@ -27,17 +30,35 @@ func _ready() -> void:
 	Slash = TouchScreenButton.new()
 	Slash.action = &"check"
 	Slash.texture_normal = preload("res://sprites/slash-button.svg")
+	Pass = TouchScreenButton.new()
+	Pass.action = &"pass"
+	Pass.texture_normal = preload("res://sprites/pass-button.svg")
+	Back = TouchScreenButton.new()
+	Back.action = &"ui_cancel"
+	Back.texture_normal = preload("res://sprites/red-button.svg") # Using red-button.svg for Back
+
 	Holder = Control.new()
 	Holder.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 50)
 	Holder.add_child(Swap)
 	Holder.add_child(Shoot) 
 	Holder.add_child(Slash) 
+	Holder.add_child(Pass)
+
+	BackHolder = Control.new()
+	BackHolder.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE, 50)
+	BackHolder.add_child(Back)
+
 	Swap.position = Vector2(-100, -300)
 	Swap.scale = Vector2.ONE*(128.0/320.0)
 	Shoot.position = Vector2(-100, -100)
 	Shoot.scale = Vector2.ONE*(128.0/320.0)
 	Slash.position = Vector2(-175, -200)
 	Slash.scale = Vector2.ONE*(128.0/320.0)
+	Pass.position = Vector2(-25, -200)
+	Pass.scale = Vector2.ONE*(128.0/320.0)
+
+	Back.position = Vector2(20, 20)
+	Back.scale = Vector2.ONE*(128.0/320.0)
 	%JoystickToggle.button_pressed = Globals.has_node("Holder")
 	$CenterContainer/VBoxContainer/Practice.grab_focus()
 	if not Globals.menu_opened:
@@ -62,8 +83,14 @@ func _on_joystick_toggled(toggled_on: bool) -> void:
 		Joy.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 150) 
 		Holder.name = "Holder"
 		Globals.add_child(Holder)
+		BackHolder.name = "BackHolder"
+		Globals.add_child(BackHolder)
 		Joy.name = "Joy"
 		Globals.add_child(Joy)
 	elif not toggled_on:
-		Globals.remove_child(Globals.get_node("Holder"))
-		Globals.remove_child(Globals.get_node("Joy"))
+		if Globals.has_node("Holder"):
+			Globals.remove_child(Globals.get_node("Holder"))
+		if Globals.has_node("BackHolder"):
+			Globals.remove_child(Globals.get_node("BackHolder"))
+		if Globals.has_node("Joy"):
+			Globals.remove_child(Globals.get_node("Joy"))
