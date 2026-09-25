@@ -71,6 +71,11 @@ func _physics_process(delta: float) -> void:
 		var diff = initial_position - global_position
 		if diff.length() > 500:
 			impulse(diff.normalized().x, diff.normalized().y)
+	elif anim_state == "skate_to":
+		var diff = target_pos - global_position
+		if diff.length() > 10:
+			if randf() < 0.2:
+				impulse(diff.normalized().x, diff.normalized().y)
 	else:
 		# Randomly skate around the rink
 		var diff = target_pos - global_position
