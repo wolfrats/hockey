@@ -190,8 +190,8 @@ func swap_color_in_texture(tex: Texture2D, from_col: Color) -> ImageTexture:
 			var current_color = img.get_pixel(x, y) 
 			# Optional: add a small tolerance check if dealing with compressed/anti-aliased art 
 			if current_color.is_equal_approx(from_col): 
-				var to_col = Color.WEB_GRAY
-				if int(x / 6.0) % 2 == 0:
+				var to_col = Color.BLACK
+				if int(x / 6.0) % 2 == 0 and y > 95 and y < 120:
 					to_col = Color.LIGHT_GRAY
 				img.set_pixel(x, y, to_col) 
 	#img.unlock() 
