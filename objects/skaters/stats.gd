@@ -106,11 +106,27 @@ const TEAMS = [
 			ClassTypes.LIGHT,
 			ClassTypes.LIGHT
 		],
-		"head_color": Color(1, 0.5, 0.6),
+		"head_color": Color(1, 0.2, 0.2),
 		"body_color": Color(1, 1, 1),
+		"foot_color": Color(1, 0.2, 0.2),
+		"away_head_color": Color(1, 1, 1),
+		"away_body_color": Color(1, 0.2, 0.2),
+		"away_foot_color": Color(1, 1, 1),
+	},
+	{
+		"name": "The Pinkertons",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(1, 0.5, 0.6),
+		"body_color": Color(1, 0.6, 1),
 		"foot_color": Color(1, 0.5, 0.6),
 		"away_head_color": Color(1, 0.5, 0.6),
-		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_body_color": Color(0.9, 0, 0.9),
 		"away_foot_color": Color(1, 0.5, 0.6),
 	}
 ]

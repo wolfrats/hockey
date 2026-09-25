@@ -36,7 +36,6 @@ enum LookDir {
 	UP
 }
 
-	var anim_manager = null
 
 func _ready() -> void:
 	initial_position = global_position
@@ -297,7 +296,6 @@ func _physics_process(delta: float) -> void:
 				faceoff_shake = 0.15
 
 			if tried_faceoff and faceoff_cooldown <= 0:
-				var pucks = get_tree().get_nodes_in_group("pucks")
 				if pucks.size() > 0:
 					var p = pucks[0]
 					if not p.freeze:
