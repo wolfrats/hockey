@@ -11,6 +11,8 @@ enum Phase {
 	POST_PERIOD_WAIT,
 	PRE_PERIOD_SKATE,
 	PRE_PERIOD_LERP,
+	PRE_PENALTY_SKATE,
+	PRE_PENALTY_LERP,
 	FACE_OFF
 }
 
@@ -82,6 +84,12 @@ func _process(delta: float) -> void:
 				manager.current_period += 1
 				manager.time_remaining = Globals.period_length
 				set_phase(Phase.FACE_OFF)
+		Phase.PRE_PENALTY_SKATE:
+			if phase_timer <= 0:
+				set_phase(Phase.PRE_PENALTY_LERP)
+		Phase.PRE_PENALTY_LERP:
+			if phase_timer <= 0:
+				set_phase(Phase.FACE_OFF)
 		Phase.FACE_OFF:
 			if phase_timer <= 1.0 and phase_timer + delta > 1.0:
 				var referees = get_tree().get_nodes_in_group("referees")
@@ -106,6 +114,8 @@ func set_phase(new_phase: Phase) -> void:
 			var circle = true
 			for s in skaters:
 				if "anim_state" in s:
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+						continue
 					s.anim_state = "skating_circle" if circle else "skating_figure8"
 					circle = not circle
 			for p in pucks:
@@ -118,12 +128,16 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 1.5
 			for s in skaters:
 				if "anim_state" in s:
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+						continue
 					s.anim_state = "lerping"
 
 		Phase.PLAYING:
 			($"../../Boards/BoardsCollision").disabled = false
 			for s in skaters:
 				if "anim_state" in s:
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+						continue
 					s.anim_state = ""
 
 			for p in pucks:
@@ -138,11 +152,13 @@ func set_phase(new_phase: Phase) -> void:
 					if child is Goalie and child.pulled:
 						child.return_to_net()
 			skaters = get_tree().get_nodes_in_group("skaters") # refresh in case extra attackers were removed
+			var team_has_penalty = false
 			for s in skaters:
 				if "anim_state" in s:
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+						team_has_penalty = true
+						continue
 					s.anim_state = "face_off"
-				if s.has_method("home"):
-					s.home()
 			for p in pucks:
 				p.visible = true
 				p.freeze = true
@@ -150,18 +166,42 @@ func set_phase(new_phase: Phase) -> void:
 					p.colidable = true
 				p.home()
 				# Set puck to center of the rink
-				p.global_position = Vector2(1005.5, 509)
+				if team_has_penalty:
+					# Find penalized skater and set faceoff position based on their team
+					var penalized_skater = null
+					for s in skaters:
+						if "penalty_time" in s and s.penalty_time > 0:
+							penalized_skater = s
+							break
+					if penalized_skater:
+						if penalized_skater.home_team:
+							p.global_position = Vector2(400, 509) # Home side faceoff dot (approx)
+						else:
+							p.global_position = Vector2(1600, 509) # Away side faceoff dot (approx)
+					else:
+						p.global_position = Vector2(1005.5, 509)
+				else:
+					p.global_position = Vector2(1005.5, 509)
+
+			for s in skaters:
+				if "anim_state" in s and s.anim_state == "face_off" and s.has_method("home") and "initial_position" in s:
+					s.home()
+
 
 		Phase.POST_GOAL_SKATE:
 			phase_timer = 2.0
 			for s in skaters:
 				if "anim_state" in s:
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+						continue
 					s.anim_state = "skating_around"
 
 		Phase.POST_GOAL_LERP:
 			phase_timer = 1.5
 			for s in skaters:
 				if "anim_state" in s:
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+						continue
 					s.anim_state = "lerping"
 			for p in pucks:
 				p.visible = false
@@ -173,6 +213,8 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 2.5
 			for s in skaters:
 				if "anim_state" in s:
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+						continue
 					s.anim_state = "skating_out"
 			($"../../Boards/BoardsCollision").disabled = true
 			for p in pucks:
@@ -190,6 +232,8 @@ func set_phase(new_phase: Phase) -> void:
 			var circle = true
 			for s in skaters:
 				if "anim_state" in s:
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+						continue
 					s.anim_state = "skating_circle" if circle else "skating_figure8"
 					circle = not circle
 
@@ -197,7 +241,66 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 1.5
 			for s in skaters:
 				if "anim_state" in s:
+					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty":
+						continue
 					s.anim_state = "lerping"
+		Phase.PRE_PENALTY_SKATE:
+			phase_timer = 2.0
+			for s in skaters:
+				if "anim_state" in s:
+					if s.anim_state == "entering_penalty" or s.anim_state == "in_penalty":
+						continue
+					s.anim_state = "skating_around"
+			for p in pucks:
+				p.visible = false
+				p.freeze = true
+				if "colidable" in p:
+					p.colidable = false
+		Phase.PRE_PENALTY_LERP:
+			phase_timer = 1.5
+			var team_has_penalty = false
+			for s in skaters:
+				if "anim_state" in s:
+					if s.anim_state == "entering_penalty" or s.anim_state == "in_penalty":
+						team_has_penalty = true
+						continue
+					s.anim_state = "lerping"
+			for p in pucks:
+				p.visible = false
+				p.freeze = true
+				if "colidable" in p:
+					p.colidable = false
+				if team_has_penalty:
+					# Find penalized skater and set faceoff position based on their team
+					var penalized_skater = null
+					for s in skaters:
+						if "penalty_time" in s and s.penalty_time > 0:
+							penalized_skater = s
+							break
+					if penalized_skater:
+						if penalized_skater.home_team:
+							p.global_position = Vector2(400, 509) # Home side faceoff dot (approx)
+						else:
+							p.global_position = Vector2(1600, 509) # Away side faceoff dot (approx)
+					else:
+						p.global_position = Vector2(1005.5, 509)
+				else:
+					p.global_position = Vector2(1005.5, 509)
+
+			for s in skaters:
+				if "anim_state" in s and s.anim_state != "entering_penalty" and s.anim_state != "in_penalty" and s.has_method("home") and "initial_position" in s:
+					var x_offset = 0
+					if pucks.size() > 0:
+						x_offset = pucks[0].global_position.x - 1005.5
+
+					# Create a temporary modified "initial_position" for the home method
+					if x_offset != 0 and abs(x_offset) > 10:
+						if not s.has_meta("base_initial_position"):
+							s.set_meta("base_initial_position", s.initial_position)
+						s.initial_position = Vector2(s.get_meta("base_initial_position").x + x_offset, s.get_meta("base_initial_position").y)
+					elif s.has_meta("base_initial_position"):
+						s.initial_position = s.get_meta("base_initial_position")
+
 
 func on_goal_scored() -> void:
 	if current_phase == Phase.PLAYING:

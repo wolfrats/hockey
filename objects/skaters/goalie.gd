@@ -12,6 +12,7 @@ var rammed: bool = false
 var charging: bool = false
 var knocked_over: int = 0
 var home_x: float
+var anim_state: String = ""
 var needs_reset: bool = false
 var pulled: bool = false
 var extra_attacker: Skater = null
