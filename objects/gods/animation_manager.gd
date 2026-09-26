@@ -83,7 +83,8 @@ func _process(delta: float) -> void:
 				set_phase(Phase.PRE_PENALTY_LERP)
 		Phase.PRE_PENALTY_LERP:
 			if phase_timer <= 0:
-				set_phase(Phase.FACE_OFF)
+				set_phase(Phase.PLAYING)
+				#set_phase(Phase.FACE_OFF)
 		Phase.FACE_OFF:
 			if phase_timer <= 1.0 and phase_timer + delta > 1.0:
 				var referees = get_tree().get_nodes_in_group("referees")
@@ -174,9 +175,9 @@ func set_phase(new_phase: Phase) -> void:
 							break
 					if penalized_skater:
 						if penalized_skater.home_team:
-							p.global_position = Vector2(400, 300) # Home side defensive zone faceoff dot
+							p.global_position = Vector2(590, 282) # Home side defensive zone faceoff dot
 						else:
-							p.global_position = Vector2(1600, 700) # Away side defensive zone faceoff dot
+							p.global_position = Vector2(1600, 720) # Away side defensive zone faceoff dot
 					else:
 						p.global_position = Vector2(1005.5, 509)
 				else:
@@ -316,10 +317,12 @@ func set_phase(new_phase: Phase) -> void:
 					if x_offset != 0 and abs(x_offset) > 10:
 						if not s.has_meta("base_initial_position"):
 							s.set_meta("base_initial_position", s.initial_position)
-						var target_x = clamp(s.get_meta("base_initial_position").x + x_offset, 250, 1750)
-						s.initial_position = Vector2(target_x, s.get_meta("base_initial_position").y)
+						var target_x = clamp(s.get_meta("base_initial_position").x + x_offset, 350, 1650)
+						# BAD CODE BAD LLM!
+						#s.initial_position = Vector2(target_x, s.get_meta("base_initial_position").y + 200)
 					elif s.has_meta("base_initial_position"):
-						s.initial_position = s.get_meta("base_initial_position")
+						pass
+						#s.initial_position = s.get_meta("base_initial_position")
 
 
 func on_goal_scored() -> void:

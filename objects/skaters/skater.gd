@@ -21,6 +21,7 @@ var scrape_counter: int = 0
 var faceoff_cooldown: float = 0.0
 var faceoff_shake: float = 0.0
 var initial_position: Vector2
+var base_initial_position: Vector2
 var needs_reset: bool = false
 var anim_state: String = ""
 var health: float
@@ -38,13 +39,13 @@ enum LookDir {
 
 func _ready() -> void:
 	initial_position = global_position
+	base_initial_position = initial_position
 	add_to_group("skaters")
 
 	var team_data = StatBook.TEAMS[Globals.home_team_index] if home_team else StatBook.TEAMS[Globals.away_team_index]
 	var index = get_index()
 	if index >= 0 and index < team_data["composition"].size():
 		stats = team_data["composition"][index]
-
 	statbook = StatBook.Classes[stats]
 	mass = statbook.weight
 	health = statbook.max_health
@@ -58,6 +59,12 @@ func _ready() -> void:
 	else:
 		$Sprite.texture.atlas = Globals.away_texture
 		facing_dir = Vector2(-1, 0)
+	if stats == Stats.ClassTypes.LIGHT:
+		$Sprite.scale.x = 0.9
+		$Sprite.scale.y = 1.1
+	if stats == Stats.ClassTypes.HEAVY:
+		$Sprite.scale.x = 1.2
+		$Sprite.scale.y = 1.1
 	if not Globals.manager.is_practice:
 		ai = preload("res://objects/skaters/ai.tscn").instantiate()
 		add_child(ai)
@@ -444,6 +451,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		state.linear_velocity = Vector2.ZERO
 		state.angular_velocity = 0
 		needs_reset = false
+		initial_position = base_initial_position
 		return
 
 	if needs_penalty_reset:
