@@ -14,6 +14,8 @@ func _ready() -> void:
 
 func home() -> void:
 	needs_reset = true
+	if self.posessor:
+		self.posessor.puck = null
 	self.posessor = null
 	self.freeze = false
 
@@ -22,7 +24,7 @@ func _process(delta: float) -> void:
 		freeze = true
 		($PointerAbove).visible = true
 		($CollisionShape2D).disabled = freeze 
-		self.global_position = posessor.global_position
+		self.global_position = posessor.global_position + posessor.facing_dir * 30.0
 	else:
 		freeze = false
 		($CollisionShape2D).disabled = freeze 
@@ -42,44 +44,59 @@ func _physics_process(_delta: float) -> void:
 	if global_position.x < -200 or global_position.x > 2200 or global_position.y < -200 or global_position.y > 1400:
 		home()
 	_update_pointer()
+
+	if posessor:
+		# Manual check for stealing when frozen
+		for skater in get_tree().get_nodes_in_group("skaters"):
+			if skater != posessor and (not blocklist.has(skater.name)) and colidable and not skater.puck:
+				if skater.global_position.distance_to(global_position) < 40.0:
+					assign_possessor(skater)
+					break # Only one stealer per frame
+
 	for body in get_colliding_bodies():
 		if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck:
-			var prev_possessor = posessor
+			assign_possessor(body)
 			
-			posessor = body
-			posessor.puck = self
-			if posessor.ghost == null:
-				var manager = posessor.get_parent().get_parent()
-				var ghosts_node = manager.get_node_or_null("Ghosts")
-				if ghosts_node:
-					var closest_player = null
-					var min_dist = INF
-					for p in ghosts_node.get_children():
-						if p.name.begins_with("Player") and p.player_index >= 0 and p.player_index < Globals.player_auto_swap.size():
-							if Globals.player_auto_swap[p.player_index] and p.skater and p.skater.home_team == posessor.home_team:
-								var dist = p.skater.global_position.distance_to(posessor.global_position)
-								if dist < min_dist:
-									min_dist = dist
-									closest_player = p
-					if closest_player:
-						var old_skater = closest_player.skater
-						if old_skater:
-							old_skater.ghost = null
-						posessor.ghost = closest_player
-						closest_player.skater = posessor
-			
-			var current_name = ("Home AI" if posessor.home_team else "Away AI")
-			if posessor.ghost:
-				current_name = posessor.ghost.name
-				
-			if prev_possessor != posessor:
-				if posessor.home_team == possessor_team and current_name != last_possessor:
-					assist_possessor = last_possessor
-				elif posessor.home_team != possessor_team:
-					assist_possessor = ""
-				last_possessor = current_name
-				possessor_team = posessor.home_team
-			
+func assign_possessor(body: Skater) -> void:
+	var prev_possessor = posessor
+
+	if posessor:
+		posessor.puck = null
+
+	posessor = body
+	posessor.puck = self
+	if posessor.ghost == null:
+		var manager = posessor.get_parent().get_parent()
+		var ghosts_node = manager.get_node_or_null("Ghosts")
+		if ghosts_node:
+			var closest_player = null
+			var min_dist = INF
+			for p in ghosts_node.get_children():
+				if p.name.begins_with("Player") and p.player_index >= 0 and p.player_index < Globals.player_auto_swap.size():
+					if Globals.player_auto_swap[p.player_index] and p.skater and p.skater.home_team == posessor.home_team:
+						var dist = p.skater.global_position.distance_to(posessor.global_position)
+						if dist < min_dist:
+							min_dist = dist
+							closest_player = p
+			if closest_player:
+				var old_skater = closest_player.skater
+				if old_skater:
+					old_skater.ghost = null
+				posessor.ghost = closest_player
+				closest_player.skater = posessor
+
+	var current_name = ("Home AI" if posessor.home_team else "Away AI")
+	if posessor.ghost:
+		current_name = posessor.ghost.name
+
+	if prev_possessor != posessor:
+		if posessor.home_team == possessor_team and current_name != last_possessor:
+			assist_possessor = last_possessor
+		elif posessor.home_team != possessor_team:
+			assist_possessor = ""
+		last_possessor = current_name
+		possessor_team = posessor.home_team
+
 func shoot(shooter, vector) -> bool:
 	if not posessor or shooter != posessor.name:
 		return false
