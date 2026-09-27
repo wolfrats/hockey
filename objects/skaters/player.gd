@@ -127,8 +127,11 @@ func handle(_delta: float, curSkater) -> void:
 	if is_action_just_pressed_custom("check"):
 		curSkater.do_check()
 		
-	if is_action_just_pressed_custom("grab"):
-		curSkater.do_grab()
+	if is_action_pressed_custom("grab"):
+		curSkater.do_grab(is_action_just_pressed_custom("grab"))
+	if is_action_just_released_custom("grab"):
+		if curSkater.has_method("release_grab"):
+			curSkater.release_grab()
 
 	if is_action_just_pressed_custom("pass") and curSkater.puck:
 		var teammate = get_nearest_teammate(curSkater)
