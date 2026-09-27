@@ -159,16 +159,23 @@ func do_check() -> void:
 							ref.target_pos = Vector2(1005.5, 509)
 
 
-func do_grab() -> void:
+func release_grab() -> void:
+	spring.node_b = NodePath("")
+	holding = 0
+
+func do_grab(is_just_pressed: bool = true) -> void:
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return
-	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
+	if not spring.node_b.is_empty():
+		return
+	if is_just_pressed and checking <= Globals.ticks and knocked_over <= Globals.ticks:
 		checking = Globals.ticks + 30
+
+	if knocked_over <= Globals.ticks:
 		var skaters = get_tree().get_nodes_in_group("skaters")
 		for s in skaters:
 			if s != self and global_position.distance_to(s.global_position) < 80:
 				spring.node_b = s.get_path()
-				holding = Globals.ticks + 120
 				s.take_damage(0, Color.DIM_GRAY)
 				Globals.play_sound_at("Grab", global_position)
 				# Camera shake feedback
@@ -324,8 +331,6 @@ func _physics_process(delta: float) -> void:
 		ai.handle(delta, self)
 	var speed = linear_velocity.length()
 	var look_dir: LookDir = LookDir.SIDE
-	if not spring.node_b.is_empty() and holding <= Globals.ticks:
-		spring.node_b = NodePath("")
 
 	if knocked_over <= Globals.ticks and checking <= Globals.ticks:
 		if facing_dir.x != 0:

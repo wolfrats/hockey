@@ -116,7 +116,10 @@ func impulse(dx: float, dy: float) -> void:
 func do_check() -> void:
 	pass
 
-func do_grab() -> void:
+func do_grab(is_just_pressed: bool = true) -> void:
+	pass
+
+func release_grab() -> void:
 	pass
 
 var puck = null
