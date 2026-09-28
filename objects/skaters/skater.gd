@@ -440,7 +440,7 @@ func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 			shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
-	if anim_state == "lerping" and penalty_time <= 0:
+	if (anim_state == "lerping" or anim_state == "face_off") and penalty_time <= 0:
 		var trans = state.get_transform()
 		trans.origin = trans.origin.lerp(initial_position, 0.05)
 		state.set_transform(trans)
