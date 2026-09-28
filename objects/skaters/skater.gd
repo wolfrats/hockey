@@ -337,6 +337,7 @@ func _physics_process(delta: float) -> void:
 			$Sprite.flip_h = (facing_dir.x > 0)
 	var base_offset = 1
 	if (abs(facing_dir.x) < abs(facing_dir.y)):
+		$Sprite.flip_h = false
 		base_offset = 8
 		look_dir = LookDir.DOWN
 		if (facing_dir.y < 0):
@@ -349,6 +350,7 @@ func _physics_process(delta: float) -> void:
 			var diff = held.global_position - global_position
 			$Sprite.flip_h = (diff.x > 0)
 			if abs(diff.x) < abs(diff.y):
+				$Sprite.flip_h = false
 				base_offset = 8
 				look_dir = LookDir.DOWN
 				if diff.y < 0:
