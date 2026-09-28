@@ -134,6 +134,8 @@ func set_phase(new_phase: Phase) -> void:
 					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = ""
+					if "base_initial_position" in s:
+						s.initial_position = s.base_initial_position
 
 			var referees = get_tree().get_nodes_in_group("referees")
 			for ref in referees:
@@ -193,11 +195,48 @@ func set_phase(new_phase: Phase) -> void:
 					ref.anim_state = "skate_to"
 					ref.target_pos = faceoff_pos
 
+			var home_skaters = []
+			var away_skaters = []
 			for s in skaters:
-				if "anim_state" in s and s.anim_state == "face_off" and s.has_method("home") and "initial_position" in s:
-					s.home()
+				if "anim_state" in s and s.anim_state == "face_off":
+					if s.home_team:
+						home_skaters.append(s)
+					else:
+						away_skaters.append(s)
 
+			var radius = 150.0
 
+			for i in range(home_skaters.size()):
+				var s = home_skaters[i]
+				if i == 0:
+					s.initial_position = faceoff_pos + Vector2(-60, 0)
+				else:
+					var num_arc = max(1, home_skaters.size() - 1)
+					var angle = PI/2 + PI * (float(i - 1) / max(1, num_arc - 1))
+					s.initial_position = faceoff_pos + Vector2(cos(angle) * radius, sin(angle) * radius)
+				s.puck = null
+				if "statbook" in s and s.statbook != null:
+					s.health = s.statbook.max_health
+				if "penalty_time" in s:
+					s.penalty_time = 0.0
+				if "needs_reset" in s:
+					s.needs_reset = false
+
+			for i in range(away_skaters.size()):
+				var s = away_skaters[i]
+				if i == 0:
+					s.initial_position = faceoff_pos + Vector2(60, 0)
+				else:
+					var num_arc = max(1, away_skaters.size() - 1)
+					var angle = -PI/2 + PI * (float(i - 1) / max(1, num_arc - 1))
+					s.initial_position = faceoff_pos + Vector2(cos(angle) * radius, sin(angle) * radius)
+				s.puck = null
+				if "statbook" in s and s.statbook != null:
+					s.health = s.statbook.max_health
+				if "penalty_time" in s:
+					s.penalty_time = 0.0
+				if "needs_reset" in s:
+					s.needs_reset = false
 		Phase.POST_GOAL_SKATE:
 			phase_timer = 2.0
 			for s in skaters:
