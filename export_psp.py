@@ -3,7 +3,71 @@ import json
 import base64
 import io
 import os
+import struct
 from PIL import Image
+
+def apply_actions(img, actions):
+    """
+    Applies an array of PixelStudio actions to the given PIL Image.
+    """
+    for action in actions:
+        tool = action.get('Tool')
+
+        # Tools that may use specific pixel positions and colors
+        if tool in (0, 2, 10, 6, 1):
+            pos_str = action.get('Positions', '')
+            col_str = action.get('Colors', '')
+
+            if not pos_str:
+                continue
+
+            pos_bytes = base64.b64decode(pos_str)
+            positions = []
+            for i in range(0, len(pos_bytes), 4):
+                if i+4 <= len(pos_bytes):
+                    x, y = struct.unpack('<HH', pos_bytes[i:i+4])
+                    positions.append((x, y))
+
+            colors = []
+            if col_str:
+                col_bytes = base64.b64decode(col_str)
+                for i in range(0, len(col_bytes), 4):
+                    if i+4 <= len(col_bytes):
+                        r, g, b, a = struct.unpack('<BBBB', col_bytes[i:i+4])
+                        colors.append((r,g,b,a))
+
+            if colors:
+                # Use putpixel to apply colors to specified positions
+                for i, (x, y) in enumerate(positions):
+                    color = colors[i] if i < len(colors) else colors[-1]
+                    if 0 <= x < img.width and 0 <= y < img.height:
+                        img.putpixel((x, y), color)
+
+        elif tool == 20:
+            # Selection/Paste
+            meta_str = action.get('Meta', '{}')
+            try:
+                meta = json.loads(meta_str)
+            except json.JSONDecodeError:
+                continue
+
+            pixels_str = meta.get('Pixels', '')
+            rect = meta.get('Rect', {})
+            rect_from = rect.get('From', {})
+            x = rect_from.get('X', 0)
+            y = rect_from.get('Y', 0)
+
+            if pixels_str:
+                try:
+                    pixels_bytes = base64.b64decode(pixels_str)
+                    paste_img = Image.open(io.BytesIO(pixels_bytes)).convert("RGBA")
+                    # Use alpha_composite to properly blend the pasted image
+                    img.alpha_composite(paste_img, (x, y))
+                except Exception as e:
+                    print(f"Error applying Tool 20: {e}")
+
+    return img
+
 
 def export_psp(filepath):
     with open(filepath, 'r', encoding='utf-8') as f:
@@ -36,6 +100,12 @@ def export_psp(filepath):
 
             image_bytes = base64.b64decode(base64_data)
             img = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
+
+            # Apply any actions from history
+            actions = history_data.get('Actions', [])
+            if actions:
+                img = apply_actions(img, actions)
+
             frames_images.append(img)
 
         if not frames_images:
