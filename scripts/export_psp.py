@@ -6,6 +6,15 @@ import os
 import struct
 from PIL import Image, ImageDraw
 
+TOOL_BRUSH = 0
+TOOL_1 = 1
+TOOL_ERASER = 2
+TOOL_FLOODFILL = 3
+TOOL_ERASER_RECT = 6
+TOOL_10 = 10
+TOOL_18 = 18
+TOOL_SELECTION_PASTE = 20
+
 def apply_actions(img, actions):
     """
     Applies an array of PixelStudio actions to the given PIL Image.
@@ -13,10 +22,10 @@ def apply_actions(img, actions):
     for action in actions:
         #print(action)
         tool = action.get('Tool')
-        if tool in (3, 18, 10):
+        if tool in (TOOL_FLOODFILL, TOOL_18, TOOL_10):
             print(action)
         
-        if tool == 6:
+        if tool == TOOL_ERASER_RECT:
             # Tool 6: Eraser rectangle
             meta_str = action.get('Meta', '{}')
             try:
@@ -41,7 +50,7 @@ def apply_actions(img, actions):
                         img.putpixel((x, y), (0, 0, 0, 0))
 
         # Tools that may use specific pixel positions and colors
-        elif tool in (0, 2, 10, 1, 3, 18):
+        elif tool in (TOOL_BRUSH, TOOL_ERASER, TOOL_10, TOOL_1, TOOL_FLOODFILL, TOOL_18):
             pos_str = action.get('Positions', '')
             col_str = action.get('Colors', '')
             
@@ -64,15 +73,15 @@ def apply_actions(img, actions):
                         r, g, b, a = struct.unpack('<BBBB', col_bytes[i:i+4])
                         colors.append((r,g,b,a))
             
-            if tool == 3:
+            if tool == TOOL_FLOODFILL:
                 for i, (x, y) in enumerate(positions):
                     color = colors[i] if i < len(colors) else colors[-1]
                     if 0 <= x < img.width and 0 <= y - 1 < img.height:
                         ImageDraw.floodfill(img, (x, y - 1), color)
-            elif colors or tool == 2:
+            elif colors or tool == TOOL_ERASER:
                 # Use putpixel to apply colors to specified positions
                 for i, (x, y) in enumerate(positions):
-                    if tool == 2:
+                    if tool == TOOL_ERASER:
                         color = (0, 0, 0, 0)
                     else:
                         color = colors[i] if i < len(colors) else colors[-1]
@@ -80,7 +89,7 @@ def apply_actions(img, actions):
                     if 0 <= x < img.width and 0 <= y < img.height:
                         img.putpixel((x, y - 1), color)
                         
-        elif tool == 20:
+        elif tool == TOOL_SELECTION_PASTE:
             # Selection/Paste
             meta_str = action.get('Meta', '{}')
             try:
@@ -191,5 +200,6 @@ if __name__ == '__main__':
         sys.exit(1)
         
     export_psp(sys.argv[1])
+
 
 
