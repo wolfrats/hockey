@@ -1,7 +1,8 @@
 shader_type canvas_item;
 
-void vertex() {
-	// Called for every vertex the material is visible on.
+varying vec4 custom_modulate; 
+void vertex() { 
+	custom_modulate = COLOR; 
 }
 
 void fragment() {
@@ -13,7 +14,7 @@ void fragment() {
 	),
 	texture(TEXTURE, UV + TEXTURE_PIXEL_SIZE * vec2(1,0)).a),
 	texture(TEXTURE, UV + TEXTURE_PIXEL_SIZE *  vec2(-1,0)).a));
-	COLOR = me + vec4(0, 0, 0, neighbors);
+	COLOR = (me*me.a + vec4(0, 0, 0, neighbors)) * custom_modulate;
 }
 
 //void light() {
