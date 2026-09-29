@@ -4,7 +4,7 @@ import base64
 import io
 import os
 import struct
-from PIL import Image
+from PIL import Image, ImageDraw
 
 def apply_actions(img, actions):
     """
@@ -13,6 +13,8 @@ def apply_actions(img, actions):
     for action in actions:
         #print(action)
         tool = action.get('Tool')
+        if tool in (3, 18, 10):
+            print(action)
         
         if tool == 6:
             # Tool 6: Eraser rectangle
@@ -39,7 +41,7 @@ def apply_actions(img, actions):
                         img.putpixel((x, y), (0, 0, 0, 0))
 
         # Tools that may use specific pixel positions and colors
-        elif tool in (0, 2, 10, 1):
+        elif tool in (0, 2, 10, 1, 3, 18):
             pos_str = action.get('Positions', '')
             col_str = action.get('Colors', '')
             
@@ -62,7 +64,12 @@ def apply_actions(img, actions):
                         r, g, b, a = struct.unpack('<BBBB', col_bytes[i:i+4])
                         colors.append((r,g,b,a))
             
-            if colors or tool == 2:
+            if tool == 3:
+                for i, (x, y) in enumerate(positions):
+                    color = colors[i] if i < len(colors) else colors[-1]
+                    if 0 <= x < img.width and 0 <= y - 1 < img.height:
+                        ImageDraw.floodfill(img, (x, y - 1), color)
+            elif colors or tool == 2:
                 # Use putpixel to apply colors to specified positions
                 for i, (x, y) in enumerate(positions):
                     if tool == 2:
@@ -184,4 +191,5 @@ if __name__ == '__main__':
         sys.exit(1)
         
     export_psp(sys.argv[1])
+
 
