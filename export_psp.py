@@ -36,10 +36,14 @@ def apply_actions(img, actions):
                         r, g, b, a = struct.unpack('<BBBB', col_bytes[i:i+4])
                         colors.append((r,g,b,a))
 
-            if colors:
+            if colors or tool == 0:
                 # Use putpixel to apply colors to specified positions
                 for i, (x, y) in enumerate(positions):
-                    color = colors[i] if i < len(colors) else colors[-1]
+                    if tool == 0:
+                        color = (0, 0, 0, 0)
+                    else:
+                        color = colors[i] if i < len(colors) else colors[-1]
+
                     if 0 <= x < img.width and 0 <= y < img.height:
                         img.putpixel((x, y), color)
 
