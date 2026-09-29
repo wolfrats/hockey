@@ -13,8 +13,32 @@ def apply_actions(img, actions):
     for action in actions:
         tool = action.get('Tool')
 
+        if tool == 6:
+            # Tool 6: Eraser rectangle
+            meta_str = action.get('Meta', '{}')
+            try:
+                meta = json.loads(meta_str)
+            except json.JSONDecodeError:
+                continue
+
+            from_pt = meta.get('From', {})
+            to_pt = meta.get('To', {})
+
+            x1 = from_pt.get('X', 0)
+            y1 = from_pt.get('Y', 0)
+            x2 = to_pt.get('X', 0)
+            y2 = to_pt.get('Y', 0)
+
+            min_x, max_x = min(x1, x2), max(x1, x2)
+            min_y, max_y = min(y1, y2), max(y1, y2)
+
+            for y in range(min_y, max_y + 1):
+                for x in range(min_x, max_x + 1):
+                    if 0 <= x < img.width and 0 <= y < img.height:
+                        img.putpixel((x, y), (0, 0, 0, 0))
+
         # Tools that may use specific pixel positions and colors
-        if tool in (0, 2, 10, 6, 1):
+        elif tool in (0, 2, 10, 1):
             pos_str = action.get('Positions', '')
             col_str = action.get('Colors', '')
 
