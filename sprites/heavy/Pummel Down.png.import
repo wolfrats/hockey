@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://btukwwtodn0hg"
-path="res://.godot/imported/Skate Up.png-11056b4666033c4f67d4373504d40818.ctex"
+uid="uid://cie5gr64xkknm"
+path="res://.godot/imported/Pummel Down.png-9fd86197470e3c09caa3c1d8989f9df7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/light/Skate Up.png"
-dest_files=["res://.godot/imported/Skate Up.png-11056b4666033c4f67d4373504d40818.ctex"]
+source_file="res://sprites/heavy/Pummel Down.png"
+dest_files=["res://.godot/imported/Pummel Down.png-9fd86197470e3c09caa3c1d8989f9df7.ctex"]
 
 [params]
 

@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://de50kxui1vx1o"
-path="res://.godot/imported/Glide Left.png-7efaead1450969d2cde22efdce466cc2.ctex"
+path="res://.godot/imported/Glide Left.png-1aded46e27260780a2f5289a8487d090.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/Glide Left.png"
-dest_files=["res://.godot/imported/Glide Left.png-7efaead1450969d2cde22efdce466cc2.ctex"]
+source_file="res://sprites/medium/Glide Left.png"
+dest_files=["res://.godot/imported/Glide Left.png-1aded46e27260780a2f5289a8487d090.ctex"]
 
 [params]
 

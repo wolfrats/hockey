@@ -29,6 +29,7 @@ var spring: DampedSpringJoint2D
 var penalty_time: float = 0.0
 var needs_penalty_reset: bool = false
 var damage_tween: Tween
+var skater_size: String = "medium"
 
 enum LookDir {
 	SIDE,
@@ -47,17 +48,16 @@ func _ready() -> void:
 	if index >= 0 and index < team_data["composition"].size():
 		stats = team_data["composition"][index]
 	statbook = StatBook.Classes[stats]
+	skater_size = statbook.size
 	mass = statbook.weight
 	health = statbook.max_health
 	spring = $Spring #DampedSpringJoint2D.new()
 	#add_child(spring)
 	spring.node_a = get_path()
-	$Sprite.texture = $Sprite.texture.duplicate()
+	# The texture itself will be updated dynamically in _physics_process based on animation state
 	if home_team:
-		$Sprite.texture.atlas = Globals.home_texture
 		facing_dir = Vector2(1, 0)
 	else:
-		$Sprite.texture.atlas = Globals.away_texture
 		facing_dir = Vector2(-1, 0)
 	if stats == Stats.ClassTypes.LIGHT:
 		$Sprite.scale.x = 0.9
@@ -87,7 +87,7 @@ func penalty(duration: float) -> void:
 
 func _process(_delta: float) -> void:
 	pass
-	
+
 func do_check() -> void:
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return
@@ -335,13 +335,11 @@ func _physics_process(delta: float) -> void:
 	if knocked_over <= Globals.ticks and checking <= Globals.ticks:
 		if facing_dir.x != 0:
 			$Sprite.flip_h = (facing_dir.x > 0)
-	var base_offset = 1
+
 	if (abs(facing_dir.x) < abs(facing_dir.y)):
 		$Sprite.flip_h = false
-		base_offset = 8
 		look_dir = LookDir.DOWN
 		if (facing_dir.y < 0):
-			base_offset = 15
 			look_dir = LookDir.UP
 
 	if not spring.node_b.is_empty():
@@ -351,49 +349,108 @@ func _physics_process(delta: float) -> void:
 			$Sprite.flip_h = (diff.x > 0)
 			if abs(diff.x) < abs(diff.y):
 				$Sprite.flip_h = false
-				base_offset = 8
 				look_dir = LookDir.DOWN
 				if diff.y < 0:
-					base_offset = 17
 					look_dir = LookDir.UP
 			else:
-				base_offset = 0
 				look_dir = LookDir.SIDE
+
 	if speed > 5 or speed == 0:
 		linear_damp = 0.9
-	base_offset += int(counter / 10.0) % 6
+
 	if rammed:
 		rammed = false
 		if puck:
 			puck.shoot(name, Vector2.ZERO)
-			#puck = null
-	if charging:
-		if started_charge == 0:
-			started_charge = Globals.ticks
-		base_offset = 24 + min(int((Globals.ticks - started_charge) / 4.0), 2)
-	else:
-		started_charge = 0
-	if checking > Globals.ticks:
-		base_offset = 21
-		if look_dir == LookDir.UP:
-			base_offset = 23
-		elif look_dir == LookDir.DOWN:
-			base_offset = 22
+
+	var anim_name = "Glide Left"
+	var frame = 0
+
 	if knocked_over > Globals.ticks:
-		base_offset = 27
+		anim_name = "Die 1"
 		z_index = -1
 		if knocked_over - Globals.ticks > 90:
 			$Sprite.position = Vector2(randf_range(-2.0, 2.0), randf_range(-2.0, 2.0))
 		else:
 			$Sprite.position = Vector2.ZERO
+	elif charging:
+		z_index = 0
+		if faceoff_shake > 0:
+			$Sprite.position = Vector2(randf_range(-3.0, 3.0), randf_range(-3.0, 3.0))
+		else:
+			$Sprite.position = Vector2.ZERO
+		if started_charge == 0:
+			started_charge = Globals.ticks
+		anim_name = "Shoot Left"
+		frame = min(int((Globals.ticks - started_charge) / 4.0), 2)
+	elif not spring.node_b.is_empty():
+		z_index = 0
+		if faceoff_shake > 0:
+			$Sprite.position = Vector2(randf_range(-3.0, 3.0), randf_range(-3.0, 3.0))
+		else:
+			$Sprite.position = Vector2.ZERO
+		started_charge = 0
+		if checking > Globals.ticks:
+			if look_dir == LookDir.UP:
+				anim_name = "Pummel Up"
+			elif look_dir == LookDir.DOWN:
+				anim_name = "Pummel Down"
+			else:
+				anim_name = "Check Left"
+		else:
+			if look_dir == LookDir.UP:
+				anim_name = "Grab Up"
+			elif look_dir == LookDir.DOWN:
+				anim_name = "Grab Down"
+			else:
+				anim_name = "Grab Left"
+	elif checking > Globals.ticks:
+		z_index = 0
+		if faceoff_shake > 0:
+			$Sprite.position = Vector2(randf_range(-3.0, 3.0), randf_range(-3.0, 3.0))
+		else:
+			$Sprite.position = Vector2.ZERO
+		started_charge = 0
+		if look_dir == LookDir.UP:
+			anim_name = "Check Up"
+		elif look_dir == LookDir.DOWN:
+			anim_name = "Check Down"
+		else:
+			anim_name = "Check Left"
 	else:
 		z_index = 0
 		if faceoff_shake > 0:
 			$Sprite.position = Vector2(randf_range(-3.0, 3.0), randf_range(-3.0, 3.0))
 		else:
 			$Sprite.position = Vector2.ZERO
+		started_charge = 0
+		if speed > 5:
+			frame = (int(counter / 10.0) % 6)
+			if look_dir == LookDir.UP:
+				anim_name = "Skate Up"
+			elif look_dir == LookDir.DOWN:
+				anim_name = "Skate Down"
+			else:
+				anim_name = "Skate Left"
+		else:
+			frame = 0
+			if look_dir == LookDir.UP:
+				anim_name = "Skate Up"
+			elif look_dir == LookDir.DOWN:
+				anim_name = "Skate Down"
+			else:
+				anim_name = "Skate Left"
+
+	if home_team:
+		if Globals.home_textures[skater_size].has(anim_name):
+			$Sprite.texture = Globals.home_textures[skater_size][anim_name]
+	else:
+		if Globals.away_textures.has(anim_name):
+			$Sprite.texture = Globals.away_textures[skater_size][anim_name]
+
 	var spacing = 192
-	$Sprite.region_rect = Rect2(base_offset * spacing + 0, 0, 192, 192) #statbook.sprite_index
+	$Sprite.region_rect = Rect2(frame * spacing, 0, 192, 192) #statbook.sprite_index
+	$Sprite.region_enabled = true
 	if abs(last_move.angle_to(linear_velocity)) > 3.1 and Globals.ticks > scrape_counter:
 		var s: Icesputter = preload("res://objects/environment/icesplutter.tscn").instantiate()
 		Globals.manager.add_child(s)

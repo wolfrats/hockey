@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://btukwwtodn0hg"
-path="res://.godot/imported/Skate Up.png-11056b4666033c4f67d4373504d40818.ctex"
+uid="uid://ep80ift6f0ux"
+path="res://.godot/imported/Skate Down.png-118e6d9cb68934e904e909de6256c4f6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/light/Skate Up.png"
-dest_files=["res://.godot/imported/Skate Up.png-11056b4666033c4f67d4373504d40818.ctex"]
+source_file="res://sprites/heavy/Skate Down.png"
+dest_files=["res://.godot/imported/Skate Down.png-118e6d9cb68934e904e909de6256c4f6.ctex"]
 
 [params]
 

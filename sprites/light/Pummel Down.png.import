@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cg5sct8kjyk7"
-path="res://.godot/imported/Pummel Down.png-40964658149fe82e083c3cb9d1d15be6.ctex"
+path="res://.godot/imported/Pummel Down.png-dc774a4456397b3469724ec14dc8dc36.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scripts/Pummel Down.png"
-dest_files=["res://.godot/imported/Pummel Down.png-40964658149fe82e083c3cb9d1d15be6.ctex"]
+source_file="res://sprites/light/Pummel Down.png"
+dest_files=["res://.godot/imported/Pummel Down.png-dc774a4456397b3469724ec14dc8dc36.ctex"]
 
 [params]
 

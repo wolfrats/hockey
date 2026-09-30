@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bwg6g2dvlina3"
-path="res://.godot/imported/Grab Up.png-5f628771629f1d0317716363929d2eb9.ctex"
+path="res://.godot/imported/Grab Up.png-e4bdbf67153db7991964127c5c80d8cd.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scripts/Grab Up.png"
-dest_files=["res://.godot/imported/Grab Up.png-5f628771629f1d0317716363929d2eb9.ctex"]
+source_file="res://sprites/light/Grab Up.png"
+dest_files=["res://.godot/imported/Grab Up.png-e4bdbf67153db7991964127c5c80d8cd.ctex"]
 
 [params]
 

@@ -36,9 +36,7 @@ func _ready() -> void:
 	target_pos = initial_position
 	add_to_group("referees")
 	mass = 100
-	sprite.texture = swap_colors_in_texture(sprite.texture.duplicate())
-	# The referee can use an existing atlas spot, let's use a default one for now
-	# or base_offset 0, index 0, but maybe colorized or just black/white
+	# The referee uses the same textures, just black/white
 	_update_cone_visuals()
 
 func home() -> void:
@@ -60,8 +58,9 @@ func _physics_process(delta: float) -> void:
 
 	if knocked_over > Globals.ticks:
 		linear_damp = 3.0
-		var spacing = 192
-		sprite.region_rect = Rect2(27 * spacing, 0, 192, 192)
+		sprite.texture = Globals.referee_textures["Die 1"]
+		sprite.region_rect = Rect2(0, 0, 192, 192)
+		sprite.region_enabled = true
 		_update_cone_visuals()
 		return
 
@@ -95,20 +94,33 @@ func _physics_process(delta: float) -> void:
 		linear_damp = 0.9
 
 	counter += 1
-	var base_offset = int(counter / 10.0) % 6
+	var anim_name = "Skate Left"
+	var frame = 0
 
 	# Adjust Sprite facing
 	if linear_velocity.x != 0:
 		sprite.flip_h = (linear_velocity.x > 0)
 
-	if (linear_velocity.abs().x < linear_velocity.abs().y):
-		base_offset += 8
-		if (linear_velocity.y < 0):
-			base_offset += 7 # 11 is up
+	if speed > 5:
+		frame = (int(counter / 10.0) % 6)
 
-	# Black and white referee stripes would be nice, but we can just use regular
+	if (linear_velocity.abs().x < linear_velocity.abs().y):
+		sprite.flip_h = false
+		anim_name = "Skate Down"
+		if (linear_velocity.y < 0):
+			anim_name = "Skate Up"
+
+	if not Globals.home_textures.has(anim_name):
+		return
+
+	# Wait, we need a referee texture... we can use a dynamically generated one or just swap it on the fly
+	# If we just use home_textures for now, they won't be black/white.
+	# We should generate referee_textures in globals
+	sprite.texture = Globals.referee_textures[anim_name]
+
 	var spacing = 192
-	sprite.region_rect = Rect2(base_offset * spacing, 0, 192, 192)
+	sprite.region_rect = Rect2(frame * spacing, 0, 192, 192)
+	sprite.region_enabled = true
 
 	skate_dir = skate_dir.lerp(self.linear_velocity, 0.03)
 
@@ -181,24 +193,24 @@ func swap_colors_in_texture(tex: Texture2D) -> ImageTexture:
 	return swap_color_in_texture(
 		swap_color_in_texture(
 			swap_color_in_texture(
-				tex, Globals.SHIRT_COLOR
-			), Globals.HELMET_COLOR
-		), Globals.SKATE_COLOR
+				tex, Globals.shirt_color
+			), Globals.helmet_color
+		), Globals.skate_color
 	)
 func swap_color_in_texture(tex: Texture2D, from_col: Color) -> ImageTexture:
-	# Convert Texture2D to an Image you can edit 
+	# Convert Texture2D to an Image you can edit
 	var img: Image = tex.get_image()
-	#img.lock() # Required for fast pixel manipulation in some contexts 
-	 # Loop through every pixel coordinates (x, y) 
-	for x in range(img.get_width()): 
-		for y in range(img.get_height()): 
-			var current_color = img.get_pixel(x, y) 
-			# Optional: add a small tolerance check if dealing with compressed/anti-aliased art 
-			if current_color.is_equal_approx(from_col): 
+	#img.lock() # Required for fast pixel manipulation in some contexts
+	 # Loop through every pixel coordinates (x, y)
+	for x in range(img.get_width()):
+		for y in range(img.get_height()):
+			var current_color = img.get_pixel(x, y)
+			# Optional: add a small tolerance check if dealing with compressed/anti-aliased art
+			if current_color.is_equal_approx(from_col):
 				var to_col = Color(0.01, 0.01, 0.01)
 				if int(x / 6.0) % 2 == 0 and y > 95 and y < 120:
 					to_col = Color.LIGHT_GRAY
-				img.set_pixel(x, y, to_col) 
-	#img.unlock() 
-	# Create a new ImageTexture from the modified Image 
+				img.set_pixel(x, y, to_col)
+	#img.unlock()
+	# Create a new ImageTexture from the modified Image
 	return ImageTexture.create_from_image(img)

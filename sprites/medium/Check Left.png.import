@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bearfplmfsjja"
-path="res://.godot/imported/Check Left.png-2fa3ecfdafad3ca3711d46df6a27e4c6.ctex"
+path="res://.godot/imported/Check Left.png-f70235b4fc935be910327478cb998d78.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/Check Left.png"
-dest_files=["res://.godot/imported/Check Left.png-2fa3ecfdafad3ca3711d46df6a27e4c6.ctex"]
+source_file="res://sprites/medium/Check Left.png"
+dest_files=["res://.godot/imported/Check Left.png-f70235b4fc935be910327478cb998d78.ctex"]
 
 [params]
 
