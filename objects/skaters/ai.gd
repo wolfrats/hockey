@@ -162,7 +162,8 @@ func handle(_delta: float, curSkater) -> void:
 			power += charge
 			curSkater.charging = true
 			if power >= target_power:
-				curSkater.shoot(shot_aim_dir, power)
+				var inaccuracy = 0.0 if difficulty == 1 else 1.0
+				curSkater.shoot(shot_aim_dir, power, inaccuracy)
 				power = 0
 				is_charging = false
 				curSkater.charging = false
@@ -227,6 +228,10 @@ func handle(_delta: float, curSkater) -> void:
 			2:
 				if is_delegated_chaser():
 					target_pos = puck.global_position if puck else curSkater.global_position
+					if difficulty == 1 and other_team_has_puck and \
+					curSkater.global_position.distance_to(target_pos) < 60:
+						if randf() < 0.05:
+							curSkater.do_check()
 				else:
 					target_pos = get_opponent_to_ram()
 					if difficulty == 1 and curSkater.global_position.distance_to(target_pos) < 60:
