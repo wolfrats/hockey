@@ -69,7 +69,50 @@ def apply_actions(img, actions):
         elif tool == TOOL_10:
             # Tool 10: Rectangle Move Operation
             pos_str = action.get('Positions', '')
-            if pos_str:
+            meta_str = action.get('Meta', '{}')
+            meta = {}
+            try:
+                if meta_str:
+                    meta = json.loads(meta_str)
+            except json.JSONDecodeError:
+                pass
+            if 'From' in meta and 'To' in meta:
+                from_pt = meta.get('From', {})
+                to_pt = meta.get('To', {})
+
+                # Get source rectangle bounds (invert Y for PIL and adjust for 0-indexing)
+                src_x1 = from_pt.get('X', 0)
+                src_y1 = img.height - from_pt.get('Y', 0) - 1
+                src_x2 = to_pt.get('X', 0)
+                src_y2 = img.height - to_pt.get('Y', 0) - 1
+
+                src_min_x, src_max_x = min(src_x1, src_x2), max(src_x1, src_x2)
+                src_min_y, src_max_y = min(src_y1, src_y2), max(src_y1, src_y2)
+
+                # Calculate movement delta from Positions (Start Point -> End Point)
+                dx, dy = 0, 0
+                if pos_str:
+                    pos_bytes = base64.b64decode(pos_str)
+                    if len(pos_bytes) >= 8:
+                        px1, py1 = struct.unpack('<HH', pos_bytes[0:4])
+                        px2, py2 = struct.unpack('<HH', pos_bytes[4:8])
+                        dx = px2 - px1
+                        dy = py1 - py2  # Invert Y delta: PixelStudio Y goes up, PIL Y goes down
+
+                dst_min_x = src_min_x + dx
+                dst_min_y = src_min_y + dy
+
+                # Crop source area (+1 for inclusive right/bottom bounds)
+                src_box = (src_min_x, src_min_y, src_max_x + 1, src_max_y + 1)
+                cropped = img.crop(src_box)
+
+                # Erase source area
+                draw = ImageDraw.Draw(img)
+                draw.rectangle([src_min_x, src_min_y, src_max_x, src_max_y], fill=(0, 0, 0, 0))
+
+                # Paste to destination (using the cropped image itself as a mask for alpha compositing)
+                img.paste(cropped, (dst_min_x, dst_min_y), cropped)
+            elif pos_str:
                 pos_bytes = base64.b64decode(pos_str)
                 positions = []
                 for i in range(0, len(pos_bytes), 4):
