@@ -268,7 +268,10 @@ def apply_actions(img, actions, history_data=None):
                     pixels_bytes = base64.b64decode(pixels_str)
                     paste_img = Image.open(io.BytesIO(pixels_bytes)).convert("RGBA")
                     # Use alpha_composite to properly blend the pasted image
-                    img.alpha_composite(paste_img, (x, img.height - y - paste_img.height))
+                    #img.alpha_composite(paste_img, (x, img.height - y - paste_img.height))
+                    ep = 1 if img.height > 10 else 0
+                    ep = 0
+                    img.paste(paste_img, (x, img.height - y - paste_img.height + ep), paste_img)
                 except Exception as e:
                     print(f"Error applying Tool 20: {e}")
 
