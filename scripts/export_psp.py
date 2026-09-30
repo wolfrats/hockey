@@ -59,9 +59,9 @@ def apply_actions(img, actions, history_data=None):
                 to_pt = meta.get('To', {})
                 
                 x1 = from_pt.get('X', 0)
-                y1 = img.height - from_pt.get('Y', 0)
+                y1 = img.height - from_pt.get('Y', 0) - 1
                 x2 = to_pt.get('X', 0)
-                y2 = img.height - to_pt.get('Y', 0)
+                y2 = img.height - to_pt.get('Y', 0) - 1
                 
                 min_x, max_x = min(x1, x2), max(x1, x2)
                 min_y, max_y = min(y1, y2), max(y1, y2)
