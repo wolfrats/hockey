@@ -13,10 +13,28 @@ var away_idx: int = 1
 @onready var away_body = %AwayBody
 @onready var away_foot = %AwayFoot
 
+@onready var home_difficulty = %HomeDifficulty
+@onready var home_difficulty_label = %HomeDifficultyLabel
+@onready var away_difficulty = %AwayDifficulty
+@onready var away_difficulty_label = %AwayDifficultyLabel
+
 func _ready() -> void:
 	%GoalieControl.button_pressed = Globals.allow_goalie_control
+	home_difficulty.value = Globals.home_ai_difficulty
+	away_difficulty.value = Globals.away_ai_difficulty
+	home_difficulty.value_changed.connect(_on_home_difficulty_changed)
+	away_difficulty.value_changed.connect(_on_away_difficulty_changed)
+	_on_home_difficulty_changed(home_difficulty.value)
+	_on_away_difficulty_changed(away_difficulty.value)
+
 	$VBoxContainer/Buttons/Play.grab_focus()
 	update_ui()
+
+func _on_home_difficulty_changed(value: float) -> void:
+	home_difficulty_label.text = "AI: Hard" if value > 0.5 else "AI: Easy"
+
+func _on_away_difficulty_changed(value: float) -> void:
+	away_difficulty_label.text = "AI: Hard" if value > 0.5 else "AI: Easy"
 
 func update_ui() -> void:
 	var home_team = StatBook.TEAMS[home_idx]
@@ -60,6 +78,8 @@ func _on_play_pressed() -> void:
 	Globals.allow_goalie_control = %GoalieControl.button_pressed
 	Globals.home_team_index = home_idx
 	Globals.away_team_index = away_idx
+	Globals.home_ai_difficulty = int(home_difficulty.value)
+	Globals.away_ai_difficulty = int(away_difficulty.value)
 	Globals.update_team_textures()
 	get_tree().change_scene_to_file("res://objects/environment/match_rink.tscn")
 
