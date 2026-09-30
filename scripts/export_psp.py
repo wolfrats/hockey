@@ -59,9 +59,9 @@ def apply_actions(img, actions, history_data=None):
                 to_pt = meta.get('To', {})
                 
                 x1 = from_pt.get('X', 0)
-                y1 = img.height - from_pt.get('Y', 0)
+                y1 = img.height - from_pt.get('Y', 0) - 1
                 x2 = to_pt.get('X', 0)
-                y2 = img.height - to_pt.get('Y', 0)
+                y2 = img.height - to_pt.get('Y', 0) - 1
                 
                 min_x, max_x = min(x1, x2), max(x1, x2)
                 min_y, max_y = min(y1, y2), max(y1, y2)
@@ -136,7 +136,7 @@ def apply_actions(img, actions, history_data=None):
                 for i in range(0, len(pos_bytes), 4):
                     if i+4 <= len(pos_bytes):
                         x, y = struct.unpack('<HH', pos_bytes[i:i+4])
-                        y = img.height - y
+                        y = img.height - y - 1
                         positions.append((x, y))
                 
                 if len(positions) >= 4:
@@ -200,7 +200,7 @@ def apply_actions(img, actions, history_data=None):
             for i in range(0, len(pos_bytes), 4):
                 if i+4 <= len(pos_bytes):
                     x, y = struct.unpack('<HH', pos_bytes[i:i+4])
-                    y = img.height - y
+                    y = img.height - y - 1
                     positions.append((x, y))
             
             colors = []
@@ -214,8 +214,8 @@ def apply_actions(img, actions, history_data=None):
             if tool == TOOL_FLOODFILL or tool == TOOL_COLOR_REPLACE:
                 for i, (x, y) in enumerate(positions):
                     color = colors[i] if i < len(colors) else colors[-1]
-                    if 0 <= x < img.width and 0 <= y - 1 < img.height:
-                        ImageDraw.floodfill(img, (x, y - 1), color)
+                    if 0 <= x < img.width and 0 <= y < img.height:
+                        ImageDraw.floodfill(img, (x, y), color)
             elif colors or tool == TOOL_ERASER:
                 # Use putpixel to apply colors to specified positions
                 for i, (x, y) in enumerate(positions):
@@ -225,7 +225,7 @@ def apply_actions(img, actions, history_data=None):
                         color = colors[i] if i < len(colors) else colors[-1]
                         
                     if 0 <= x < img.width and 0 <= y < img.height:
-                        img.putpixel((x, y - 1), color)
+                        img.putpixel((x, y), color)
                         
         elif tool == TOOL_SELECTION_PASTE:
             # Selection/Paste
@@ -242,9 +242,9 @@ def apply_actions(img, actions, history_data=None):
             to_pt = rect.get('To', {})
             
             x1 = from_pt.get('X', 0)
-            y1 = img.height - from_pt.get('Y', 0)
+            y1 = img.height - from_pt.get('Y', 0) - 1
             x2 = to_pt.get('X', 0)
-            y2 = img.height - to_pt.get('Y', 0)
+            y2 = img.height - to_pt.get('Y', 0) - 1
             
             min_x, max_x = min(x1, x2), max(x1, x2)
             min_y, max_y = min(y1, y2), max(y1, y2)
@@ -252,7 +252,7 @@ def apply_actions(img, actions, history_data=None):
             for y in range(min_y, max_y + 1):
                 for x in range(min_x, max_x + 1):
                     if 0 <= x < img.width and 0 <= y < img.height:
-                        img.putpixel((x, y - 1), (0, 0, 0, 0))
+                        img.putpixel((x, y), (0, 0, 0, 0))
 
             pixels_str = meta.get('Pixels', '')
             rect = meta.get('Rect', {})
@@ -271,7 +271,7 @@ def apply_actions(img, actions, history_data=None):
                     #img.alpha_composite(paste_img, (x, img.height - y - paste_img.height))
                     ep = 1 if img.height > 10 else 0
                     ep = 0
-                    img.paste(paste_img, (x, img.height - y - paste_img.height + ep), paste_img)
+                    img.paste(paste_img, (x, img.height - y - paste_img.height), paste_img)
                 except Exception as e:
                     print(f"Error applying Tool 20: {e}")
 
