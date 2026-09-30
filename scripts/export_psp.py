@@ -12,18 +12,36 @@ TOOL_1 = 1
 TOOL_ERASER = 2
 TOOL_FLOODFILL = 3
 TOOL_ERASER_RECT = 6
-TOOL_10 = 10
+TOOL_MOVE_RECT = 10
 TOOL_COLOR_REPLACE = 18
 TOOL_SELECTION_PASTE = 20
 
-def apply_actions(img, actions):
+def apply_actions(img, actions, history_data=None):
     """
     Applies an array of PixelStudio actions to the given PIL Image.
     """
+    if history_data is None:
+        history_data = {}
+
+    snapshot = history_data.get('_snapshot', '')
+    if snapshot:
+        if ',' in snapshot:
+            base64_data = snapshot.split(',', 1)[1]
+        else:
+            base64_data = snapshot
+        
+        try:
+            snapshot_bytes = base64.b64decode(base64_data)
+            paste_img = Image.open(io.BytesIO(snapshot_bytes)).convert("RGBA")
+            #img.alpha_composite(paste_img)
+            img = paste_img
+        except Exception as e:
+            print(f"Error applying Tool 1 snapshot: {e}")
+
     for action in actions:
         #print(action)
         tool = action.get('Tool')
-        #if tool in (TOOL_FLOODFILL, TOOL_COLOR_REPLACE, TOOL_10):
+        #if tool in (TOOL_FLOODFILL, TOOL_COLOR_REPLACE, TOOL_MOVE_RECT):
             #print(action)
         
         if tool == TOOL_ERASER_RECT:
@@ -66,7 +84,7 @@ def apply_actions(img, actions):
                         draw = ImageDraw.Draw(img)
                         draw.polygon(positions, fill=(0, 0, 0, 0))
 
-        elif tool == TOOL_10:
+        elif tool == TOOL_MOVE_RECT:
             # Tool 10: Rectangle Move Operation
             pos_str = action.get('Positions', '')
             meta_str = action.get('Meta', '{}')
@@ -153,8 +171,24 @@ def apply_actions(img, actions):
                     # Paste to destination
                     img.paste(cropped, (dst_min_x, dst_min_y), cropped)
 
+        elif tool == TOOL_1:
+            snapshot = history_data.get('_snapshot', '')
+            if snapshot:
+                if ',' in snapshot:
+                    base64_data = snapshot.split(',', 1)[1]
+                else:
+                    base64_data = snapshot
+                
+                try:
+                    snapshot_bytes = base64.b64decode(base64_data)
+                    paste_img = Image.open(io.BytesIO(snapshot_bytes)).convert("RGBA")
+                    #img.alpha_composite(paste_img)
+                    #img = paste_img
+                except Exception as e:
+                    print(f"Error applying Tool 1 snapshot: {e}")
+
         # Tools that may use specific pixel positions and colors
-        elif tool in (TOOL_BRUSH, TOOL_ERASER, TOOL_1, TOOL_FLOODFILL, TOOL_COLOR_REPLACE):
+        elif tool in (TOOL_BRUSH, TOOL_ERASER, TOOL_FLOODFILL, TOOL_COLOR_REPLACE):
             pos_str = action.get('Positions', '')
             col_str = action.get('Colors', '')
             
@@ -222,10 +256,12 @@ def apply_actions(img, actions):
 
             pixels_str = meta.get('Pixels', '')
             rect = meta.get('Rect', {})
-            #rect_from = rect.get('To', {})
+            rect_to = rect.get('To', {})
             rect_from = rect.get('From', {})
             x = rect_from.get('X', 0)
             y = rect_from.get('Y', 0)
+            x2 = rect_to.get('X', 0)
+            y2 = rect_to.get('Y', 0)
             
             if pixels_str:
                 try:
@@ -274,7 +310,7 @@ def export_psp(filepath):
             # Apply any actions from history
             actions = history_data.get('Actions', [])
             if actions:
-                img = apply_actions(img, actions)
+                img = apply_actions(img, actions, history_data)
                 
             frames_images.append(img)
         
@@ -304,6 +340,7 @@ if __name__ == '__main__':
         sys.exit(1)
         
     export_psp(sys.argv[1])
+
 
 
 
