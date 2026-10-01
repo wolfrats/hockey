@@ -154,7 +154,10 @@ func handle(_delta: float, curSkater) -> void:
 		if target_skater:
 			target_pos = target_skater.global_position
 			if curSkater.global_position.distance_to(target_pos) < 60:
-				curSkater.do_check()
+				if curSkater.spring.node_b.is_empty() and randf() < 0.3:
+					curSkater.do_grab(true)
+				else:
+					curSkater.do_check()
 				anger = 0.0
 				is_angry = false
 	elif has_puck:
@@ -231,12 +234,18 @@ func handle(_delta: float, curSkater) -> void:
 					if difficulty == 1 and other_team_has_puck and \
 					curSkater.global_position.distance_to(target_pos) < 60:
 						if randf() < 0.05:
-							curSkater.do_check()
+							if curSkater.spring.node_b.is_empty() and randf() < 0.3:
+								curSkater.do_grab(true)
+							else:
+								curSkater.do_check()
 				else:
 					target_pos = get_opponent_to_ram()
 					if difficulty == 1 and curSkater.global_position.distance_to(target_pos) < 60:
 						if randf() < 0.05:
-							curSkater.do_check()
+							if curSkater.spring.node_b.is_empty() and randf() < 0.3:
+								curSkater.do_grab(true)
+							else:
+								curSkater.do_check()
 			3:
 				going_for_puck_timer -= _delta
 				if going_for_puck_timer <= 0:
@@ -251,6 +260,9 @@ func handle(_delta: float, curSkater) -> void:
 					target_pos = puck.global_position if puck else curSkater.global_position
 				else:
 					target_pos = get_preferred_spot(team_has_puck, index, attack_x, defend_x, forward_dir)
+
+	if not curSkater.spring.node_b.is_empty() and randf() < 0.02:
+		curSkater.release_grab()
 
 	var dist = curSkater.global_position.distance_to(target_pos)
 	if dist > 10:

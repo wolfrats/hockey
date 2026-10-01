@@ -126,6 +126,8 @@ func do_check() -> void:
 		for s in checkable_targets:
 			if s != self and global_position.distance_to(s.global_position) < 80:
 				var dmg = statbook.check_damage * randf_range(0.8, 1.2)
+				if spring and spring.node_b == s.get_path():
+					dmg *= 1.5
 				if s.has_method("take_damage"):
 					s.take_damage(dmg)
 				if "spring" in s and s.spring:
@@ -191,6 +193,8 @@ func do_grab(is_just_pressed: bool = true) -> void:
 func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
 	if knocked_over > Globals.ticks or anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return
+	if not spring.node_b.is_empty() and randf() < 0.3333:
+		release_grab()
 	health -= damage
 	if damage_tween and damage_tween.is_valid():
 		damage_tween.kill()
