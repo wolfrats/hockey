@@ -161,6 +161,7 @@ func handle(_delta: float, curSkater) -> void:
 				anger = 0.0
 				is_angry = false
 	elif has_puck:
+		var target_distance = 500 if difficulty == 1 else 300
 		if is_charging:
 			power += charge
 			curSkater.charging = true
@@ -170,7 +171,7 @@ func handle(_delta: float, curSkater) -> void:
 				power = 0
 				is_charging = false
 				curSkater.charging = false
-		elif abs(curSkater.global_position.x - attack_x) < 300:
+		elif abs(curSkater.global_position.x - attack_x) < target_distance:
 			if randf() > 0.05 and index != 0:
 				var target_y = 509.0
 				var manager = curSkater.get_parent().get_parent()
@@ -189,9 +190,9 @@ func handle(_delta: float, curSkater) -> void:
 					var bottom_gap = bottom_post - goalie_y
 
 					if top_gap > bottom_gap:
-						target_y = top_post + (top_gap / 2.0)
+						target_y = top_post + (top_gap / 4.0)
 					else:
-						target_y = bottom_post - (bottom_gap / 2.0)
+						target_y = bottom_post - (bottom_gap / 4.0)
 
 				shot_aim_dir = Vector2(attack_x - curSkater.global_position.x, target_y - curSkater.global_position.y).normalized()
 				target_power = 1.0
