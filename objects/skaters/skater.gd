@@ -164,6 +164,7 @@ func release_grab() -> void:
 	holding = 0
 
 func do_grab(is_just_pressed: bool = true) -> void:
+	holding = 1
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return
 	if not spring.node_b.is_empty():
@@ -383,7 +384,7 @@ func _physics_process(delta: float) -> void:
 			started_charge = Globals.ticks
 		anim_name = "Shoot Left"
 		frame = min(int((Globals.ticks - started_charge) / 4.0), 2)
-	elif not spring.node_b.is_empty():
+	elif not spring.node_b.is_empty() or holding > 0:
 		z_index = 0
 		if faceoff_shake > 0:
 			$Sprite.position = Vector2(randf_range(-3.0, 3.0), randf_range(-3.0, 3.0))
