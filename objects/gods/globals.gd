@@ -51,7 +51,6 @@ func generate_referee_textures() -> void:
 		if tex:
 			referee_textures[s] = swap_colors_in_texture_referee(tex)
 
-
 func _ready() -> void:
 	for s in get_node("Sounds").get_children():
 		sounds[s.name] = s
@@ -100,7 +99,7 @@ func get_closest_node(from_position: Vector2, group_name: String) -> Node2D:
 	return closest_node
 
 func swap_colors_in_texture_referee(tex: Texture2D) -> ImageTexture:
-	var img: Image = tex.get_image()
+	var img: Image = tex.get_image().duplicate()
 	for x in range(img.get_width()):
 		for y in range(img.get_height()):
 			var current_color = img.get_pixel(x, y)
@@ -124,7 +123,7 @@ func swap_colors_in_texture_multi(tex: Texture2D, head: Color, body: Color, foot
 	)
 func swap_color_in_texture(tex: Texture2D, from_col: Color, to_col: Color) -> ImageTexture:
 	# Convert Texture2D to an Image you can edit
-	var img: Image = tex.get_image()
+	var img: Image = tex.get_image().duplicate()
 	#img.lock() # Required for fast pixel manipulation in some contexts
 	 # Loop through every pixel coordinates (x, y)
 	for x in range(img.get_width()):

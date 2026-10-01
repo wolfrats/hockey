@@ -110,12 +110,9 @@ func _physics_process(delta: float) -> void:
 		if (linear_velocity.y < 0):
 			anim_name = "Skate Up"
 
-	if not Globals.home_textures.has(anim_name):
+	if not Globals.referee_textures.has(anim_name):
 		return
 
-	# Wait, we need a referee texture... we can use a dynamically generated one or just swap it on the fly
-	# If we just use home_textures for now, they won't be black/white.
-	# We should generate referee_textures in globals
 	sprite.texture = Globals.referee_textures[anim_name]
 
 	var spacing = 192

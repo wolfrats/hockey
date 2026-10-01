@@ -64,7 +64,7 @@ func _ready() -> void:
 		$Sprite.scale.y = 1.1
 	if stats == Stats.ClassTypes.HEAVY:
 		$Sprite.scale.x = 1.2
-		$Sprite.scale.y = 1.1
+		#$Sprite.scale.y = 1.1
 	if not Globals.manager.is_practice:
 		ai = preload("res://objects/skaters/ai.tscn").instantiate()
 		add_child(ai)
@@ -445,7 +445,7 @@ func _physics_process(delta: float) -> void:
 		if Globals.home_textures[skater_size].has(anim_name):
 			$Sprite.texture = Globals.home_textures[skater_size][anim_name]
 	else:
-		if Globals.away_textures.has(anim_name):
+		if Globals.away_textures[skater_size].has(anim_name):
 			$Sprite.texture = Globals.away_textures[skater_size][anim_name]
 
 	var spacing = 192
