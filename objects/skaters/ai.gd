@@ -33,7 +33,7 @@ func _physics_process(_delta: float) -> void:
 func is_delegated_chaser() -> bool:
 	if not puck:
 		return false
-	var nodes = get_tree().get_nodes_in_group("skaters")
+	var nodes = skater.get_tree().get_nodes_in_group("skaters")
 	var closest_teammate = null
 	var min_distance: float = INF
 	for node in nodes:
@@ -47,7 +47,7 @@ func is_delegated_chaser() -> bool:
 	return closest_teammate == skater
 
 func get_most_forward_teammate() -> Node2D:
-	var nodes = get_tree().get_nodes_in_group("skaters")
+	var nodes = skater.get_tree().get_nodes_in_group("skaters")
 	var forward_teammate = null
 	var max_forward: float = -INF
 	var forward_dir = 1.0 if skater.home_team else -1.0
@@ -60,7 +60,7 @@ func get_most_forward_teammate() -> Node2D:
 	return forward_teammate
 
 func get_opponent_to_ram() -> Vector2:
-	var nodes = get_tree().get_nodes_in_group("skaters")
+	var nodes = skater.get_tree().get_nodes_in_group("skaters")
 	var opponents = []
 	for node in nodes:
 		if node is Skater and node.home_team != skater.home_team:
@@ -142,7 +142,7 @@ func handle(_delta: float, curSkater) -> void:
 			other_team_has_puck = true
 
 	if is_angry:
-		var all_skaters = get_tree().get_nodes_in_group("skaters")
+		var all_skaters = curSkater.get_tree().get_nodes_in_group("skaters")
 		var target_skater = null
 		var min_dist = INF
 		for s in all_skaters:
@@ -267,6 +267,43 @@ func handle(_delta: float, curSkater) -> void:
 	var dist = curSkater.global_position.distance_to(target_pos)
 	if dist > 10:
 		var dir = (target_pos - curSkater.global_position).normalized()
+
+		if difficulty == 1:
+			var avoidance = Vector2.ZERO
+			var obstacles = []
+
+			obstacles.append({"pos": Vector2(301, 509), "radius": 120.0})
+			obstacles.append({"pos": Vector2(1710, 509), "radius": 120.0})
+
+			var all_skaters = curSkater.get_tree().get_nodes_in_group("skaters")
+			for s in all_skaters:
+				if s != curSkater and s.is_inside_tree():
+					if target_pos.distance_to(s.global_position) > 40:
+						obstacles.append({"pos": s.global_position, "radius": 80.0})
+
+			var manager = curSkater.get_parent().get_parent()
+			if manager:
+				for child in manager.get_children():
+					if child is Goalie and child.is_inside_tree():
+						if target_pos.distance_to(child.global_position) > 40:
+							obstacles.append({"pos": child.global_position, "radius": 80.0})
+
+			for obs in obstacles:
+				var d = curSkater.global_position.distance_to(obs.pos)
+				if d < obs.radius and d > 0.0:
+					var to_obs = (obs.pos - curSkater.global_position).normalized()
+					if dir.dot(to_obs) > 0.3:
+						var repulse = -to_obs
+						var tangent = Vector2(-to_obs.y, to_obs.x)
+						if dir.dot(tangent) < 0:
+							tangent = -tangent
+
+						var weight = 1.0 - (d / obs.radius)
+						avoidance += (repulse * 0.5 + tangent * 1.5) * weight
+
+			if avoidance != Vector2.ZERO:
+				dir = (dir + avoidance).normalized()
+
 		dx = dir.x
 		dy = dir.y
 	else:
