@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dy1ylgi0csn1m"
-path="res://.godot/imported/Grab Left.png-93862867e4beb4cc9cbc15f621e63472.ctex"
+path="res://.godot/imported/Grab Left.png-dc573fcca6596ae616b0e9f301b07930.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/heavy/Grab Left.png"
-dest_files=["res://.godot/imported/Grab Left.png-93862867e4beb4cc9cbc15f621e63472.ctex"]
+source_file="res://sprites/medium/Grab Left.png"
+dest_files=["res://.godot/imported/Grab Left.png-dc573fcca6596ae616b0e9f301b07930.ctex"]
 
 [params]
 
