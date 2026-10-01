@@ -5,9 +5,9 @@ extends Control
 
 func _ready() -> void:
 	$CenterContainer/VBoxContainer/Buttons/Rematch.grab_focus()
-	
+
 	score_label.text = "%d - %d" % [Globals.match_home_score, Globals.match_away_score]
-	
+
 	var all_players = []
 	for p in Globals.scorer_stats.keys():
 		if not all_players.has(p):
@@ -15,7 +15,13 @@ func _ready() -> void:
 	for p in Globals.assist_stats.keys():
 		if not all_players.has(p):
 			all_players.append(p)
-			
+	for p in Globals.faceoff_won_stats.keys():
+		if not all_players.has(p):
+			all_players.append(p)
+	for p in Globals.penalty_stats.keys():
+		if not all_players.has(p):
+			all_players.append(p)
+
 	if all_players.size() == 0:
 		var empty_label = Label.new()
 		empty_label.text = "No stats recorded."
@@ -29,7 +35,13 @@ func _ready() -> void:
 			var a = 0
 			if Globals.assist_stats.has(p):
 				a = Globals.assist_stats[p]
-			
+			var f = 0
+			if Globals.faceoff_won_stats.has(p):
+				f = Globals.faceoff_won_stats[p]
+			var pen = 0
+			if Globals.penalty_stats.has(p):
+				pen = Globals.penalty_stats[p]
+
 			var display_name = p
 			if display_name == "Player":
 				display_name = "Player 1"
@@ -39,13 +51,18 @@ func _ready() -> void:
 			var stat_label = RichTextLabel.new()
 			stat_label.fit_content = true
 			stat_label.bbcode_enabled = true
-			stat_label.text = "[color=#%s]%s[/color]: %d Goals, %d Assists" % [display_color_code, display_name, g, a]
+			stat_label.text = (
+				"[color=#%s]%s[/color]: %d Goals, %d Assists, %d Faceoffs Won, %d Penalties" %
+				[display_color_code, display_name, g, a, f, pen]
+			)
 			stat_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			stats_container.add_child(stat_label)
 
 func _on_rematch_pressed() -> void:
 	Globals.scorer_stats.clear()
 	Globals.assist_stats.clear()
+	Globals.faceoff_won_stats.clear()
+	Globals.penalty_stats.clear()
 	Globals.match_home_score = 0
 	Globals.match_away_score = 0
 	get_tree().change_scene_to_file("res://objects/environment/match_rink.tscn")
@@ -53,6 +70,8 @@ func _on_rematch_pressed() -> void:
 func _on_menu_pressed() -> void:
 	Globals.scorer_stats.clear()
 	Globals.assist_stats.clear()
+	Globals.faceoff_won_stats.clear()
+	Globals.penalty_stats.clear()
 	Globals.match_home_score = 0
 	Globals.match_away_score = 0
 	get_tree().change_scene_to_file("res://menu/main_menu.tscn")
