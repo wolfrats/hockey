@@ -41,6 +41,8 @@ func _ready() -> void:
 		setup_ui()
 		Globals.scorer_stats.clear()
 		Globals.assist_stats.clear()
+		Globals.faceoff_won_stats.clear()
+		Globals.penalty_stats.clear()
 
 func setup_multiplayer() -> void:
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
@@ -230,12 +232,12 @@ func goal_scored(goal_name: String, scorer: String = "", assister: String = "") 
 	elif goal_name == "AwayGoal":
 		home_score += 1
 		Globals.play_sound_at("GoalHome", global_position)
-		
+
 	if scorer != "":
 		if not Globals.scorer_stats.has(scorer):
 			Globals.scorer_stats[scorer] = 0
 		Globals.scorer_stats[scorer] += 1
-		
+
 	if assister != "":
 		if not Globals.assist_stats.has(assister):
 			Globals.assist_stats[assister] = 0

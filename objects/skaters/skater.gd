@@ -79,6 +79,13 @@ func home() -> void:
 		spring.node_b = NodePath("")
 
 func penalty(duration: float) -> void:
+	var current_name = "Home AI" if home_team else "Away AI"
+	if ghost:
+		current_name = ghost.name
+	if not Globals.penalty_stats.has(current_name):
+		Globals.penalty_stats[current_name] = 0
+	Globals.penalty_stats[current_name] += 1
+
 	penalty_time = duration
 	anim_state = "entering_penalty"
 	checking = 0
@@ -320,6 +327,13 @@ func _physics_process(delta: float) -> void:
 					var p = pucks[0]
 					if not p.freeze:
 						# Won the face-off
+						var current_name = "Home AI" if home_team else "Away AI"
+						if ghost:
+							current_name = ghost.name
+						if not Globals.faceoff_won_stats.has(current_name):
+							Globals.faceoff_won_stats[current_name] = 0
+						Globals.faceoff_won_stats[current_name] += 1
+
 						var backward_dir = Vector2(-1, randf_range(-0.5, 0.5)) if home_team else Vector2(1, randf_range(-0.5, 0.5))
 						var shoot_dir = backward_dir.normalized()
 						# Temporarily act like we have puck to shoot it

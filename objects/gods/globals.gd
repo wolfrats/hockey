@@ -23,6 +23,8 @@ var player_colors_map = {}
 
 var scorer_stats: Dictionary = {}
 var assist_stats: Dictionary = {}
+var faceoff_won_stats: Dictionary = {}
+var penalty_stats: Dictionary = {}
 var match_home_score: int = 0
 var match_away_score: int = 0
 
