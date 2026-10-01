@@ -102,12 +102,18 @@ func handle(_delta: float, curSkater) -> void:
 		team_strategies[skater.home_team] = randi_range(1, 4)
 		next_strategy_switch[skater.home_team] = Globals.ticks + randi_range(600, 1200)
 
+	var difficulty = Globals.home_ai_difficulty if skater.home_team else Globals.away_ai_difficulty
 	var current_strategy = team_strategies[skater.home_team]
+
+	if difficulty == 1:
+		current_strategy = 2
+
 	if last_health == 0.0:
 		last_health = curSkater.health
 
 	if curSkater.health < last_health:
-		anger += (last_health - curSkater.health) * 3.0
+		var anger_mult = 10.0 if difficulty == 1 else 3.0
+		anger += (last_health - curSkater.health) * anger_mult
 	last_health = curSkater.health
 
 	anger = max(0.0, anger - _delta * 10.0)
@@ -156,7 +162,8 @@ func handle(_delta: float, curSkater) -> void:
 			power += charge
 			curSkater.charging = true
 			if power >= target_power:
-				curSkater.shoot(shot_aim_dir, power)
+				var inaccuracy = 0.0 if difficulty == 1 else 1.0
+				curSkater.shoot(shot_aim_dir, power, inaccuracy)
 				power = 0
 				is_charging = false
 				curSkater.charging = false
@@ -221,8 +228,15 @@ func handle(_delta: float, curSkater) -> void:
 			2:
 				if is_delegated_chaser():
 					target_pos = puck.global_position if puck else curSkater.global_position
+					if difficulty == 1 and other_team_has_puck and \
+					curSkater.global_position.distance_to(target_pos) < 60:
+						if randf() < 0.05:
+							curSkater.do_check()
 				else:
 					target_pos = get_opponent_to_ram()
+					if difficulty == 1 and curSkater.global_position.distance_to(target_pos) < 60:
+						if randf() < 0.05:
+							curSkater.do_check()
 			3:
 				going_for_puck_timer -= _delta
 				if going_for_puck_timer <= 0:
