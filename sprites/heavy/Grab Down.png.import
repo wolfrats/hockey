@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dhrgscac2hsxo"
-path="res://.godot/imported/Grab Down.png-ee7b1f5425ccc83742b3f390b1b2f9a1.ctex"
+path="res://.godot/imported/Grab Down.png-192ff0f0b7f3d4ac44473ae74d8f48e8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/medium/Grab Down.png"
-dest_files=["res://.godot/imported/Grab Down.png-ee7b1f5425ccc83742b3f390b1b2f9a1.ctex"]
+source_file="res://sprites/heavy/Grab Down.png"
+dest_files=["res://.godot/imported/Grab Down.png-192ff0f0b7f3d4ac44473ae74d8f48e8.ctex"]
 
 [params]
 

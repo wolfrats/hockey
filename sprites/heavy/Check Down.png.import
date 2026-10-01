@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cqgl6wnfdk41f"
-path="res://.godot/imported/Check Down.png-d5c4f4bf97766e3aa37131242f52f271.ctex"
+path="res://.godot/imported/Check Down.png-16726af76168f85e4e3681ca2149ef6f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/medium/Check Down.png"
-dest_files=["res://.godot/imported/Check Down.png-d5c4f4bf97766e3aa37131242f52f271.ctex"]
+source_file="res://sprites/heavy/Check Down.png"
+dest_files=["res://.godot/imported/Check Down.png-16726af76168f85e4e3681ca2149ef6f.ctex"]
 
 [params]
 
