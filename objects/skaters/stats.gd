@@ -134,6 +134,22 @@ const TEAMS = [
 		"away_foot_color": Color(0.2, 0.7, 0.8),
 	},
 	{
+		"name": "Shapes",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.2, 0.2, 0.2),
+		"body_color": Color(.2, .6, .2),
+		"foot_color": Color(0.2, 0.2, 0.2),
+		"away_head_color": Color(0.2, 0.6, 0.2),
+		"away_body_color": Color(1, 1, 1),
+		"away_foot_color": Color(0.2, 0.6, 0.2),
+	},
+	{
 		"name": "Pinkertons",
 		"composition": [
 			ClassTypes.HEAVY,
