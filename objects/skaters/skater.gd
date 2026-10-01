@@ -74,12 +74,16 @@ func home() -> void:
 	self.puck = null
 	health = statbook.max_health
 	penalty_time = 0.0
+	holding = 0
+	if not spring.node_b.is_empty():
+		spring.node_b = NodePath("")
 
 func penalty(duration: float) -> void:
 	penalty_time = duration
 	anim_state = "entering_penalty"
 	checking = 0
 	charging = false
+	holding = 0
 	if puck:
 		puck.shoot(name, Vector2.ZERO)
 	if not spring.node_b.is_empty():
@@ -168,6 +172,7 @@ func release_grab() -> void:
 func do_grab(is_just_pressed: bool = true) -> void:
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return
+	holding = 1
 	if not spring.node_b.is_empty():
 		return
 	if is_just_pressed and checking <= Globals.ticks and knocked_over <= Globals.ticks:
@@ -387,7 +392,7 @@ func _physics_process(delta: float) -> void:
 			started_charge = Globals.ticks
 		anim_name = "Shoot Left"
 		frame = min(int((Globals.ticks - started_charge) / 4.0), 2)
-	elif not spring.node_b.is_empty():
+	elif holding > 0 or not spring.node_b.is_empty():
 		z_index = 0
 		if faceoff_shake > 0:
 			$Sprite.position = Vector2(randf_range(-3.0, 3.0), randf_range(-3.0, 3.0))
