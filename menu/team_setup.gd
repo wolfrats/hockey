@@ -19,6 +19,8 @@ var away_idx: int = 1
 @onready var away_difficulty_label = %AwayDifficultyLabel
 
 func _ready() -> void:
+	home_idx = Globals.home_team_index
+	away_idx = Globals.away_team_index
 	%GoalieControl.button_pressed = Globals.allow_goalie_control
 	home_difficulty.value = Globals.home_ai_difficulty
 	away_difficulty.value = Globals.away_ai_difficulty
