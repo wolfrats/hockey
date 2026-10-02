@@ -15,6 +15,9 @@ func _ready() -> void:
 	for p in Globals.assist_stats.keys():
 		if not all_players.has(p):
 			all_players.append(p)
+	for p in Globals.shot_stats.keys():
+		if not all_players.has(p):
+			all_players.append(p)
 	for p in Globals.faceoff_won_stats.keys():
 		if not all_players.has(p):
 			all_players.append(p)
@@ -44,6 +47,9 @@ func _ready() -> void:
 			var a = 0
 			if Globals.assist_stats.has(p):
 				a = Globals.assist_stats[p]
+			var s = 0
+			if Globals.shot_stats.has(p):
+				s = Globals.shot_stats[p]
 			var f = 0
 			if Globals.faceoff_won_stats.has(p):
 				f = Globals.faceoff_won_stats[p]
@@ -70,8 +76,8 @@ func _ready() -> void:
 			stat_label.fit_content = true
 			stat_label.bbcode_enabled = true
 			stat_label.text = (
-				"[color=#%s]%s[/color]: %d Goals, %d Assists, %d Faceoffs Won, " %
-				[display_color_code, display_name, g, a, f] +
+				"[color=#%s]%s[/color]: %d Goals, %d Assists, %d Shots, %d Faceoffs Won, " %
+				[display_color_code, display_name, g, a, s, f] +
 				"%d Penalties, %d Checks, %d Hits, %d Downs" %
 				[pen, checks, hits, downs]
 			)
@@ -81,6 +87,7 @@ func _ready() -> void:
 func _on_rematch_pressed() -> void:
 	Globals.scorer_stats.clear()
 	Globals.assist_stats.clear()
+	Globals.shot_stats.clear()
 	Globals.faceoff_won_stats.clear()
 	Globals.penalty_stats.clear()
 	Globals.check_stats.clear()
@@ -93,6 +100,7 @@ func _on_rematch_pressed() -> void:
 func _on_menu_pressed() -> void:
 	Globals.scorer_stats.clear()
 	Globals.assist_stats.clear()
+	Globals.shot_stats.clear()
 	Globals.faceoff_won_stats.clear()
 	Globals.penalty_stats.clear()
 	Globals.check_stats.clear()
