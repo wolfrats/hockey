@@ -45,13 +45,13 @@ func _physics_process(_delta: float) -> void:
 		home()
 	_update_pointer()
 
-	if posessor:
-		# Manual check for stealing when frozen
-		for skater in get_tree().get_nodes_in_group("skaters"):
-			if skater != posessor and (not blocklist.has(skater.name)) and colidable and not skater.puck:
-				if skater.global_position.distance_to(global_position) < 40.0:
-					assign_possessor(skater)
-					break # Only one stealer per frame
+	#if posessor:
+		## Manual check for stealing when frozen
+		#for skater in get_tree().get_nodes_in_group("skaters"):
+			#if skater != posessor and (not blocklist.has(skater.name)) and colidable and not skater.puck:
+				#if skater.global_position.distance_to(global_position) < 40.0:
+					#assign_possessor(skater)
+					#break # Only one stealer per frame
 
 	for body in get_colliding_bodies():
 		if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck:
