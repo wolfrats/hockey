@@ -97,6 +97,13 @@ func assign_possessor(body: Skater) -> void:
 		last_possessor = current_name
 		possessor_team = posessor.home_team
 
+func do_shoot(vector):
+	freeze = false
+	apply_impulse(vector)
+	var new_transform = get_transform() 
+	new_transform.origin = global_position
+	set_transform(new_transform)
+
 func shoot(shooter, vector) -> bool:
 	if not posessor or shooter != posessor.name:
 		return false
@@ -107,11 +114,7 @@ func shoot(shooter, vector) -> bool:
 	#get_tree().create_timer(1.0/60.0).timeout.connect(_enable_collision)
 	#set_collision_mask_value(4, false)
 	set_deferred("freeze", false)
-	freeze = false
-	apply_impulse(vector)
-	var new_transform = get_transform() 
-	new_transform.origin = global_position
-	set_transform(new_transform)
+	call_deferred("do_shoot", vector)
 	return true
 
 func _enable_collision() -> void:
