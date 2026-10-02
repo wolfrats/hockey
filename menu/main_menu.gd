@@ -66,11 +66,11 @@ func _ready() -> void:
 
 	Back.position = Vector2(20, 20)
 	Back.scale = Vector2.ONE*(128.0/320.0)
-	%JoystickToggle.button_pressed = Globals.has_node("Holder")
+	%JoystickToggle.set_pressed_no_signal(Globals.use_onscreen_controls)
 	$CenterContainer/VBoxContainer/Practice.grab_focus()
 	if not Globals.menu_opened:
 		Globals.menu_opened = true
-		if DisplayServer.is_touchscreen_available():
+		if Globals.use_onscreen_controls:
 			_on_joystick_toggled(true)
 
 
@@ -101,3 +101,5 @@ func _on_joystick_toggled(toggled_on: bool) -> void:
 			Globals.remove_child(Globals.get_node("BackHolder"))
 		if Globals.has_node("Joy"):
 			Globals.remove_child(Globals.get_node("Joy"))
+	Globals.use_onscreen_controls = toggled_on
+	Globals.save_settings()

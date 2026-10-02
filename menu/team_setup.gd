@@ -82,6 +82,7 @@ func _on_play_pressed() -> void:
 	Globals.away_team_index = away_idx
 	Globals.home_ai_difficulty = int(home_difficulty.value)
 	Globals.away_ai_difficulty = int(away_difficulty.value)
+	Globals.save_settings()
 	Globals.update_team_textures()
 	get_tree().change_scene_to_file("res://objects/environment/match_rink.tscn")
 
