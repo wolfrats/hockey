@@ -140,7 +140,21 @@ func _physics_process(delta: float) -> void:
 			apply_impulse(Vector2.LEFT * diffx)
 		var puck_node = Globals.get_closest_node(global_position, "pucks")
 		if puck_node:
-			var diffy = global_position.y - clamp(puck_node.global_position.y + OFFSET, min_y, max_y)
+			var target_y = clamp(puck_node.global_position.y + OFFSET, min_y, max_y)
+			var difficulty = Globals.home_ai_difficulty if home_team else Globals.away_ai_difficulty
+			if difficulty == 1 and puck_node.posessor and puck_node.posessor.charging:
+				var shooter = puck_node.posessor
+				var aim_dir = Vector2.ZERO
+				if shooter.ghost and "shotDir" in shooter.ghost:
+					aim_dir = shooter.ghost.shotDir.normalized()
+				elif shooter.ai and "shot_aim_dir" in shooter.ai:
+					aim_dir = shooter.ai.shot_aim_dir.normalized()
+				if aim_dir.length_squared() > 0 and aim_dir.x != 0:
+					var dist_x = home_x - shooter.global_position.x
+					if (dist_x > 0 and aim_dir.x > 0) or (dist_x < 0 and aim_dir.x < 0):
+						var t = dist_x / aim_dir.x
+						target_y = clamp(shooter.global_position.y + aim_dir.y * t + OFFSET, min_y, max_y)
+			var diffy = global_position.y - target_y
 			if abs(diffy) > 4:
 				apply_impulse(Vector2.UP * diffy)
 	#counter += 1
