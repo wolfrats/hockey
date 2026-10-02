@@ -69,6 +69,12 @@ func _ready() -> void:
 		ai = preload("res://objects/skaters/ai.tscn").instantiate()
 		add_child(ai)
 
+func get_player_name() -> String:
+	var current_name = "Home AI" if home_team else "Away AI"
+	if ghost:
+		current_name = ghost.name
+	return current_name
+
 func home() -> void:
 	needs_reset = true
 	self.puck = null
@@ -79,9 +85,7 @@ func home() -> void:
 		spring.node_b = NodePath("")
 
 func penalty(duration: float) -> void:
-	var current_name = "Home AI" if home_team else "Away AI"
-	if ghost:
-		current_name = ghost.name
+	var current_name = get_player_name()
 	if not Globals.penalty_stats.has(current_name):
 		Globals.penalty_stats[current_name] = 0
 	Globals.penalty_stats[current_name] += 1
@@ -104,6 +108,11 @@ func do_check() -> void:
 		return
 	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
 		checking = Globals.ticks + 20
+
+		var current_name = get_player_name()
+		if not Globals.check_stats.has(current_name):
+			Globals.check_stats[current_name] = 0
+		Globals.check_stats[current_name] += 1
 
 		# Find nearest opposing skater or referee
 		var nearest_skater: Node2D = null
@@ -139,10 +148,21 @@ func do_check() -> void:
 				var dmg = statbook.check_damage * randf_range(0.8, 1.2)
 				if spring and spring.node_b == s.get_path():
 					dmg *= 1.5
+				var target_downed_before = ("knocked_over" in s and s.knocked_over > Globals.ticks)
 				if s.has_method("take_damage"):
 					s.take_damage(dmg)
 				if "spring" in s and s.spring:
 					s.spring.node_b = NodePath("")
+
+				var current_name = get_player_name()
+				if not Globals.hit_stats.has(current_name):
+					Globals.hit_stats[current_name] = 0
+				Globals.hit_stats[current_name] += 1
+
+				if not target_downed_before and "knocked_over" in s and s.knocked_over > Globals.ticks:
+					if not Globals.down_stats.has(current_name):
+						Globals.down_stats[current_name] = 0
+					Globals.down_stats[current_name] += 1
 
 				# Knockback target
 				var knockback_dir = (s.global_position - global_position).normalized()
@@ -327,9 +347,7 @@ func _physics_process(delta: float) -> void:
 					var p = pucks[0]
 					if not p.freeze:
 						# Won the face-off
-						var current_name = "Home AI" if home_team else "Away AI"
-						if ghost:
-							current_name = ghost.name
+						var current_name = get_player_name()
 						if not Globals.faceoff_won_stats.has(current_name):
 							Globals.faceoff_won_stats[current_name] = 0
 						Globals.faceoff_won_stats[current_name] += 1
@@ -571,8 +589,19 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		if impulse_strength > 150.0:
 			rammed = true
 			if "statbook" in collider and collider.statbook:
-				take_damage(collider.statbook.check_damage * randf_range(0.8, 1.2) * 0.5) # Take half check damage when rammed hard by someone
+				var target_downed_before = knocked_over > Globals.ticks
+				# Take half check damage when rammed hard by someone
+				take_damage(collider.statbook.check_damage * randf_range(0.8, 1.2) * 0.5)
 				Globals.play_sound_at("Bump", global_position)
+				if collider.has_method("get_player_name"):
+					var collider_name = collider.get_player_name()
+					if not Globals.hit_stats.has(collider_name):
+						Globals.hit_stats[collider_name] = 0
+					Globals.hit_stats[collider_name] += 1
+					if not target_downed_before and knocked_over > Globals.ticks:
+						if not Globals.down_stats.has(collider_name):
+							Globals.down_stats[collider_name] = 0
+						Globals.down_stats[collider_name] += 1
 			else:
 				take_damage(10)
 				Globals.play_sound_at("Board", global_position)

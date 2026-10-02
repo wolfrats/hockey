@@ -43,6 +43,9 @@ func _ready() -> void:
 		Globals.assist_stats.clear()
 		Globals.faceoff_won_stats.clear()
 		Globals.penalty_stats.clear()
+		Globals.check_stats.clear()
+		Globals.hit_stats.clear()
+		Globals.down_stats.clear()
 
 func setup_multiplayer() -> void:
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)

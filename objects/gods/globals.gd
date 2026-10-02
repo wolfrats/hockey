@@ -25,6 +25,9 @@ var scorer_stats: Dictionary = {}
 var assist_stats: Dictionary = {}
 var faceoff_won_stats: Dictionary = {}
 var penalty_stats: Dictionary = {}
+var check_stats: Dictionary = {}
+var hit_stats: Dictionary = {}
+var down_stats: Dictionary = {}
 var match_home_score: int = 0
 var match_away_score: int = 0
 
