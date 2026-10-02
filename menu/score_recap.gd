@@ -21,6 +21,15 @@ func _ready() -> void:
 	for p in Globals.penalty_stats.keys():
 		if not all_players.has(p):
 			all_players.append(p)
+	for p in Globals.check_stats.keys():
+		if not all_players.has(p):
+			all_players.append(p)
+	for p in Globals.hit_stats.keys():
+		if not all_players.has(p):
+			all_players.append(p)
+	for p in Globals.down_stats.keys():
+		if not all_players.has(p):
+			all_players.append(p)
 
 	if all_players.size() == 0:
 		var empty_label = Label.new()
@@ -41,6 +50,15 @@ func _ready() -> void:
 			var pen = 0
 			if Globals.penalty_stats.has(p):
 				pen = Globals.penalty_stats[p]
+			var checks = 0
+			if Globals.check_stats.has(p):
+				checks = Globals.check_stats[p]
+			var hits = 0
+			if Globals.hit_stats.has(p):
+				hits = Globals.hit_stats[p]
+			var downs = 0
+			if Globals.down_stats.has(p):
+				downs = Globals.down_stats[p]
 
 			var display_name = p
 			if display_name == "Player":
@@ -52,8 +70,10 @@ func _ready() -> void:
 			stat_label.fit_content = true
 			stat_label.bbcode_enabled = true
 			stat_label.text = (
-				"[color=#%s]%s[/color]: %d Goals, %d Assists, %d Faceoffs Won, %d Penalties" %
-				[display_color_code, display_name, g, a, f, pen]
+				"[color=#%s]%s[/color]: %d Goals, %d Assists, %d Faceoffs Won, " %
+				[display_color_code, display_name, g, a, f] +
+				"%d Penalties, %d Checks, %d Hits, %d Downs" %
+				[pen, checks, hits, downs]
 			)
 			stat_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			stats_container.add_child(stat_label)
@@ -63,6 +83,9 @@ func _on_rematch_pressed() -> void:
 	Globals.assist_stats.clear()
 	Globals.faceoff_won_stats.clear()
 	Globals.penalty_stats.clear()
+	Globals.check_stats.clear()
+	Globals.hit_stats.clear()
+	Globals.down_stats.clear()
 	Globals.match_home_score = 0
 	Globals.match_away_score = 0
 	get_tree().change_scene_to_file("res://objects/environment/match_rink.tscn")
@@ -72,6 +95,9 @@ func _on_menu_pressed() -> void:
 	Globals.assist_stats.clear()
 	Globals.faceoff_won_stats.clear()
 	Globals.penalty_stats.clear()
+	Globals.check_stats.clear()
+	Globals.hit_stats.clear()
+	Globals.down_stats.clear()
 	Globals.match_home_score = 0
 	Globals.match_away_score = 0
 	get_tree().change_scene_to_file("res://menu/main_menu.tscn")
