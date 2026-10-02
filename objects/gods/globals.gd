@@ -37,7 +37,11 @@ var sounds: Dictionary[String, AudioStreamPlayer2D] = {}
 var menu_opened: bool = false
 var manager: Node2D = null
 
+var save_path = "user://settings.cfg"
+var use_onscreen_controls: bool = DisplayServer.is_touchscreen_available()
+
 func _init() -> void:
+	load_settings()
 	update_team_textures()
 	generate_referee_textures()
 	for x in range(0, len(player_colors)):
@@ -147,3 +151,20 @@ func play_sound_at(sound: String, place: Vector2) -> void:
 	sounds[sound].global_position = place
 	sounds[sound].pitch_scale = randf_range(0.9, 1.1)
 	sounds[sound].play()
+
+func load_settings() -> void:
+	var config = ConfigFile.new()
+	var err = config.load(save_path)
+	if err == OK:
+		use_onscreen_controls = config.get_value(
+			"Settings", "use_onscreen_controls", DisplayServer.is_touchscreen_available()
+		)
+		home_team_index = config.get_value("Settings", "home_team_index", 0)
+		away_team_index = config.get_value("Settings", "away_team_index", 1)
+
+func save_settings() -> void:
+	var config = ConfigFile.new()
+	config.set_value("Settings", "use_onscreen_controls", use_onscreen_controls)
+	config.set_value("Settings", "home_team_index", home_team_index)
+	config.set_value("Settings", "away_team_index", away_team_index)
+	config.save(save_path)
