@@ -18,9 +18,18 @@ var away_idx: int = 1
 @onready var away_difficulty = %AwayDifficulty
 @onready var away_difficulty_label = %AwayDifficultyLabel
 
+const TIME_MAP = 	[
+	["30s", 30],
+	["1 min", 60],
+	["2 min", 120],
+	["3 min", 180],
+	["4 min", 240]	
+]
+
 func _ready() -> void:
 	home_idx = Globals.home_team_index
 	away_idx = Globals.away_team_index
+	Globals.period_length = TIME_MAP[2][1]
 	%GoalieControl.button_pressed = Globals.allow_goalie_control
 	home_difficulty.value = Globals.home_ai_difficulty
 	away_difficulty.value = Globals.away_ai_difficulty
@@ -88,3 +97,8 @@ func _on_play_pressed() -> void:
 
 func _on_back_pressed() -> void:
 	get_tree().change_scene_to_file("res://menu/main_menu.tscn")
+
+func _on_time_value_changed(value: float) -> void:
+	var setting = TIME_MAP[int(value)]
+	%TimeLabel.text = "Period Length: " + setting[0]
+	Globals.period_length = setting[1]
