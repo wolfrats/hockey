@@ -216,6 +216,11 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 
 		if collider is Puck:
 			block_timer = 0.5
+			if not collider.shot_on_goal_counted and collider.last_possessor != "":
+				if not Globals.shot_stats.has(collider.last_possessor):
+					Globals.shot_stats[collider.last_possessor] = 0
+				Globals.shot_stats[collider.last_possessor] += 1
+				collider.shot_on_goal_counted = true
 		elif collider is Skater:
 			#if impulse_strength > 10.0:
 			bump_timer = 0.5

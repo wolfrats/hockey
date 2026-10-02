@@ -8,6 +8,7 @@ var block_all: int = 0
 var last_possessor: String = ""
 var assist_possessor: String = ""
 var possessor_team: bool = false
+var shot_on_goal_counted: bool = false
 
 func _ready() -> void:
 	initial_position = global_position
@@ -18,6 +19,7 @@ func home() -> void:
 		self.posessor.puck = null
 	self.posessor = null
 	self.freeze = false
+	shot_on_goal_counted = false
 
 func _process(delta: float) -> void:
 	if posessor:
@@ -115,6 +117,7 @@ func shoot(shooter, vector) -> bool:
 	#set_collision_mask_value(4, false)
 	set_deferred("freeze", false)
 	call_deferred("do_shoot", vector)
+	shot_on_goal_counted = false
 	return true
 
 func _enable_collision() -> void:

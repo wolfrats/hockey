@@ -41,6 +41,7 @@ func _ready() -> void:
 		setup_ui()
 		Globals.scorer_stats.clear()
 		Globals.assist_stats.clear()
+		Globals.shot_stats.clear()
 		Globals.faceoff_won_stats.clear()
 		Globals.penalty_stats.clear()
 		Globals.check_stats.clear()

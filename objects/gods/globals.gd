@@ -23,6 +23,7 @@ var player_colors_map = {}
 
 var scorer_stats: Dictionary = {}
 var assist_stats: Dictionary = {}
+var shot_stats: Dictionary = {}
 var faceoff_won_stats: Dictionary = {}
 var penalty_stats: Dictionary = {}
 var check_stats: Dictionary = {}
