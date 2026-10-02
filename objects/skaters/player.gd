@@ -103,6 +103,7 @@ func _physics_process(_delta: float) -> void:
 			var idx = (current_idx + i) % num_siblings
 			var newskater = siblings[idx]
 			if ("ghost" in newskater) and newskater.ghost == null:
+				skater.release_grab()
 				skater.ghost = null
 				newskater.ghost = self
 				skater = newskater

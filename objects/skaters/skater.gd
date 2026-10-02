@@ -201,8 +201,8 @@ func do_grab(is_just_pressed: bool = true) -> void:
 	holding = 1
 	if not spring.node_b.is_empty():
 		return
-	if is_just_pressed and checking <= Globals.ticks and knocked_over <= Globals.ticks:
-		checking = Globals.ticks + 30
+	#if is_just_pressed and checking <= Globals.ticks and knocked_over <= Globals.ticks:
+	#	checking = Globals.ticks + 30
 
 	if knocked_over <= Globals.ticks:
 		var skaters = get_tree().get_nodes_in_group("skaters")
