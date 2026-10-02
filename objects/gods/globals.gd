@@ -145,4 +145,5 @@ func swap_color_in_texture(tex: Texture2D, from_col: Color, to_col: Color) -> Im
 
 func play_sound_at(sound: String, place: Vector2) -> void:
 	sounds[sound].global_position = place
+	sounds[sound].pitch_scale = randf_range(0.9, 1.1)
 	sounds[sound].play()
