@@ -6,8 +6,8 @@ var home_textures: Dictionary = {}
 var away_textures: Dictionary = {}
 var referee_textures: Dictionary = {}
 
-var home_goalie_texture: Texture2D
-var away_goalie_texture: Texture2D
+var home_goalie_textures: Dictionary = {}
+var away_goalie_textures: Dictionary = {}
 
 var ticks: int = 0
 var period_length: float = 120.0
@@ -77,8 +77,13 @@ func update_team_textures() -> void:
 				home_textures[t][s] = swap_colors_in_texture_multi(tex, home_team["head_color"], home_team["body_color"], home_team["foot_color"])
 				away_textures[t][s] = swap_colors_in_texture_multi(tex, away_team.get("away_head_color", away_team["head_color"]), away_team.get("away_body_color", away_team["body_color"]), away_team.get("away_foot_color", away_team["foot_color"]))
 
-	home_goalie_texture = swap_colors_in_texture_multi(preload("res://sprites/goalie.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"])
-	away_goalie_texture = swap_colors_in_texture_multi(preload("res://sprites/goalie.png"), away_team.get("away_head_color", away_team["head_color"]), away_team.get("away_body_color", away_team["body_color"]), away_team.get("away_foot_color", away_team["foot_color"]))
+
+	for s in ["Stand", "Skate", "Block Puck", "Bump Player"]:
+		var tex = load("res://sprites/goalie/" + s + ".png")
+		if tex:
+			home_goalie_textures[s] = swap_colors_in_texture_multi(tex, home_team["head_color"], home_team["body_color"], home_team["foot_color"])
+			away_goalie_textures[s] = swap_colors_in_texture_multi(tex, away_team.get("away_head_color", away_team["head_color"]), away_team.get("away_body_color", away_team["body_color"]), away_team.get("away_foot_color", away_team["foot_color"]))
+
 
 func _physics_process(_delta: float) -> void:
 	ticks += 1

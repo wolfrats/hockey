@@ -17,6 +17,12 @@ var needs_reset: bool = false
 var pulled: bool = false
 var extra_attacker: Skater = null
 
+var bump_timer: float = 0.0
+var block_timer: float = 0.0
+
+var original_x: float
+var bump_offset: Vector2 = Vector2.ZERO
+
 func home() -> void:
 	needs_reset = true
 
@@ -82,15 +88,46 @@ func _ready() -> void:
 	$Sprite.texture = $Sprite.texture.duplicate()
 	#$Sprite.texture.atlas = $Sprite.texture.atlas.duplicate()
 	if home_team:
-		$Sprite.texture = Globals.home_goalie_texture
+		$Sprite.texture = Globals.home_goalie_textures["Stand"]
 	else:
-		$Sprite.texture = Globals.away_goalie_texture
+		$Sprite.texture = Globals.away_goalie_textures["Stand"]
 	$Sprite.flip_h = home_team
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
-	pass
-	
+func _process(delta: float) -> void:
+	var anim_name = "Stand"
+
+	if block_timer > 0:
+		block_timer -= delta
+		anim_name = "Block Puck"
+		$Sprite.position = Vector2.ZERO
+	elif bump_timer > 0:
+		bump_timer -= delta
+		anim_name = "Bump Player"
+
+		# Bonus: Lerping sprite position based on bump_offset and bump_timer
+		var t = bump_timer / 0.5 # assuming bump lasts 0.5 sec max
+		if t > 0.5:
+			# Moving towards offset
+			var p = (1.0 - t) * 2.0
+			$Sprite.position = bump_offset * p
+		else:
+			# Moving back to zero
+			var p = t * 2.0
+			$Sprite.position = bump_offset * p
+	elif linear_velocity.length() > 5:
+		anim_name = "Skate"
+		$Sprite.position = Vector2.ZERO
+	else:
+		$Sprite.position = Vector2.ZERO
+
+	if home_team:
+		if Globals.home_goalie_textures.has(anim_name):
+			$Sprite.texture = Globals.home_goalie_textures[anim_name]
+	else:
+		if Globals.away_goalie_textures.has(anim_name):
+			$Sprite.texture = Globals.away_goalie_textures[anim_name]
+
 func _physics_process(delta: float) -> void:
 	if ghost:
 		ghost.handle(delta, self)
@@ -116,7 +153,7 @@ func impulse(dx: float, dy: float) -> void:
 func do_check() -> void:
 	pass
 
-func do_grab(is_just_pressed: bool = true) -> void:
+func do_grab(_is_just_pressed: bool = true) -> void:
 	pass
 
 func release_grab() -> void:
@@ -126,7 +163,8 @@ var puck = null
 
 func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 	if puck:
-		var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
+		var snap = statbook.snap_power + ((1 - statbook.snap_power) * power)
+		var vec = dir.normalized() * 200 * snap * statbook.shot_power
 		var vec2 = vec.rotated(inaccuracy_modifier * statbook.shot_variance * (1 - (2*randf())))
 		puck.shoot(name, vec2)
 
@@ -134,8 +172,12 @@ func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 		if camera:
 			var shake_amount = 2.0 + (power * 8.0)
 			var shake_tween = create_tween()
-			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount, shake_amount), randf_range(-shake_amount, shake_amount)), 0.05)
-			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount/2.0, shake_amount/2.0), randf_range(-shake_amount/2.0, shake_amount/2.0)), 0.05)
+			var r = shake_amount
+			shake_tween.tween_property(camera, "offset", \
+				Vector2(randf_range(-r, r), randf_range(-r, r)), 0.05)
+			var r2 = shake_amount/2.0
+			shake_tween.tween_property(camera, "offset", \
+				Vector2(randf_range(-r2, r2), randf_range(-r2, r2)), 0.05)
 			shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
@@ -149,13 +191,20 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		return
 
 	for i in range(state.get_contact_count()):
-		 # Get the impulse vector for this specific contact point 
-		#var myimpulse: Vector2 = state.get_contact_impulse(i)
+		# Get the impulse vector for this specific contact point
 		var myimpulse: Vector2 = state.get_contact_local_velocity_at_position(i)
 		var collider = state.get_contact_collider_object(i)
 		if "mass" in collider:
 			myimpulse *= 1 + (collider.mass - mass)
 		var impulse_strength: float = myimpulse.length()
+
+		if collider is Puck:
+			block_timer = 0.5
+		elif collider is Skater:
+			if impulse_strength > 10.0:
+				bump_timer = 0.5
+				bump_offset = myimpulse.normalized() * 10.0
+
 		if impulse_strength > 150.0:
-		 	# drop the puck
+			# drop the puck
 			rammed = true
