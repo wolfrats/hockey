@@ -154,7 +154,6 @@ func do_check() -> void:
 				if "spring" in s and s.spring:
 					s.spring.node_b = NodePath("")
 
-				var current_name = get_player_name()
 				if not Globals.hit_stats.has(current_name):
 					Globals.hit_stats[current_name] = 0
 				Globals.hit_stats[current_name] += 1
