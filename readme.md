@@ -1,4 +1,10 @@
 # Open Practice: A FOSS Hockey Game
+
+<a href="https://wolfrats.com/hockey">
+<img width="627" height="360" alt="gameplay" src="https://github.com/user-attachments/assets/4b3097d5-da1f-4f36-a173-a2982dd86f91" />
+</a>
+
+
 This repo contains the code and assets for _Open Practice: A FOSS Hockey Game_, an arcade-style,
 local multiplayer ice hockey game. The game is made with Godot and compiled for the web automatically.
 It is playable in-browser [here](https://wolfrats.com/hockey). 
