@@ -28,7 +28,8 @@ script = ExtResource("1_tat2j")
 texture_filter = 1
 material = ExtResource("2_tat2j")
 texture = ExtResource("2_k1fhr")
-region_rect = Rect2(84, 124, 24, 24)
+region_enabled = true
+region_rect = Rect2(0, 0, 192, 192)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1481518937]
 z_index = 1

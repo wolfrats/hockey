@@ -16,6 +16,7 @@ var anim_state: String = ""
 var needs_reset: bool = false
 var pulled: bool = false
 var extra_attacker: Skater = null
+var prev_position: Vector2 = Vector2.ZERO
 
 var bump_timer: float = 0.0
 var block_timer: float = 0.0
@@ -85,6 +86,7 @@ func return_to_net() -> void:
 func _ready() -> void:
 	# add_to_group("skaters")
 	home_x = global_position.x
+	prev_position = global_position
 	$Sprite.texture = $Sprite.texture.duplicate()
 	#$Sprite.texture.atlas = $Sprite.texture.atlas.duplicate()
 	if home_team:
@@ -96,7 +98,7 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	var anim_name = "Stand"
-
+	$Sprite.region_rect.position.x = 0
 	if block_timer > 0:
 		block_timer -= delta
 		anim_name = "Block Puck"
@@ -115,9 +117,10 @@ func _process(delta: float) -> void:
 			# Moving back to zero
 			var p = t * 2.0
 			$Sprite.position = bump_offset * p
-	elif linear_velocity.length() > 5:
+	elif (global_position - prev_position).length() > 1:
 		anim_name = "Skate"
 		$Sprite.position = Vector2.ZERO
+		$Sprite.region_rect.position.x = (int(Globals.ticks / 10.0) % 6) * 192
 	else:
 		$Sprite.position = Vector2.ZERO
 
@@ -127,7 +130,7 @@ func _process(delta: float) -> void:
 	else:
 		if Globals.away_goalie_textures.has(anim_name):
 			$Sprite.texture = Globals.away_goalie_textures[anim_name]
-
+	prev_position = global_position
 func _physics_process(delta: float) -> void:
 	if ghost:
 		ghost.handle(delta, self)
@@ -143,8 +146,7 @@ func _physics_process(delta: float) -> void:
 	#counter += 1
 
 func impulse(dx: float, dy: float) -> void:
-	# Ensure Goalies can be pushed freely by ghosts, without being forced to clamp back to net
-	var impulse_vec = Vector2(dx, dy) * 20.0
+	var impulse_vec = Vector2(dx, dy) * 30.0
 
 	if impulse_vec.length() > 0:
 		counter += 1
@@ -201,9 +203,9 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		if collider is Puck:
 			block_timer = 0.5
 		elif collider is Skater:
-			if impulse_strength > 10.0:
-				bump_timer = 0.5
-				bump_offset = myimpulse.normalized() * 10.0
+			#if impulse_strength > 10.0:
+			bump_timer = 0.5
+			bump_offset = myimpulse.normalized() * 10.0
 
 		if impulse_strength > 150.0:
 			# drop the puck
