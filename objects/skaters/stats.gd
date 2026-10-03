@@ -70,7 +70,7 @@ const TEAMS = [
 		"away_foot_color": Color(0.965, 0.502, 0.142, 1.0),
 	},
 	{
-		"name": "Blue Feathers",
+		"name": "Thunderbolts",
 		"composition": [
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
@@ -113,9 +113,9 @@ const TEAMS = [
 		"head_color": Color(1, 0.2, 0.2),
 		"body_color": Color(1, 1, 1),
 		"foot_color": Color(1, 0.2, 0.2),
-		"away_head_color": Color(1, 1, 1),
+		"away_head_color": Color(0.1, 0.1, 0.1),
 		"away_body_color": Color(1, 0.2, 0.2),
-		"away_foot_color": Color(1, 1, 1),
+		"away_foot_color": Color(0.1, 0.1, 0.1),
 	},
 	{
 		"name": "Sea Searpants",
@@ -164,5 +164,37 @@ const TEAMS = [
 		"away_head_color": Color(1, 0.5, 0.6),
 		"away_body_color": Color(0.9, 0, 0.9),
 		"away_foot_color": Color(1, 0.5, 0.6),
-	}
+	},
+	{
+		"name": "Bears",
+		"composition": [
+			ClassTypes.LIGHT,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY
+		],
+		"head_color": Color(0.8, 0.7, 0.4),
+		"body_color": Color(0.1, 0.1, 0.1),
+		"foot_color": Color(0.8, 0.7, 0.4),
+		"away_head_color": Color(1, 1, 1),
+		"away_body_color": Color(0.8, 0.7, 0.4),
+		"away_foot_color": Color(1, 1, 1),
+	},
+	{
+		"name": "Long Island Ice Teas",
+		"composition": [
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.HEAVY
+		],
+		"head_color": Color(1.0, 0.464, 0.236, 1.0),
+		"body_color": Color(0.016, 0.0, 0.935),
+		"foot_color": Color(1.0, 0.875, 1.0, 1.0),
+		"away_head_color": Color(0.016, 0.0, 0.935),
+		"away_body_color": Color(1.0, 0.875, 1.0, 1.0),
+		"away_foot_color": Color(1.0, 0.464, 0.236, 1.0),
+	},
 ]
