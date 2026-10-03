@@ -118,7 +118,7 @@ const TEAMS = [
 		"away_foot_color": Color(0.1, 0.1, 0.1),
 	},
 	{
-		"name": "Sea Searpants",
+		"name": "Loch Ness Monsters",
 		"composition": [
 			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
@@ -184,10 +184,10 @@ const TEAMS = [
 	{
 		"name": "Long Island Ice Teas",
 		"composition": [
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
 			ClassTypes.HEAVY
 		],
 		"head_color": Color(1.0, 0.464, 0.236, 1.0),
@@ -212,5 +212,21 @@ const TEAMS = [
 		"away_head_color": Color(0.729, 0.0, 0.065),
 		"away_body_color": Color(1, 1, 1),
 		"away_foot_color": Color(0.2, 0.7, 0.8),
+	},
+	{
+		"name": "Rockslides",
+		"composition": [
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.HEAVY
+		],
+		"head_color": Color(0.119, 0.388, 0.653),
+		"body_color": Color(0.578, 0.121, 0.254),
+		"foot_color": Color(0.119, 0.388, 0.653),
+		"away_head_color": Color(0.578, 0.121, 0.254),
+		"away_body_color": Color(1.0, 0.875, 1.0, 1.0),
+		"away_foot_color": Color(0.578, 0.121, 0.254),
 	},
 ]
