@@ -37,8 +37,10 @@ has a chance of breaking the grab.
 
 Playing dirty in front of the ref may lead to penalties and a power play for the opposing team.
 
-# Team Bios
-
+<details>
+<summary>
+<h1>Team Bios</h1>
+</summary>
 The game currently features 11 totally original teams.
 
 ### The Wide Street Wackos
@@ -73,6 +75,8 @@ A fairly balanced team focused on winning the most.
 
 ### The Rockslides
 A team focused on generating scoring chances while sacrificing everything else.
+
+</details>
 
 # AI Disclosure
 AI was used somewhat heavily for the game's code, mostly for trivial features and tweaks. No AI was, or ever will be, used for
