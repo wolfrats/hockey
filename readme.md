@@ -37,6 +37,43 @@ has a chance of breaking the grab.
 
 Playing dirty in front of the ref may lead to penalties and a power play for the opposing team.
 
+# Team Bios
+
+The game currently features 11 totally original teams.
+
+### The Wide Street Wackos
+The best team. Prefers violence over skilled hockey.
+
+### The Thunderbolts
+A balanced team focused on strong play.
+
+### The Flightless Birds
+A team focused on good control over the puck. The worst team, despite their great success.
+
+### The Candy Canes
+An offense-focused team aiming to win with high-skill shooters.
+
+### The Loch Ness Monsters
+A team hoping to balance offense and defense while still getting the puck to their star snipers.
+
+### The Shapes
+A team focused on possession, cycle-control, and generating offensive chances.
+
+### The Pinkertons
+A fictional team, I needed an all-pink team to bring incredible violence to the game.
+
+### The Bears
+Another team focused on hurting players.
+
+### The Long Island Ice Teas
+A defensive team.
+
+### The Haberdashers
+A fairly balanced team focused on winning the most.
+
+### The Rockslides
+A team focused on generating scoring chances while sacrificing everything else.
+
 # AI Disclosure
 AI was used somewhat heavily for the game's code, mostly for trivial features and tweaks. No AI was, or ever will be, used for
 graphical or audio assets. At the time of writing, the split of human-to-ai code was about 60%-40%.
