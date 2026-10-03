@@ -80,7 +80,17 @@ func get_axis_custom(axis_name: String) -> float:
 
 func _physics_process(_delta: float) -> void:
 	_update_buttons()
-	visible = (skater != null)
+	var hide_indicator = false
+	if Globals.manager and Globals.manager.anim_manager:
+		var phase = Globals.manager.anim_manager.current_phase
+		if phase == AnimationManager.Phase.POST_PERIOD_SKATE_OUT:
+			hide_indicator = true
+		elif phase == AnimationManager.Phase.POST_PERIOD_WAIT:
+			hide_indicator = true
+	if hide_indicator:
+		visible = false
+	else:
+		visible = (skater != null)
 	if not skater:
 		return
 	global_position = skater.global_position#global_position.lerp(skater.global_position, 0.1)

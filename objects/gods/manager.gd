@@ -182,6 +182,12 @@ func _process(delta: float) -> void:
 
 		if target_count > 0:
 			target_pos /= target_count
+			if anim_manager:
+				var phase = anim_manager.current_phase
+				if phase == AnimationManager.Phase.POST_PERIOD_SKATE_OUT:
+					target_pos = Vector2(1005.5, 509)
+				elif phase == AnimationManager.Phase.POST_PERIOD_WAIT:
+					target_pos = Vector2(1005.5, 509)
 			main_camera.global_position = main_camera.global_position.lerp(target_pos, 5.0 * delta)
 
 func setup_ui() -> void:
