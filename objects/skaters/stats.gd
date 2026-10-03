@@ -197,4 +197,20 @@ const TEAMS = [
 		"away_body_color": Color(1.0, 0.875, 1.0, 1.0),
 		"away_foot_color": Color(1.0, 0.464, 0.236, 1.0),
 	},
+		{
+		"name": "Haberdashers",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.9, 0.9, 0.9),
+		"body_color": Color(0.729, 0.0, 0.065),
+		"foot_color": Color(0.2, 0.6, 0.9),
+		"away_head_color": Color(0.729, 0.0, 0.065),
+		"away_body_color": Color(1, 1, 1),
+		"away_foot_color": Color(0.2, 0.7, 0.8),
+	},
 ]
