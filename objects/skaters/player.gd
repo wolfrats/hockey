@@ -158,6 +158,15 @@ func handle(_delta: float, cur_skater) -> void:
 			var dir = ((teammate.global_position + Vector2(6, 30)) - cur_skater.global_position).normalized()
 			cur_skater.shoot(dir, 0.5, 0)
 
+
+	if is_action_just_released_custom("pass") and not cur_skater.puck:
+		var nodes = get_tree().get_nodes_in_group("skaters")
+		for node in nodes:
+			var is_teammate = node is Skater and node.home_team == cur_skater.home_team
+			if is_teammate and node.puck and node.ghost == null:
+				var dir = ((cur_skater.global_position + Vector2(6, 30)) - node.global_position).normalized()
+				node.shoot(dir, 0.5, 0)
+				break
 	if is_action_just_pressed_custom("shoot"):
 		shot_dir = Vector2(dx, dy)
 	if not is_action_pressed_custom("shoot"):
