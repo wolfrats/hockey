@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://7mux8lo0ke4" path="res://objects/skaters/player.tscn" id="5_iroi8"]
 [ext_resource type="PackedScene" uid="uid://087q0jqlan76" path="res://objects/environment/puck.tscn" id="7_xvcn5"]
 [ext_resource type="PackedScene" uid="uid://dcs1p006dc6l1" path="res://objects/environment/Goal.tscn" id="8_6d2ki"]
+[ext_resource type="PackedScene" uid="uid://daupcjejdlj5y" path="res://objects/environment/netsprite.tscn" id="8_jkole"]
 [ext_resource type="PackedScene" uid="uid://c7t4freferee" path="res://objects/skaters/referee.tscn" id="9_ref"]
 [ext_resource type="Script" uid="uid://carxvn5etqhdd" path="res://objects/environment/bench.gd" id="10_jkole"]
 
@@ -574,7 +575,6 @@ position = Vector2(1003, 412)
 
 [node name="Player" parent="Manager/Ghosts" unique_id=1253797390 instance=ExtResource("5_iroi8")]
 position = Vector2(1008, 471)
-device_id = null
 
 [node name="Camera2D" type="Camera2D" parent="Manager/Ghosts/Player" unique_id=1537754657]
 
@@ -585,6 +585,13 @@ unique_name_in_owner = true
 position = Vector2(1007, 486)
 continuous_cd = 1
 max_contacts_reported = 18
+
+[node name="Node" parent="Manager" unique_id=566522780 instance=ExtResource("8_jkole")]
+position = Vector2(288, 495)
+
+[node name="Node2" parent="Manager" unique_id=1482667935 instance=ExtResource("8_jkole")]
+position = Vector2(1718, 495)
+scale = Vector2(-1, 1)
 
 [node name="Boards" type="StaticBody2D" parent="." unique_id=897642293]
 unique_name_in_owner = true

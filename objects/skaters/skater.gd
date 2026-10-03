@@ -284,12 +284,12 @@ func _physics_process(delta: float) -> void:
 			impulse(diff.normalized().x, diff.normalized().y)
 	elif anim_state == "skating_circle" or anim_state == "skating_figure8":
 		var time_offset = float(get_instance_id() % 1000)
-		var time = (Globals.ticks + time_offset) / 40.0
+		var time = (Globals.ticks + time_offset) / 60.0
 		var target_dir = Vector2.ZERO
 		if anim_state == "skating_circle":
-			target_dir = Vector2(cos(time), sin(time))
+			target_dir = Vector2(cos(time), sin(time)) * 4
 		else:
-			target_dir = Vector2(cos(time), sin(time * 2.0) * 0.8)
+			target_dir = Vector2(cos(time), sin(time * 2.0) * 0.8) * 4
 		if randf() < 0.1:
 			impulse(target_dir.x, target_dir.y)
 		var diff = initial_position - global_position
@@ -299,10 +299,10 @@ func _physics_process(delta: float) -> void:
 	elif anim_state == "skating_out":
 		var target_y = -200
 		var diffy = target_y - global_position.y
+		if randf() < 0.1:
+			impulse(randf_range(-10, 10), 0)
 		if abs(diffy) > 10:
 			impulse(0, sign(diffy))
-		if randf() < 0.1:
-			impulse(randf_range(-0.5, 0.5), 0)
 		if global_position.y < 200:
 			$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta)
 	elif anim_state == "swapping":

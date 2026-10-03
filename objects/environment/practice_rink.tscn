@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://7mux8lo0ke4" path="res://objects/skaters/player.tscn" id="5_4alo6"]
 [ext_resource type="PackedScene" uid="uid://087q0jqlan76" path="res://objects/environment/puck.tscn" id="7_4hy42"]
 [ext_resource type="PackedScene" uid="uid://dcs1p006dc6l1" path="res://objects/environment/Goal.tscn" id="8_i5rrj"]
+[ext_resource type="PackedScene" uid="uid://daupcjejdlj5y" path="res://objects/environment/netsprite.tscn" id="8_jdhqj"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_k8ji8"]
 texture = ExtResource("2_jdhqj")
@@ -495,6 +496,7 @@ texture = ExtResource("2_jdhqj")
 sources/1 = SubResource("TileSetAtlasSource_k8ji8")
 
 [node name="Root" type="Node2D" unique_id=608511731]
+y_sort_enabled = true
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=696495241]
 z_index = -100
@@ -585,6 +587,7 @@ build_mode = 1
 polygon = PackedVector2Array(106, 305, 104, 725, 144, 857, 262, 936, 1725, 929, 1834, 894, 1909, 792, 1918, 724, 1921, 269, 1845, 181, 1755, 138, 1685, 136, 286, 134, 206, 157, 152, 208)
 
 [node name="HomeGoal" type="StaticBody2D" parent="." unique_id=1254396325]
+y_sort_enabled = true
 collision_layer = 22
 collision_mask = 31
 
@@ -599,6 +602,7 @@ position = Vector2(301, 509)
 position = Vector2(1710, 516)
 
 [node name="AwayGoal" type="StaticBody2D" parent="." unique_id=877925233]
+y_sort_enabled = true
 collision_layer = 22
 collision_mask = 31
 
@@ -620,3 +624,10 @@ polygon = PackedVector2Array(900, 135, 900, 50, 1100, 50, 1100, 135)
 points = PackedVector2Array(900, 135, 900, 50, 1100, 50, 1100, 135)
 width = 5.0
 default_color = Color(0, 0, 0, 1)
+
+[node name="Node" parent="." unique_id=1519119840 instance=ExtResource("8_jdhqj")]
+position = Vector2(288, 495)
+
+[node name="Node2" parent="." unique_id=566522780 instance=ExtResource("8_jdhqj")]
+position = Vector2(1718, 495)
+scale = Vector2(-1, 1)
