@@ -63,6 +63,21 @@ func _ready() -> void:
 				fan2.global_position = Vector2(X + Y * 20, Y * 50 + 1024)
 				fan2.scale.y = -1
 				fan2.z_index = -Y
+		for X in range(0, 4):
+			for Y in range(0, 1024, 50):
+				var path: int = Y + X * 50
+				if int(path / 150) % 3 == 0:
+					continue
+				var fan = preload("res://objects/environment/fan.tscn").instantiate()
+				fan.side = true
+				add_child(fan)
+				fan.global_position = Vector2(X * -50, Y + X * 20)
+				
+				var fan2: Fan = preload("res://objects/environment/fan.tscn").instantiate()
+				fan2.side = true
+				add_child(fan2)
+				fan2.global_position = Vector2(X * 50 + 2048, Y + X * 20)
+				fan2.scale.x = -1
 
 func setup_multiplayer() -> void:
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)

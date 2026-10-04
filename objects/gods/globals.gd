@@ -77,10 +77,14 @@ func update_team_textures() -> void:
 		true: {
 			"Sit": swap_colors_in_texture_multi(preload("res://sprites/fan/Sit.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"]),
 			"Stand": swap_colors_in_texture_multi(preload("res://sprites/fan/Stand.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"]),
+			"Sit-Side": swap_colors_in_texture_multi(preload("res://sprites/fan/Sit-Side.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"]),
+			"Stand-Side": swap_colors_in_texture_multi(preload("res://sprites/fan/Stand-Side.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"]),
 		},
 		false: {
 			"Sit": swap_colors_in_texture_multi(preload("res://sprites/fan/Sit.png"), away_team["head_color"], away_team["body_color"], away_team["foot_color"]),
 			"Stand": swap_colors_in_texture_multi(preload("res://sprites/fan/Stand.png"), away_team["head_color"], away_team["body_color"], away_team["foot_color"]),
+			"Sit-Side": swap_colors_in_texture_multi(preload("res://sprites/fan/Sit-Side.png"), away_team["head_color"], away_team["body_color"], away_team["foot_color"]),
+			"Stand-Side": swap_colors_in_texture_multi(preload("res://sprites/fan/Stand-Side.png"), away_team["head_color"], away_team["body_color"], away_team["foot_color"]),
 		},
 	}
 	var sprites = [
