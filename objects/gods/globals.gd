@@ -9,6 +9,8 @@ var referee_textures: Dictionary = {}
 var home_goalie_textures: Dictionary = {}
 var away_goalie_textures: Dictionary = {}
 
+var fan_textures: Dictionary = {}
+
 var ticks: int = 0
 var period_length: float = 120.0
 var shirt_color: Color = Color.from_rgba8(96, 176, 248)
@@ -39,7 +41,7 @@ var home_ai_difficulty: int = 0
 var away_ai_difficulty: int = 0
 var sounds: Dictionary[String, AudioStreamPlayer2D] = {}
 var menu_opened: bool = false
-var manager: Node2D = null
+var manager: Manager = null
 
 var save_path = "user://settings.cfg"
 var use_onscreen_controls: bool = DisplayServer.is_touchscreen_available()
@@ -71,7 +73,16 @@ func update_team_textures() -> void:
 
 	home_color = home_team["body_color"]
 	away_color = away_team.get("away_body_color", away_team["body_color"])
-
+	fan_textures = {
+		true: {
+			"Sit": swap_colors_in_texture_multi(preload("res://sprites/fan/Sit.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"]),
+			"Stand": swap_colors_in_texture_multi(preload("res://sprites/fan/Stand.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"]),
+		},
+		false: {
+			"Sit": swap_colors_in_texture_multi(preload("res://sprites/fan/Sit.png"), away_team["head_color"], away_team["body_color"], away_team["foot_color"]),
+			"Stand": swap_colors_in_texture_multi(preload("res://sprites/fan/Stand.png"), away_team["head_color"], away_team["body_color"], away_team["foot_color"]),
+		},
+	}
 	var sprites = [
 		"Skate Left", "Skate Down", "Skate Up", "Glide Left", "Check Left", "Check Down", "Check Up",
 		"Grab Left", "Grab Down", "Grab Up", "Pummel Down", "Pummel Up", "Shoot Left", "Die 1"

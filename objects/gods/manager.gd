@@ -1,4 +1,6 @@
-extends Node2D
+class_name Manager extends Node2D
+
+signal shot(team: bool, position: Vector2)
 
 var home_score: int = 0
 var away_score: int = 0
@@ -47,6 +49,11 @@ func _ready() -> void:
 		Globals.check_stats.clear()
 		Globals.hit_stats.clear()
 		Globals.down_stats.clear()
+		for Y in range(0, 4):
+			for X in range(0, 2000, 50):
+				var fan = preload("res://objects/environment/fan.tscn").instantiate()
+				add_child(fan)
+				fan.global_position = Vector2(X + Y * 20, Y * -50)
 
 func setup_multiplayer() -> void:
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)

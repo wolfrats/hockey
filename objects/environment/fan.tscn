@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://46tfd5ah3rh6"]
+
+[ext_resource type="Script" uid="uid://bnc3abbpdw88s" path="res://objects/environment/fan.gd" id="1_vd4dr"]
+[ext_resource type="Texture2D" uid="uid://dpuawmwavs50c" path="res://sprites/fan/Chair.png" id="2_kx8ux"]
+[ext_resource type="Texture2D" uid="uid://bpbyhpiyqlrwi" path="res://sprites/fan/Sit.png" id="3_gwobx"]
+
+[node name="Fan" type="Node2D" unique_id=870400134]
+script = ExtResource("1_vd4dr")
+
+[node name="Chair" type="Sprite2D" parent="." unique_id=996727030]
+texture = ExtResource("2_kx8ux")
+
+[node name="Person" type="Sprite2D" parent="." unique_id=331214540]
+position = Vector2(0, 1)
+texture = ExtResource("3_gwobx")

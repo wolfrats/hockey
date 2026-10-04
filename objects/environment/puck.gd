@@ -110,6 +110,7 @@ func shoot(shooter, vector) -> bool:
 	if not posessor or shooter != posessor.name:
 		return false
 	posessor.puck = null
+	Globals.manager.shot.emit(posessor.home_team, global_position)
 	posessor = null
 	blocklist[shooter] = 0.25
 	#block_all = Globals.ticks + 1
@@ -131,7 +132,6 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		state.linear_velocity = Vector2.ZERO
 		state.angular_velocity = 0
 		needs_reset = false
-		
 		
 func _update_pointer() -> void:
 	if not has_node("Pointer"):
