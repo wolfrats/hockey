@@ -51,9 +51,18 @@ func _ready() -> void:
 		Globals.down_stats.clear()
 		for Y in range(0, 4):
 			for X in range(0, 2000, 50):
+				var path: int = X + Y * 50
+				if int(path / 150) % 3 == 0:
+					continue
 				var fan = preload("res://objects/environment/fan.tscn").instantiate()
 				add_child(fan)
 				fan.global_position = Vector2(X + Y * 20, Y * -50)
+				
+				var fan2: Fan = preload("res://objects/environment/fan.tscn").instantiate()
+				add_child(fan2)
+				fan2.global_position = Vector2(X + Y * 20, Y * 50 + 1024)
+				fan2.scale.y = -1
+				fan2.z_index = -Y
 
 func setup_multiplayer() -> void:
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
