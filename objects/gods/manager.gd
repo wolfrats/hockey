@@ -1,6 +1,6 @@
 class_name Manager extends Node2D
 
-signal shot(team: bool, position: Vector2)
+signal shot(team: bool, position: Vector2, vector: Vector2)
 
 var home_score: int = 0
 var away_score: int = 0
@@ -49,35 +49,39 @@ func _ready() -> void:
 		Globals.check_stats.clear()
 		Globals.hit_stats.clear()
 		Globals.down_stats.clear()
-		for Y in range(0, 4):
+	for Y in range(0, 4):
 			for X in range(0, 2000, 50):
 				var path: int = X + Y * 50
+				@warning_ignore("integer_division")
 				if int(path / 150) % 3 == 0:
 					continue
 				var fan = preload("res://objects/environment/fan.tscn").instantiate()
 				add_child(fan)
-				fan.global_position = Vector2(X + Y * 20, Y * -50)
+				fan.global_position = Vector2(X + Y * 20, 50 + Y * -50)
 				
+				if X > 900 and X < 1120 and Y == 0: # no people near penalty box
+					continue
 				var fan2: Fan = preload("res://objects/environment/fan.tscn").instantiate()
 				add_child(fan2)
 				fan2.global_position = Vector2(X + Y * 20, Y * 50 + 1024)
 				fan2.scale.y = -1
 				fan2.z_index = -Y
-		for X in range(0, 4):
-			for Y in range(0, 1024, 50):
-				var path: int = Y + X * 50
-				if int(path / 150) % 3 == 0:
-					continue
-				var fan = preload("res://objects/environment/fan.tscn").instantiate()
-				fan.side = true
-				add_child(fan)
-				fan.global_position = Vector2(X * -50, Y + X * 20)
-				
-				var fan2: Fan = preload("res://objects/environment/fan.tscn").instantiate()
-				fan2.side = true
-				add_child(fan2)
-				fan2.global_position = Vector2(X * 50 + 2048, Y + X * 20)
-				fan2.scale.x = -1
+	for X in range(0, 4):
+		for Y in range(0, 1024, 50):
+			var path: int = Y + X * 50
+			@warning_ignore("integer_division")
+			if int(path / 150) % 3 == 0:
+				continue
+			var fan = preload("res://objects/environment/fan.tscn").instantiate()
+			fan.side = true
+			add_child(fan)
+			fan.global_position = Vector2(X * -50, Y + X * 20)
+			
+			var fan2: Fan = preload("res://objects/environment/fan.tscn").instantiate()
+			fan2.side = true
+			add_child(fan2)
+			fan2.global_position = Vector2(X * 50 + 2048, Y + X * 20)
+			fan2.scale.x = -1
 
 func setup_multiplayer() -> void:
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)

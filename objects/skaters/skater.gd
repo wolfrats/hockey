@@ -251,7 +251,7 @@ func _physics_process(delta: float) -> void:
 		health = min(statbook.max_health, health + delta * 15.0) # Regenerate 15 hp per second
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		if anim_state == "entering_penalty":
-			linear_velocity = Vector2(0, -100)
+			linear_velocity = Vector2(0, 100)
 			$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta * 1.5)
 			if $Sprite.modulate.a <= 0.0:
 				anim_state = "in_penalty"
@@ -267,7 +267,7 @@ func _physics_process(delta: float) -> void:
 				if penalty_time <= 0:
 					anim_state = "leaving_penalty"
 		elif anim_state == "leaving_penalty":
-			linear_velocity = Vector2(0, 100)
+			linear_velocity = Vector2(0, -100)
 			$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta * 1.5)
 			if $Sprite.modulate.a <= 0.0:
 				anim_state = "return_from_penalty"
@@ -560,7 +560,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 
 	if needs_penalty_reset:
 		var trans = state.get_transform()
-		trans.origin = Vector2(1000, 100) # Penalty box position
+		trans.origin = Vector2(1000, 950) # Penalty box position
 		state.set_transform(trans)
 		state.linear_velocity = Vector2.ZERO
 		state.angular_velocity = 0
