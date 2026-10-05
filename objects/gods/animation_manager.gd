@@ -1,6 +1,8 @@
 class_name AnimationManager
 extends Node
 
+var lights: Node
+
 enum Phase {
 	PRE_GAME_SKATE,
 	PRE_GAME_LERP,
@@ -23,6 +25,7 @@ var manager: Node = null
 func _ready() -> void:
 	manager = get_parent()
 	set_phase(Phase.PRE_GAME_SKATE)
+	lights = get_tree().root.get_node_or_null("Rink/Lights")
 
 func _process(delta: float) -> void:
 	if current_phase == Phase.PLAYING:
@@ -39,8 +42,24 @@ func _process(delta: float) -> void:
 				if device >= 0:
 					if Input.is_joy_button_pressed(device, JOY_BUTTON_A) or Input.is_joy_button_pressed(device, JOY_BUTTON_X) or Input.is_joy_button_pressed(device, JOY_BUTTON_Y) or Input.is_joy_button_pressed(device, JOY_BUTTON_B):
 						start = true
+	
+			for i in range(0, 3):
+				var light: PointLight2D = lights.get_children()[i]
+				i += 1
+				var R = 60 + i * 9
+				var r = 30 - i * 4
+				var d = 40 + i * 20
+				var s = 3
+				var t = Globals.ticks / (90.0 - i)
+				var x = ((R - r)*cos(t) + d*cos((R-r)/r * t)) * s
+				var y = ((R - r)*sin(t) + d*sin((R-r)/r * t)) * s
+				light.global_position = Vector2(1000 + x, 512 + y)
 			if start:
 				set_phase(Phase.PRE_GAME_LERP)
+				get_tree().root.get_node("Rink/CanvasModulate").color = Color.WHITE
+				for i in range(0, 3):
+					var light: PointLight2D = lights.get_children()[i]
+					light.visible = false
 		Phase.PRE_GAME_LERP:
 			if phase_timer <= 0:
 				set_phase(Phase.FACE_OFF)

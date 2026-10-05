@@ -49,6 +49,13 @@ func _ready() -> void:
 		Globals.check_stats.clear()
 		Globals.hit_stats.clear()
 		Globals.down_stats.clear()
+		var lights = %Lights.get_children()
+		lights[0].color = StatBook.TEAMS[Globals.home_team_index]["body_color"]
+		lights[0].color.v = 1
+		lights[1].color = StatBook.TEAMS[Globals.home_team_index]["head_color"]
+		lights[1].color.v = 1
+		lights[2].color = StatBook.TEAMS[Globals.home_team_index]["foot_color"]
+		lights[2].color.v = 1
 	for Y in range(0, 4):
 			for X in range(0, 2000, 50):
 				var path: int = X + Y * 50

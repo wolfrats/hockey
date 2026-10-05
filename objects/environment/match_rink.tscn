@@ -500,9 +500,21 @@ sources/1 = SubResource("TileSetAtlasSource_ka43y")
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4jwb7"]
 size = Vector2(125.5, 45)
 
-[node name="Node2D" type="Node2D" unique_id=608511731]
+[sub_resource type="Gradient" id="Gradient_gmvdi"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
 
-[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=2112835940]
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_6d2ki"]
+gradient = SubResource("Gradient_gmvdi")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.85, 0.85)
+
+[node name="Rink" type="Node2D" unique_id=608511731]
+
+[node name="Floor" type="TileMapLayer" parent="." unique_id=2112835940]
+unique_name_in_owner = true
 z_index = -100
 position = Vector2(-21, 10)
 scale = Vector2(4, 4)
@@ -540,9 +552,9 @@ home_team = true
 
 [node name="Team1_5" parent="Manager/Team1" unique_id=505868705 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
 position = Vector2(907, 340)
-ghost = NodePath("../../Ghosts/Player")
 home_team = true
 stats = 1
+ghost = NodePath("../../Ghosts/Player")
 
 [node name="Goalie2" parent="Manager" unique_id=1083843776 instance=ExtResource("3_jkole")]
 position = Vector2(1672, 521)
@@ -661,6 +673,33 @@ script = ExtResource("10_jkole")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AwayBench" unique_id=131011547]
 position = Vector2(1452, 151)
 shape = SubResource("RectangleShape2D_4jwb7")
+
+[node name="Lights" type="Node2D" parent="." unique_id=1881172458]
+unique_name_in_owner = true
+
+[node name="Light1" type="PointLight2D" parent="Lights" unique_id=2008568119]
+position = Vector2(638.1423, 801.724)
+color = Color(1, 0, 0.24564552, 1)
+energy = 2.0
+texture = SubResource("GradientTexture2D_6d2ki")
+height = 8.0
+
+[node name="Light2" type="PointLight2D" parent="Lights" unique_id=1697791339]
+position = Vector2(1036.3894, 260.0924)
+color = Color(0.48514813, 0.2971665, 0.12292649, 1)
+energy = 2.0
+texture = SubResource("GradientTexture2D_6d2ki")
+height = 8.0
+
+[node name="Light3" type="PointLight2D" parent="Lights" unique_id=895278428]
+position = Vector2(1475.7749, 637.8594)
+color = Color(0.9662165, 1, 0.95977885, 1)
+energy = 2.0
+texture = SubResource("GradientTexture2D_6d2ki")
+height = 8.0
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1007415911]
+color = Color(0.43632764, 0.43632764, 0.43632764, 1)
 
 [connection signal="body_entered" from="HomeBench" to="HomeBench" method="_on_bench_body_entered"]
 [connection signal="body_entered" from="AwayBench" to="AwayBench" method="_on_bench_body_entered"]
