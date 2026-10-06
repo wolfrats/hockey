@@ -246,6 +246,8 @@ func _physics_process(delta: float) -> void:
 	set_collision_layer_value(4, true)
 	if puck and puck.posessor != self:
 		puck = null
+	if Globals.manager.is_replay:
+		return
 	if faceoff_shake > 0:
 		faceoff_shake -= delta
 	if faceoff_cooldown > 0:
