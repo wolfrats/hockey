@@ -74,8 +74,8 @@ func assign_possessor(body: Skater) -> void:
 			var closest_player = null
 			var min_dist = INF
 			for p in ghosts_node.get_children():
-				if p.name.begins_with("Player") and p.player_index >= 0 and p.player_index < Globals.player_auto_swap.size():
-					if Globals.player_auto_swap[p.player_index] and p.skater and p.skater.home_team == posessor.home_team:
+				if p.name.begins_with("Player") and p.player_index >= 0:
+					if  p.player_index >= Globals.player_auto_swap.size() or Globals.player_auto_swap[p.player_index] and p.skater and p.skater.home_team == posessor.home_team:
 						var dist = p.skater.global_position.distance_to(posessor.global_position)
 						if dist < min_dist:
 							min_dist = dist
