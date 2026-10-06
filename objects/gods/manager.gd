@@ -2,12 +2,14 @@ class_name Manager extends Node2D
 
 signal shot(team: bool, position: Vector2, vector: Vector2)
 
+const FAN_SCENE = preload("res://objects/environment/fan.tscn")
+
+@export var is_practice: bool = false
 var home_score: int = 0
 var away_score: int = 0
 var current_period: int = 1
-var time_remaining: float = 0.0
 
-@export var is_practice: bool = false
+var time_remaining: float = 0.0
 
 var ui_layer: CanvasLayer
 var score_label: Label
@@ -16,8 +18,15 @@ var period_label: Label
 var anim_manager: AnimationManager
 var main_camera: Camera2D
 
+var replay_buffer: Array = []
+var is_replay: bool = false
+var replay_index: int = 0
+var replay_label: Label = null
+
+
 func _enter_tree() -> void:
 	Globals.manager = self
+
 
 func _ready() -> void:
 	# Create a new detached Camera for the Manager
@@ -27,7 +36,7 @@ func _ready() -> void:
 
 	setup_multiplayer()
 
-	# Find and remove any existing Camera2D nodes from Player ghosts to ensure our new camera is the only one
+	# Find and remove any existing Camera2D nodes from Player ghosts
 	var ghosts_node = get_node_or_null("Ghosts")
 	if ghosts_node:
 		for child in ghosts_node.get_children():
@@ -56,46 +65,49 @@ func _ready() -> void:
 		lights[1].color.v = 1
 		lights[2].color = StatBook.TEAMS[Globals.home_team_index]["foot_color"]
 		lights[2].color.v = 1
-	for Y in range(0, 4):
-			for X in range(0, 2000, 50):
-				var path: int = X + Y * 50
-				@warning_ignore("integer_division")
-				if int(path / 150) % 3 == 0:
-					continue
-				var fan = preload("res://objects/environment/fan.tscn").instantiate()
-				add_child(fan)
-				fan.global_position = Vector2(X + Y * 20, 50 + Y * -50)
-				
-				if X > 900 and X < 1120 and Y == 0: # no people near penalty box
-					continue
-				var fan2: Fan = preload("res://objects/environment/fan.tscn").instantiate()
-				add_child(fan2)
-				fan2.global_position = Vector2(X + Y * 20, Y * 50 + 1024)
-				fan2.scale.y = -1
-				fan2.z_index = -Y
-	for X in range(0, 4):
-		for Y in range(0, 1024, 50):
-			var path: int = Y + X * 50
+	for y in range(0, 4):
+		for x in range(0, 2000, 50):
+			var path: int = x + y * 50
 			@warning_ignore("integer_division")
 			if int(path / 150) % 3 == 0:
 				continue
-			var fan = preload("res://objects/environment/fan.tscn").instantiate()
+			var fan = FAN_SCENE.instantiate()
+			add_child(fan)
+			fan.global_position = Vector2(x + y * 20, 50 + y * -50)
+
+			if x > 900 and x < 1120 and y == 0:  # no people near penalty box
+				continue
+			var fan2: Fan = FAN_SCENE.instantiate()
+			add_child(fan2)
+			fan2.global_position = Vector2(x + y * 20, y * 50 + 1024)
+			fan2.scale.y = -1
+			fan2.z_index = -y
+	for x in range(0, 4):
+		for y in range(0, 1024, 50):
+			var path: int = y + x * 50
+			@warning_ignore("integer_division")
+			if int(path / 150) % 3 == 0:
+				continue
+			var fan = FAN_SCENE.instantiate()
 			fan.side = true
 			add_child(fan)
-			fan.global_position = Vector2(X * -50, Y + X * 20)
-			
-			var fan2: Fan = preload("res://objects/environment/fan.tscn").instantiate()
+			fan.global_position = Vector2(x * -50, y + x * 20)
+
+			var fan2: Fan = FAN_SCENE.instantiate()
 			fan2.side = true
 			add_child(fan2)
-			fan2.global_position = Vector2(X * 50 + 2048, Y + X * 20)
+			fan2.global_position = Vector2(x * 50 + 2048, y + x * 20)
 			fan2.scale.x = -1
+
 
 func setup_multiplayer() -> void:
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
 	_update_players()
 
+
 func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
 	_update_players()
+
 
 func _update_players() -> void:
 	var ghosts_node = get_node_or_null("Ghosts")
@@ -117,7 +129,7 @@ func _update_players() -> void:
 		if active_devices.size() == 0:
 			active_devices.append(-2)
 		else:
-			# Keyboard is not added if fallback triggers with at least 1 controller to preserve original behaviour where keyboard mapped to same actions as p1.
+			# Keyboard is not added if fallback triggers with at least 1 controller
 			pass
 
 	var current_players = []
@@ -180,6 +192,7 @@ func _update_players() -> void:
 		else:
 			p.device_id = -1
 
+
 func _process(delta: float) -> void:
 	if not is_practice:
 		if anim_manager.current_phase == AnimationManager.Phase.PLAYING:
@@ -220,7 +233,7 @@ func _process(delta: float) -> void:
 				if puck is Puck:
 					target_pos += puck.global_position
 					target_count += 1
-					break # Just track the first puck
+					break  # Just track the first puck
 
 		if target_count > 0:
 			target_pos /= target_count
@@ -231,6 +244,99 @@ func _process(delta: float) -> void:
 				elif phase == AnimationManager.Phase.POST_PERIOD_WAIT:
 					target_pos = Vector2(1005.5, 509)
 			main_camera.global_position = main_camera.global_position.lerp(target_pos, 5.0 * delta)
+
+
+func start_replay() -> void:
+	is_replay = true
+	replay_index = 0
+	if ui_layer and not replay_label:
+		replay_label = Label.new()
+		replay_label.text = "REPLAY"
+		replay_label.set_anchors_preset(Control.PRESET_TOP_WIDE)
+		replay_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		replay_label.add_theme_font_size_override("font_size", 48)
+		replay_label.label_settings = LabelSettings.new()
+		replay_label.label_settings.outline_size = 6
+		replay_label.label_settings.font_size = 64
+		replay_label.label_settings.outline_color = Color.BLACK
+		replay_label.label_settings.font_color = Color.RED
+		replay_label.position = Vector2(0, 100)
+		ui_layer.add_child(replay_label)
+
+
+func stop_replay() -> void:
+	is_replay = false
+	if replay_label:
+		replay_label.queue_free()
+		replay_label = null
+
+
+func _physics_process(_delta: float) -> void:
+	if not is_replay:
+		var frame_data = {}
+
+		# Skaters and Goalies
+		var skaters = get_tree().get_nodes_in_group("skaters")
+		var referees = get_tree().get_nodes_in_group("referees")
+		var all_skaters = skaters + referees
+		for s in all_skaters:
+			var sprite = s.get_node_or_null("Sprite")
+			if sprite:
+				frame_data[s.get_instance_id()] = {
+					"type": "skater",
+					"position": s.global_position,
+					"rotation": s.rotation,
+					"z_index": s.z_index,
+					"texture": sprite.texture,
+					"sprite_pos": sprite.position,
+					"region_rect": sprite.region_rect,
+					"flip_h": sprite.flip_h,
+					"modulate": sprite.modulate
+				}
+
+		# Pucks
+		var pucks = get_tree().get_nodes_in_group("pucks")
+		for p in pucks:
+			frame_data[p.get_instance_id()] = {
+				"type": "puck",
+				"position": p.global_position,
+				"rotation": p.rotation,
+				"visible": p.visible
+			}
+
+		replay_buffer.append(frame_data)
+		if replay_buffer.size() > 600:
+			replay_buffer.pop_front()
+	else:
+		if replay_buffer.size() > 0:
+			var frame_data = replay_buffer[replay_index]
+			for id in frame_data:
+				var node = instance_from_id(id)
+				if node:
+					var data = frame_data[id]
+					if data["type"] == "skater":
+						node.global_position = data["position"]
+						node.rotation = data["rotation"]
+						node.z_index = data["z_index"]
+						var sprite = node.get_node_or_null("Sprite")
+						if sprite:
+							sprite.texture = data["texture"]
+							sprite.position = data["sprite_pos"]
+							sprite.region_rect = data["region_rect"]
+							sprite.flip_h = data["flip_h"]
+							sprite.modulate = data["modulate"]
+					elif data["type"] == "puck":
+						if node.posessor:
+							node.posessor.puck = null
+						node.posessor = null
+						node.global_position = data["position"]
+						node.rotation = data["rotation"]
+						node.visible = data["visible"]
+
+			replay_index += 1
+			if replay_index >= replay_buffer.size():
+				replay_index = 0
+
 
 func setup_ui() -> void:
 	ui_layer = CanvasLayer.new()
@@ -267,6 +373,7 @@ func setup_ui() -> void:
 	timer_label.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	ui_layer.add_child(timer_label)
 
+
 func update_ui() -> void:
 	score_label.text = "%d - %d" % [home_score, away_score]
 	period_label.text = "Period %d" % current_period
@@ -274,6 +381,7 @@ func update_ui() -> void:
 	var mins = int(time_remaining / 60)
 	var secs = int(time_remaining) % 60
 	timer_label.text = "%d:%02d" % [mins, secs]
+
 
 func goal_scored(goal_name: String, scorer: String = "", assister: String = "") -> void:
 	if anim_manager.current_phase != AnimationManager.Phase.PLAYING:
