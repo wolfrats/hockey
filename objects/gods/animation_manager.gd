@@ -1,22 +1,11 @@
 class_name AnimationManager
 extends Node
 
+
+
 var lights: Node
 
-enum Phase {
-	PRE_GAME_SKATE,
-	PRE_GAME_LERP,
-	PLAYING,
-	POST_GOAL_SKATE,
-	POST_GOAL_LERP,
-	POST_PERIOD_SKATE_OUT,
-	POST_PERIOD_WAIT,
-	PRE_PERIOD_SKATE,
-	PRE_PERIOD_LERP,
-	PRE_PENALTY_SKATE,
-	PRE_PENALTY_LERP,
-	FACE_OFF
-}
+
 
 var current_phase: Phase = Phase.PRE_GAME_SKATE
 var phase_timer: float = 0.0
@@ -36,23 +25,30 @@ func _process(delta: float) -> void:
 	match current_phase:
 		Phase.PRE_GAME_SKATE:
 			var start = false
-			if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("pass") or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") or Input.is_action_just_pressed("check"):
+			if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("pass") \
+					or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") \
+					or Input.is_action_just_pressed("check"):
 				start = true
 			for device in Globals.player_devices:
 				if device >= 0:
-					if Input.is_joy_button_pressed(device, JOY_BUTTON_A) or Input.is_joy_button_pressed(device, JOY_BUTTON_X) or Input.is_joy_button_pressed(device, JOY_BUTTON_Y) or Input.is_joy_button_pressed(device, JOY_BUTTON_B):
+					if Input.is_joy_button_pressed(device, JOY_BUTTON_A) or \
+					Input.is_joy_button_pressed(device, JOY_BUTTON_X) \
+						or Input.is_joy_button_pressed(device, JOY_BUTTON_Y) \
+				or Input.is_joy_button_pressed(device, JOY_BUTTON_B):
 						start = true
-	
+
 			for i in range(0, 3):
 				var light: PointLight2D = lights.get_children()[i]
 				i += 1
-				var R = 60 + i * 9
-				var r = 30 - i * 4
-				var d = 40 + i * 20
-				var s = 3
-				var t = Globals.ticks / (90.0 - i)
-				var x = ((R - r)*cos(t) + d*cos((R-r)/r * t)) * s
-				var y = ((R - r)*sin(t) + d*sin((R-r)/r * t)) * s
+				var radius_large = 60 + i * 9
+				var radius_small = 30 - i * 4
+				var dist = 40 + i * 20
+				var scale = 3
+				var time = Globals.ticks / (90.0 - i)
+				var diff = radius_large - radius_small
+				var mult = diff / radius_small * time
+				var x = (diff * cos(time) + dist * cos(mult)) * scale
+				var y = (diff * sin(time) + dist * sin(mult)) * scale
 				light.global_position = Vector2(1000 + x, 512 + y)
 			if start:
 				set_phase(Phase.PRE_GAME_LERP)
@@ -68,6 +64,23 @@ func _process(delta: float) -> void:
 				set_phase(Phase.POST_GOAL_LERP)
 		Phase.POST_GOAL_LERP:
 			if phase_timer <= 0:
+				set_phase(Phase.REPLAY)
+		Phase.REPLAY:
+			var skip = false
+			if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("pass") \
+					or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") \
+					or Input.is_action_just_pressed("check"):
+				skip = true
+			for device in Globals.player_devices:
+				if device >= 0:
+					if Input.is_joy_button_pressed(device, JOY_BUTTON_A) or \
+					Input.is_joy_button_pressed(device, JOY_BUTTON_X) \
+						or Input.is_joy_button_pressed(device, JOY_BUTTON_Y) \
+				or Input.is_joy_button_pressed(device, JOY_BUTTON_B):
+						skip = true
+			if skip:
+				if manager and manager.has_method("stop_replay"):
+					manager.stop_replay()
 				set_phase(Phase.FACE_OFF)
 		Phase.POST_PERIOD_SKATE_OUT:
 			if phase_timer <= 0:
@@ -83,11 +96,16 @@ func _process(delta: float) -> void:
 					set_phase(Phase.PRE_PERIOD_SKATE)
 		Phase.PRE_PERIOD_SKATE:
 			var start = false
-			if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("pass") or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") or Input.is_action_just_pressed("check"):
+			if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("pass") \
+					or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") \
+					or Input.is_action_just_pressed("check"):
 				start = true
 			for device in Globals.player_devices:
 				if device >= 0:
-					if Input.is_joy_button_pressed(device, JOY_BUTTON_A) or Input.is_joy_button_pressed(device, JOY_BUTTON_X) or Input.is_joy_button_pressed(device, JOY_BUTTON_Y) or Input.is_joy_button_pressed(device, JOY_BUTTON_B):
+					if Input.is_joy_button_pressed(device, JOY_BUTTON_A) or \
+					Input.is_joy_button_pressed(device, JOY_BUTTON_X) \
+						or Input.is_joy_button_pressed(device, JOY_BUTTON_Y) \
+				or Input.is_joy_button_pressed(device, JOY_BUTTON_B):
 						start = true
 			if start:
 				set_phase(Phase.PRE_PERIOD_LERP)
@@ -128,7 +146,10 @@ func set_phase(new_phase: Phase) -> void:
 			var circle = true
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
+					if s.anim_state == "in_penalty" or \
+					s.anim_state == "entering_penalty" or \
+										s.anim_state == "leaving_penalty" or \
+																				s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "skating_circle" if circle else "skating_figure8"
 					circle = not circle
@@ -142,15 +163,25 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 1.5
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
+					if s.anim_state == "in_penalty" or \
+					s.anim_state == "entering_penalty" or \
+										s.anim_state == "leaving_penalty" or \
+																				s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "lerping"
+
+		Phase.REPLAY:
+			if manager and manager.has_method("start_replay"):
+				manager.start_replay()
 
 		Phase.PLAYING:
 			($"../../Boards/BoardsCollision").disabled = false
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
+					if s.anim_state == "in_penalty" or \
+					s.anim_state == "entering_penalty" or \
+										s.anim_state == "leaving_penalty" or \
+																				s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = ""
 					if "base_initial_position" in s:
@@ -176,7 +207,10 @@ func set_phase(new_phase: Phase) -> void:
 			var team_has_penalty = false
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
+					if s.anim_state == "in_penalty" or \
+					s.anim_state == "entering_penalty" or \
+										s.anim_state == "leaving_penalty" or \
+																				s.anim_state == "return_from_penalty":
 						team_has_penalty = true
 						continue
 					s.anim_state = "face_off"
@@ -260,7 +294,10 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 2.0
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
+					if s.anim_state == "in_penalty" or \
+					s.anim_state == "entering_penalty" or \
+										s.anim_state == "leaving_penalty" or \
+																				s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "skating_around"
 
@@ -268,7 +305,10 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 1.5
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
+					if s.anim_state == "in_penalty" or \
+					s.anim_state == "entering_penalty" or \
+										s.anim_state == "leaving_penalty" or \
+																				s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "lerping"
 			for p in pucks:
@@ -281,7 +321,10 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 2.5
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
+					if s.anim_state == "in_penalty" or \
+					s.anim_state == "entering_penalty" or \
+										s.anim_state == "leaving_penalty" or \
+																				s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "skating_out"
 			($"../../Boards/BoardsCollision").disabled = true
@@ -300,7 +343,10 @@ func set_phase(new_phase: Phase) -> void:
 			var circle = true
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
+					if s.anim_state == "in_penalty" or \
+					s.anim_state == "entering_penalty" or \
+										s.anim_state == "leaving_penalty" or \
+																				s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "skating_circle" if circle else "skating_figure8"
 					circle = not circle
@@ -309,14 +355,20 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 1.5
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "in_penalty" or s.anim_state == "entering_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
+					if s.anim_state == "in_penalty" or \
+					s.anim_state == "entering_penalty" or \
+										s.anim_state == "leaving_penalty" or \
+																				s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "lerping"
 		Phase.PRE_PENALTY_SKATE:
 			phase_timer = 2.0
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "entering_penalty" or s.anim_state == "in_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
+					if s.anim_state == "entering_penalty" or \
+					s.anim_state == "in_penalty" or \
+										s.anim_state == "leaving_penalty" or \
+																				s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "skating_around"
 			for p in pucks:
@@ -329,7 +381,10 @@ func set_phase(new_phase: Phase) -> void:
 			var team_has_penalty = false
 			for s in skaters:
 				if "anim_state" in s:
-					if s.anim_state == "entering_penalty" or s.anim_state == "in_penalty" or s.anim_state == "leaving_penalty" or s.anim_state == "return_from_penalty":
+					if s.anim_state == "entering_penalty" or \
+					s.anim_state == "in_penalty" or \
+										s.anim_state == "leaving_penalty" or \
+																				s.anim_state == "return_from_penalty":
 						team_has_penalty = true
 						continue
 					s.anim_state = "lerping"
@@ -366,7 +421,11 @@ func set_phase(new_phase: Phase) -> void:
 					ref.target_pos = faceoff_pos
 
 			for s in skaters:
-				if "anim_state" in s and s.anim_state != "entering_penalty" and s.anim_state != "in_penalty" and s.anim_state != "leaving_penalty" and s.anim_state != "return_from_penalty" and s.has_method("home") and "initial_position" in s:
+				if "anim_state" in s \
+				and not (s.anim_state in ["in_penalty", "entering_penalty"]) \
+				and not (s.anim_state in ["leaving_penalty", "return_from_penalty"]) \
+				and s.has_method("home") \
+				and "initial_position" in s:
 					var x_offset = 0
 					if pucks.size() > 0:
 						x_offset = pucks[0].global_position.x - 1005.5
