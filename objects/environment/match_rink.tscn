@@ -552,9 +552,9 @@ home_team = true
 
 [node name="Team1_5" parent="Manager/Team1" unique_id=505868705 node_paths=PackedStringArray("ghost") instance=ExtResource("4_ka43y")]
 position = Vector2(907, 340)
+ghost = NodePath("../../Ghosts/Player")
 home_team = true
 stats = 1
-ghost = NodePath("../../Ghosts/Player")
 
 [node name="Goalie2" parent="Manager" unique_id=1083843776 instance=ExtResource("3_jkole")]
 position = Vector2(1672, 521)

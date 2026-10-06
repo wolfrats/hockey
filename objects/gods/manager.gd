@@ -337,7 +337,6 @@ func _physics_process(_delta: float) -> void:
 			if replay_index >= replay_buffer.size():
 				replay_index = 0
 
-
 func setup_ui() -> void:
 	ui_layer = CanvasLayer.new()
 	add_child(ui_layer)

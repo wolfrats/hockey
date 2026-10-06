@@ -234,4 +234,6 @@ joypads/ignore_joypad_on_unfocused_application=true
 
 rendering_device/driver.windows="d3d12"
 textures/vram_compression/import_etc2_astc=true
+textures/default_filters/use_nearest_mipmap_filter=true
+textures/default_filters/anisotropic_filtering_level=0
 environment/defaults/default_clear_color=Color(0.15607709, 0.15607709, 0.15607709, 1)

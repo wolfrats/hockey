@@ -91,8 +91,10 @@ func _ready() -> void:
 	#$Sprite.texture.atlas = $Sprite.texture.atlas.duplicate()
 	if home_team:
 		$Sprite.texture = Globals.home_goalie_textures["Stand"]
+		$Sprite.material = Globals.home_shader_material
 	else:
 		$Sprite.texture = Globals.away_goalie_textures["Stand"]
+		$Sprite.material = Globals.away_shader_material
 	$Sprite.flip_h = home_team
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
