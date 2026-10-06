@@ -2,10 +2,10 @@ extends CanvasLayer
 
 var home_color: Color
 var away_color: Color
+var skater_textures: Dictionary = {}
 var home_textures: Dictionary = {}
 var away_textures: Dictionary = {}
 var referee_textures: Dictionary = {}
-
 var home_goalie_textures: Dictionary = {}
 var away_goalie_textures: Dictionary = {}
 
@@ -48,10 +48,21 @@ var use_onscreen_controls: bool = DisplayServer.is_touchscreen_available()
 
 func _init() -> void:
 	load_settings()
+	var sprites = [
+		"Skate Left", "Skate Down", "Skate Up", "Glide Left", "Check Left", "Check Down", "Check Up",
+		"Grab Left", "Grab Down", "Grab Up", "Pummel Down", "Pummel Up", "Shoot Left", "Die 1"
+	]
+	for t in ["light", "medium", "heavy"]:
+		for s in sprites:
+			var tex = load("res://sprites/" + t + "/" + s + ".png")
+			skater_textures[t + "/" + s] = tex
 	update_team_textures()
 	generate_referee_textures()
 	for x in range(0, len(player_colors)):
 		player_colors_map["Player %d" % [x + 1]] = player_colors[x].to_html(false)
+
+func skater_texture(size, action) -> Texture2D:
+	return skater_textures[size + "/" + action]#.duplicate()
 
 func generate_referee_textures() -> void:
 	var sprites = [
@@ -59,7 +70,7 @@ func generate_referee_textures() -> void:
 		"Grab Left", "Grab Down", "Grab Up", "Pummel Down", "Pummel Up", "Shoot Left", "Die 1"
 	]
 	for s in sprites:
-		var tex = load("res://sprites/medium/" + s + ".png")
+		var tex = skater_texture("medium", s)
 		if tex:
 			referee_textures[s] = swap_colors_in_texture_referee(tex)
 
@@ -95,7 +106,7 @@ func update_team_textures() -> void:
 		home_textures[t] = {}
 		away_textures[t] = {}
 		for s in sprites:
-			var tex = load("res://sprites/" + t + "/" + s + ".png")
+			var tex = skater_texture(t, s)
 			if tex:
 				home_textures[t][s] = swap_colors_in_texture_multi(tex, home_team["head_color"], home_team["body_color"], home_team["foot_color"])
 				away_textures[t][s] = swap_colors_in_texture_multi(tex, away_team.get("away_head_color", away_team["head_color"]), away_team.get("away_body_color", away_team["body_color"]), away_team.get("away_foot_color", away_team["foot_color"]))
