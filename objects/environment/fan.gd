@@ -33,27 +33,29 @@ func _ready() -> void:
 	$Person.texture = Globals.fan_textures[sitstr]
 	var home_team_kit = StatBook.TEAMS[Globals.home_team_index]
 	var away_team_kit = StatBook.TEAMS[Globals.away_team_index]
-	$Person.set_instance_shader_parameter("original_0", Globals.color_to_vec4(Globals.helmet_color))
-	$Person.set_instance_shader_parameter("original_1", Globals.color_to_vec4(Globals.shirt_color))
-	$Person.set_instance_shader_parameter("original_2", Globals.color_to_vec4(Globals.skate_color))
-	$Person.set_instance_shader_parameter("original_3", Globals.color_to_vec4(Globals.skin_tone))
+	var material = $Person.material.duplicate()
+	$Person.material = material
+	material.set("shader_parameter/original_0", Globals.color_to_vec4(Globals.helmet_color))
+	material.set("shader_parameter/original_1", Globals.color_to_vec4(Globals.shirt_color))
+	material.set("shader_parameter/original_2", Globals.color_to_vec4(Globals.skate_color))
+	material.set("shader_parameter/original_3", Globals.color_to_vec4(Globals.skin_tone))
 	var st = Globals.generate_random_skin_tone()
-	$Person.set_instance_shader_parameter("replace_3", Globals.color_to_vec4(st[0]))
-	$Person.set_instance_shader_parameter("original_4", Globals.color_to_vec4(Globals.hair_color))
-	$Person.set_instance_shader_parameter("replace_4", Globals.color_to_vec4(Globals.generate_random_hair_color()))
-	$Person.set_instance_shader_parameter("original_5", Globals.color_to_vec4(Globals.eye_color))
-	$Person.set_instance_shader_parameter("replace_5", Globals.color_to_vec4(Globals.generate_random_eye_color()))
-	$Person.set_instance_shader_parameter("original_6", Globals.color_to_vec4(Globals.nose_color))
-	$Person.set_instance_shader_parameter("replace_6", Globals.color_to_vec4(st[1]))
+	material.set("shader_parameter/replace_3", Globals.color_to_vec4(st[0]))
+	material.set("shader_parameter/original_4", Globals.color_to_vec4(Globals.hair_color))
+	material.set("shader_parameter/replace_4", Globals.color_to_vec4(Globals.generate_random_hair_color()))
+	material.set("shader_parameter/original_5", Globals.color_to_vec4(Globals.eye_color))
+	material.set("shader_parameter/replace_5", Globals.color_to_vec4(Globals.generate_random_eye_color()))
+	material.set("shader_parameter/original_6", Globals.color_to_vec4(Globals.nose_color))
+	material.set("shader_parameter/replace_6", Globals.color_to_vec4(st[1]))
 
 	if home_team:
-		$Person.set_instance_shader_parameter("replace_0", Globals.color_to_vec4(home_team_kit["head_color"]))
-		$Person.set_instance_shader_parameter("replace_1", Globals.color_to_vec4(home_team_kit["body_color"]))
-		$Person.set_instance_shader_parameter("replace_2", Globals.color_to_vec4(home_team_kit["foot_color"]))
+		material.set("shader_parameter/replace_0", Globals.color_to_vec4(home_team_kit["head_color"]))
+		material.set("shader_parameter/replace_1", Globals.color_to_vec4(home_team_kit["body_color"]))
+		material.set("shader_parameter/replace_2", Globals.color_to_vec4(home_team_kit["foot_color"]))
 	else:
-		$Person.set_instance_shader_parameter("replace_0", Globals.color_to_vec4(away_team_kit["away_head_color"]))
-		$Person.set_instance_shader_parameter("replace_1", Globals.color_to_vec4(away_team_kit["away_body_color"]))
-		$Person.set_instance_shader_parameter("replace_2", Globals.color_to_vec4(away_team_kit["away_foot_color"]))
+		material.set("shader_parameter/replace_0", Globals.color_to_vec4(away_team_kit["away_head_color"]))
+		material.set("shader_parameter/replace_1", Globals.color_to_vec4(away_team_kit["away_body_color"]))
+		material.set("shader_parameter/replace_2", Globals.color_to_vec4(away_team_kit["away_foot_color"]))
 
 func _physics_process(_delta: float) -> void:
 	if stand_timer > 0:

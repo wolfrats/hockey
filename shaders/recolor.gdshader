@@ -1,20 +1,20 @@
 shader_type canvas_item;
 
-instance uniform vec4 original_0;
-instance uniform vec4 original_1;
-instance uniform vec4 original_2;
-instance uniform vec4 original_3;
-instance uniform vec4 original_4;
-instance uniform vec4 original_5;
-instance uniform vec4 original_6;
+uniform vec4 original_0;
+uniform vec4 original_1;
+uniform vec4 original_2;
+uniform vec4 original_3;
+uniform vec4 original_4;
+uniform vec4 original_5;
+uniform vec4 original_6;
 
-instance uniform vec4 replace_0;
-instance uniform vec4 replace_1;
-instance uniform vec4 replace_2;
-instance uniform vec4 replace_3;
-instance uniform vec4 replace_4;
-instance uniform vec4 replace_5;
-instance uniform vec4 replace_6;
+uniform vec4 replace_0;
+uniform vec4 replace_1;
+uniform vec4 replace_2;
+uniform vec4 replace_3;
+uniform vec4 replace_4;
+uniform vec4 replace_5;
+uniform vec4 replace_6;
 
 
 vec4 swap_color(vec4 color){

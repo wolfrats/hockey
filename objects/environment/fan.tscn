@@ -7,6 +7,20 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vd4dr"]
 shader = ExtResource("3_kx8ux")
+shader_parameter/original_0 = Vector4(0, 0, 0, 0)
+shader_parameter/original_1 = Vector4(0, 0, 0, 0)
+shader_parameter/original_2 = Vector4(0, 0, 0, 0)
+shader_parameter/original_3 = Vector4(0, 0, 0, 0)
+shader_parameter/original_4 = Vector4(0, 0, 0, 0)
+shader_parameter/original_5 = Vector4(0, 0, 0, 0)
+shader_parameter/original_6 = Vector4(0, 0, 0, 0)
+shader_parameter/replace_0 = Vector4(0, 0, 0, 0)
+shader_parameter/replace_1 = Vector4(0, 0, 0, 0)
+shader_parameter/replace_2 = Vector4(0, 0, 0, 0)
+shader_parameter/replace_3 = Vector4(0, 0, 0, 0)
+shader_parameter/replace_4 = Vector4(0, 0, 0, 0)
+shader_parameter/replace_5 = Vector4(0, 0, 0, 0)
+shader_parameter/replace_6 = Vector4(0, 0, 0, 0)
 
 [node name="Fan" type="Node2D" unique_id=870400134]
 script = ExtResource("1_vd4dr")
@@ -17,10 +31,5 @@ texture = ExtResource("2_kx8ux")
 [node name="Person" type="Sprite2D" parent="." unique_id=331214540]
 texture_filter = 1
 material = SubResource("ShaderMaterial_vd4dr")
-instance_shader_parameters/original_0 = Color(0, 0, 0, 1)
-instance_shader_parameters/original_1 = Color(0, 0, 0, 1)
-instance_shader_parameters/original_3 = Color(0, 0, 0, 1)
-instance_shader_parameters/replace_0 = Color(1, 0.1928342, 0.32692218, 1)
-instance_shader_parameters/replace_1 = Color(0, 0.75112915, 0.11379731, 1)
 position = Vector2(0, 1)
 texture = ExtResource("3_vd4dr")

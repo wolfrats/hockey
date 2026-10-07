@@ -90,17 +90,18 @@ func _ready() -> void:
 	$Sprite.texture = $Sprite.texture.duplicate()
 	#$Sprite.texture.atlas = $Sprite.texture.atlas.duplicate()
 	var st = Globals.generate_random_skin_tone()
-	$Sprite.set_instance_shader_parameter("original_3", Globals.color_to_vec4(Globals.skin_tone))
-	$Sprite.set_instance_shader_parameter("original_4", Globals.color_to_vec4(Globals.nose_color))
-	$Sprite.set_instance_shader_parameter("replace_3", Globals.color_to_vec4(st[0]))
-	$Sprite.set_instance_shader_parameter("replace_4", Globals.color_to_vec4(st[1]))
 	if home_team:
 		$Sprite.texture = Globals.home_goalie_textures["Stand"]
-		$Sprite.material = Globals.home_shader_material
+		$Sprite.material = Globals.home_shader_material.duplicate()
 	else:
 		$Sprite.texture = Globals.away_goalie_textures["Stand"]
-		$Sprite.material = Globals.away_shader_material
+		$Sprite.material = Globals.away_shader_material.duplicate()
 	$Sprite.flip_h = home_team
+	$Sprite.material.set("shader_parameter/original_3", Globals.color_to_vec4(Globals.skin_tone))
+	$Sprite.material.set("shader_parameter/original_4", Globals.color_to_vec4(Globals.nose_color))
+	$Sprite.material.set("shader_parameter/replace_3", Globals.color_to_vec4(st[0]))
+	$Sprite.material.set("shader_parameter/replace_4", Globals.color_to_vec4(st[1]))
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
