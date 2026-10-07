@@ -96,7 +96,7 @@ func _ready() -> void:
 		$Sprite.texture = Globals.away_goalie_textures["Stand"]
 		$Sprite.material = Globals.away_shader_material
 	var st = Globals.generate_random_skin_tone()
-	$Sprite.set_instance_shader_parameter("origiEWWWWWnal_3", Globals.color_to_vec4(Globals.skin_tone))
+	$Sprite.set_instance_shader_parameter("original_3", Globals.color_to_vec4(Globals.skin_tone))
 	$Sprite.set_instance_shader_parameter("original_4", Globals.color_to_vec4(Globals.nose_color))
 	$Sprite.set_instance_shader_parameter("replace_3", Globals.color_to_vec4(st[0]))
 	$Sprite.set_instance_shader_parameter("replace_4", Globals.color_to_vec4(st[1]))
