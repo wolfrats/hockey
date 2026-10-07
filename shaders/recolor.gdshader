@@ -7,6 +7,7 @@ instance uniform vec4 original_3;
 instance uniform vec4 original_4;
 instance uniform vec4 original_5;
 instance uniform vec4 original_6;
+
 instance uniform vec4 replace_0;
 instance uniform vec4 replace_1;
 instance uniform vec4 replace_2;

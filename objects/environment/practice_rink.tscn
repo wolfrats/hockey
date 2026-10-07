@@ -497,6 +497,7 @@ sources/1 = SubResource("TileSetAtlasSource_k8ji8")
 
 [node name="Root" type="Node2D" unique_id=608511731]
 y_sort_enabled = true
+texture_filter = 1
 
 [node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=696495241]
 z_index = -100
