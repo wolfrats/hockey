@@ -20,6 +20,9 @@ const float precision = 0.01;
 
 
 vec4 swap_color(vec4 color){
+	if (color.a < 0.01) {
+		return color;
+	}
 	vec4 original_colors[5] = vec4[5] (original_0, original_1, original_2, original_3, original_4);
 	vec4 replace_colors[5] = vec4[5] (replace_0, replace_1, replace_2, replace_3, replace_4);
 	for (int i = 0; i < 5; i ++) {
