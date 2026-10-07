@@ -237,8 +237,9 @@ func random_hair_color() -> Color:
 var hair_bucket = []
 func generate_random_hair_color() -> Color:
 	if hair_bucket.is_empty():
+		var val = random_hair_color()
 		for I in randi_range(1, 6):
-			hair_bucket.push_back(random_hair_color())
+			hair_bucket.push_back(val)
 	return hair_bucket.pop_back()
 
 func random_eye_color() -> Color: 
@@ -255,8 +256,9 @@ func random_eye_color() -> Color:
 var eye_bucket = []
 func generate_random_eye_color() -> Color: 
 	if eye_bucket.is_empty():
+		var val = random_eye_color()
 		for I in randi_range(1, 6):
-			eye_bucket.push_back(random_eye_color())
+			eye_bucket.push_back(val)
 	return eye_bucket.pop_back()
 
 func random_skin_tone() -> Array[Color]:
@@ -266,6 +268,7 @@ func random_skin_tone() -> Array[Color]:
 var skin_bucket = []
 func generate_random_skin_tone() -> Array[Color]:
 	if skin_bucket.is_empty():
+		var val = random_skin_tone()
 		for I in randi_range(1, 6):
-			skin_bucket.push_back(random_skin_tone())
+			skin_bucket.push_back(val)
 	return skin_bucket.pop_back()
