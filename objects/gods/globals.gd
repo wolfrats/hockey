@@ -234,7 +234,7 @@ func random_hair_color() -> Color:
 		v = randf_range(0.30, 0.70)
 	return Color.from_hsv(h, s, v)
 
-var hair_bucket = []
+var hair_bucket = [] #I realize I could have just used a counter and kept 1 copy of the color, to reduce memory, but who cares
 func generate_random_hair_color() -> Color:
 	if hair_bucket.is_empty():
 		var val = random_hair_color()
