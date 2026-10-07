@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bpbyhpiyqlrwi"
-path="res://.godot/imported/Sit.png-705debd0252484bb730b67fd15b116e4.ctex"
+uid="uid://byx1wpnsd4cxe"
+path="res://.godot/imported/Sit-Side-X.png-0b1ef67530fcee374649b009b05f9fa0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/fan/Sit.png"
-dest_files=["res://.godot/imported/Sit.png-705debd0252484bb730b67fd15b116e4.ctex"]
+source_file="res://sprites/fan/Sit-Side-X.png"
+dest_files=["res://.godot/imported/Sit-Side-X.png-0b1ef67530fcee374649b009b05f9fa0.ctex"]
 
 [params]
 

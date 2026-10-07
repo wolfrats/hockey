@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bo6n76ecflqj6"
-path="res://.godot/imported/Chair.png-c02a9ed09a03088c0959e4a273ca7491.ctex"
+uid="uid://dba7jn3xjneud"
+path="res://.godot/imported/Stand-M.png-7a8cbc7d70f05920e13dbe0714d40d17.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/fan/Chair.png"
-dest_files=["res://.godot/imported/Chair.png-c02a9ed09a03088c0959e4a273ca7491.ctex"]
+source_file="res://sprites/fan/Stand-M.png"
+dest_files=["res://.godot/imported/Stand-M.png-7a8cbc7d70f05920e13dbe0714d40d17.ctex"]
 
 [params]
 

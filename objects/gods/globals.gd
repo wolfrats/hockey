@@ -14,9 +14,12 @@ var fan_textures: Dictionary = {}
 
 var ticks: int = 0
 var period_length: float = 120.0
-var helmet_color: Color = Color.from_rgba8(16, 100, 174)
+var  helmet_color: Color = Color.from_rgba8(16, 100, 174)
 var shirt_color: Color = Color.from_rgba8(96, 176, 248)
 var skate_color: Color = Color.from_rgba8(96, 255, 248)
+const hair_color = Color("5B3225FF")
+const eye_color = Color("086D40FF")
+const skin_tone = Color("F88070FF")
 
 var player_devices: Array[int] = []
 var player_teams: Array[int] = []
@@ -86,26 +89,20 @@ func _ready() -> void:
 	for s in get_node("Sounds").get_children():
 		sounds[s.name] = s
 
+func color_to_vec4(color: Color) -> Vector4: 
+	return Vector4(color.r, color.g, color.b, color.a)
+
 func update_team_textures() -> void:
 	var home_team = StatBook.TEAMS[home_team_index]
 	var away_team = StatBook.TEAMS[away_team_index]
 
 	home_color = home_team["body_color"]
 	away_color = away_team.get("away_body_color", away_team["body_color"])
-	fan_textures = {
-		true: {
-			"Sit": swap_colors_in_texture_multi(preload("res://sprites/fan/Sit.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"]),
-			"Stand": swap_colors_in_texture_multi(preload("res://sprites/fan/Stand.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"]),
-			"Sit-Side": swap_colors_in_texture_multi(preload("res://sprites/fan/Sit-Side.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"]),
-			"Stand-Side": swap_colors_in_texture_multi(preload("res://sprites/fan/Stand-Side.png"), home_team["head_color"], home_team["body_color"], home_team["foot_color"]),
-		},
-		false: {
-			"Sit": swap_colors_in_texture_multi(preload("res://sprites/fan/Sit.png"), away_team["head_color"], away_team["body_color"], away_team["foot_color"]),
-			"Stand": swap_colors_in_texture_multi(preload("res://sprites/fan/Stand.png"), away_team["head_color"], away_team["body_color"], away_team["foot_color"]),
-			"Sit-Side": swap_colors_in_texture_multi(preload("res://sprites/fan/Sit-Side.png"), away_team["head_color"], away_team["body_color"], away_team["foot_color"]),
-			"Stand-Side": swap_colors_in_texture_multi(preload("res://sprites/fan/Stand-Side.png"), away_team["head_color"], away_team["body_color"], away_team["foot_color"]),
-		},
-	}
+	fan_textures = {}
+	for gm in ["-X", "-F", "-M"]:
+		for s in ["", "-Side"]:
+			for p in ["Sit", "Stand"]:
+				fan_textures[p + s + gm] = load("res://sprites/fan/" + p + s + gm + ".png")
 	var sprites = [
 		"Skate Left", "Skate Down", "Skate Up", "Glide Left", "Check Left", "Check Down", "Check Up",
 		"Grab Left", "Grab Down", "Grab Up", "Pummel Down", "Pummel Up", "Shoot Left", "Die 1"
@@ -190,9 +187,10 @@ func swap_color_in_texture(tex: Texture2D, from_col: Color, to_col: Color) -> Im
 	# Create a new ImageTexture from the modified Image
 	return ImageTexture.create_from_image(img)
 
-func play_sound_at(sound: String, place: Vector2) -> void:
+func play_sound_at(sound: String, place: Vector2, twang: bool = true) -> void:
 	sounds[sound].global_position = place
-	sounds[sound].pitch_scale = randf_range(0.9, 1.1)
+	if twang:
+		sounds[sound].pitch_scale = randf_range(0.9, 1.1)
 	sounds[sound].play()
 
 func load_settings() -> void:
@@ -211,3 +209,37 @@ func save_settings() -> void:
 	config.set_value("Settings", "home_team_index", home_team_index)
 	config.set_value("Settings", "away_team_index", away_team_index)
 	config.save(save_path)
+
+func generate_random_hair_color() -> Color: 	
+	var h: float = 0.0 
+	var s: float = 0.0
+	var v: float = 0.0 	 	
+	var hair_type_roll = randf() 	
+	if hair_type_roll < 0.40: 
+		h = randf_range(0.05, 0.09) 
+		s = randf_range(0.40, 0.70) 
+		v = randf_range(0.15, 0.40) 
+	elif hair_type_roll < 0.75: 
+		h = randf_range(0.05, 0.10) 
+		s = randf_range(0.10, 0.30) 
+		v = randf_range(0.05, 0.15) 
+	elif hair_type_roll < 0.92: 
+		h = randf_range(0.08, 0.14) 
+		s = randf_range(0.30, 0.60) 
+		v = randf_range(0.60, 0.90) 
+	else: 
+		h = randf_range(0.00, 0.06) 
+		s = randf_range(0.60, 0.85) 
+		v = randf_range(0.30, 0.70)
+	return Color.from_hsv(h, s, v)
+
+func generate_random_eye_color() -> Color: 
+	var roll = randf() 
+	if roll < 0.70: 
+		return Color.from_hsv(randf_range(0.05, 0.11), randf_range(0.5, 0.8), randf_range(0.2, 0.5)) 
+	elif roll < 0.85: 
+		return Color.from_hsv(randf_range(0.52, 0.64), randf_range(0.2, 0.5), randf_range(0.6, 0.9)) 
+	elif roll < 0.95: 
+		return Color.from_hsv(randf_range(0.09, 0.14), randf_range(0.4, 0.6), randf_range(0.3, 0.6)) 
+	else: 
+		return Color.from_hsv(randf_range(0.20, 0.36), randf_range(0.3, 0.6), randf_range(0.4, 0.7))

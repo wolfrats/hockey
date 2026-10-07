@@ -54,6 +54,8 @@ func _ready() -> void:
 	spring = $Spring #DampedSpringJoint2D.new()
 	#add_child(spring)
 	spring.node_a = get_path()
+	$Sprite.set_instance_shader_parameter("original_3", Globals.color_to_vec4(Globals.skin_tone))
+	$Sprite.set_instance_shader_parameter("replace_3", Globals.color_to_vec4(Globals.skin_tone.darkened(pow(randf() / 2, 2))))
 	# The texture itself will be updated dynamically in _physics_process based on animation state
 	if home_team:
 		facing_dir = Vector2(1, 0)

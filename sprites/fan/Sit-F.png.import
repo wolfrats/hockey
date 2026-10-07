@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bnfin0k1kb3v4"
-path="res://.godot/imported/Stand.png-7efa685d3579fcb7e5fa3b25b052d74a.ctex"
+uid="uid://joj5tj73fu5k"
+path="res://.godot/imported/Sit-F.png-a9419cdf602cb7dc998aa261b80a4c00.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://sprites/fan/Stand.png"
-dest_files=["res://.godot/imported/Stand.png-7efa685d3579fcb7e5fa3b25b052d74a.ctex"]
+source_file="res://sprites/fan/Sit-F.png"
+dest_files=["res://.godot/imported/Sit-F.png-a9419cdf602cb7dc998aa261b80a4c00.ctex"]
 
 [params]
 

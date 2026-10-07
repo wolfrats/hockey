@@ -1,8 +1,12 @@
 [gd_scene format=3 uid="uid://46tfd5ah3rh6"]
 
 [ext_resource type="Script" uid="uid://bnc3abbpdw88s" path="res://objects/environment/fan.gd" id="1_vd4dr"]
-[ext_resource type="Texture2D" uid="uid://dpuawmwavs50c" path="res://sprites/fan/Chair.png" id="2_kx8ux"]
-[ext_resource type="Texture2D" uid="uid://bpbyhpiyqlrwi" path="res://sprites/fan/Sit.png" id="3_gwobx"]
+[ext_resource type="Texture2D" uid="uid://bo6n76ecflqj6" path="res://sprites/fan/Chair.png" id="2_kx8ux"]
+[ext_resource type="Shader" uid="uid://c4wrpw8sx7x33" path="res://shaders/recolor.gdshader" id="3_kx8ux"]
+[ext_resource type="Texture2D" uid="uid://daij1sr385wyh" path="res://sprites/fan/Sit-M.png" id="3_vd4dr"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vd4dr"]
+shader = ExtResource("3_kx8ux")
 
 [node name="Fan" type="Node2D" unique_id=870400134]
 script = ExtResource("1_vd4dr")
@@ -11,5 +15,12 @@ script = ExtResource("1_vd4dr")
 texture = ExtResource("2_kx8ux")
 
 [node name="Person" type="Sprite2D" parent="." unique_id=331214540]
+texture_filter = 1
+material = SubResource("ShaderMaterial_vd4dr")
+instance_shader_parameters/original_0 = Color(0, 0, 0, 1)
+instance_shader_parameters/original_1 = Color(0, 0, 0, 1)
+instance_shader_parameters/original_3 = Color(0, 0, 0, 1)
+instance_shader_parameters/replace_0 = Color(1, 0.1928342, 0.32692218, 1)
+instance_shader_parameters/replace_1 = Color(0, 0.75112915, 0.11379731, 1)
 position = Vector2(0, 1)
-texture = ExtResource("3_gwobx")
+texture = ExtResource("3_vd4dr")
