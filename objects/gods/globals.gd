@@ -20,6 +20,7 @@ var skate_color: Color = Color.from_rgba8(96, 255, 248)
 const hair_color = Color("5B3225FF")
 const eye_color = Color("086D40FF")
 const skin_tone = Color("F88070FF")
+const nose_color = Color("C3694DFF")
 
 var player_devices: Array[int] = []
 var player_teams: Array[int] = []
@@ -243,3 +244,7 @@ func generate_random_eye_color() -> Color:
 		return Color.from_hsv(randf_range(0.09, 0.14), randf_range(0.4, 0.6), randf_range(0.3, 0.6)) 
 	else: 
 		return Color.from_hsv(randf_range(0.20, 0.36), randf_range(0.3, 0.6), randf_range(0.4, 0.7))
+
+func generate_random_skin_tone() -> Array[Color]:
+	var s = (pow(randf()*.99, 5))
+	return [Globals.skin_tone.darkened(s), Globals.nose_color.darkened(s)]
