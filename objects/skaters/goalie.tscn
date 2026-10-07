@@ -2,11 +2,20 @@
 
 [ext_resource type="Script" uid="uid://nueihv38xcpj" path="res://objects/skaters/goalie.gd" id="1_tat2j"]
 [ext_resource type="Texture2D" uid="uid://dto2aeu1rlv8r" path="res://sprites/goalie.png" id="2_k1fhr"]
-[ext_resource type="Material" uid="uid://1eoo1pqelk1h" path="res://shaders/outline_shader_material.tres" id="2_tat2j"]
+[ext_resource type="Shader" uid="uid://da240jlm20smy" path="res://shaders/skater.gdshader" id="2_tat2j"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_arvj2"]
 friction = 0.5
 bounce = 0.5
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0dw4r"]
+shader = ExtResource("2_tat2j")
+shader_parameter/original_0 = Color(0, 0, 0, 1)
+shader_parameter/original_1 = Color(0, 0, 0, 1)
+shader_parameter/original_2 = Color(0, 0, 0, 1)
+shader_parameter/replace_0 = Color(0, 0, 0, 1)
+shader_parameter/replace_1 = Color(0, 0, 0, 1)
+shader_parameter/replace_2 = Color(0, 0, 0, 1)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_est1s"]
 size = Vector2(15.75, 23.5)
@@ -26,7 +35,7 @@ script = ExtResource("1_tat2j")
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=406336950]
 texture_filter = 1
-material = ExtResource("2_tat2j")
+material = SubResource("ShaderMaterial_0dw4r")
 texture = ExtResource("2_k1fhr")
 region_enabled = true
 region_rect = Rect2(0, 0, 192, 192)
