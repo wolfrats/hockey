@@ -15,7 +15,7 @@ instance uniform vec4 replace_4;
 instance uniform vec4 replace_5;
 instance uniform vec4 replace_6;
 
-const float precision = 0.1;
+const float precision = 0.01;
 
 
 vec4 swap_color(vec4 color){
