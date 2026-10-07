@@ -211,7 +211,7 @@ func save_settings() -> void:
 	config.set_value("Settings", "away_team_index", away_team_index)
 	config.save(save_path)
 
-func generate_random_hair_color() -> Color: 	
+func random_hair_color() -> Color: 	
 	var h: float = 0.0 
 	var s: float = 0.0
 	var v: float = 0.0 	 	
@@ -234,7 +234,14 @@ func generate_random_hair_color() -> Color:
 		v = randf_range(0.30, 0.70)
 	return Color.from_hsv(h, s, v)
 
-func generate_random_eye_color() -> Color: 
+var hair_bucket = []
+func generate_random_hair_color() -> Color:
+	if hair_bucket.is_empty():
+		for I in randi_range(1, 6):
+			hair_bucket.push_back(random_hair_color())
+	return hair_bucket.pop_back()
+
+func random_eye_color() -> Color: 
 	var roll = randf() 
 	if roll < 0.70: 
 		return Color.from_hsv(randf_range(0.05, 0.11), randf_range(0.5, 0.8), randf_range(0.2, 0.5)) 
@@ -245,6 +252,20 @@ func generate_random_eye_color() -> Color:
 	else: 
 		return Color.from_hsv(randf_range(0.20, 0.36), randf_range(0.3, 0.6), randf_range(0.4, 0.7))
 
-func generate_random_skin_tone() -> Array[Color]:
+var eye_bucket = []
+func generate_random_eye_color() -> Color: 
+	if eye_bucket.is_empty():
+		for I in randi_range(1, 6):
+			eye_bucket.push_back(random_eye_color())
+	return eye_bucket.pop_back()
+
+func random_skin_tone() -> Array[Color]:
 	var s = (pow(randf()*.99, 5))
 	return [Globals.skin_tone.darkened(s), Globals.nose_color.darkened(s)]
+
+var skin_bucket = []
+func generate_random_skin_tone() -> Array[Color]:
+	if skin_bucket.is_empty():
+		for I in randi_range(1, 6):
+			skin_bucket.push_back(random_skin_tone())
+	return skin_bucket.pop_back()
