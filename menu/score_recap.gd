@@ -4,7 +4,17 @@ extends Control
 @onready var stats_container: VBoxContainer = %StatsContainer
 
 func _ready() -> void:
-	$CenterContainer/VBoxContainer/Buttons/Rematch.grab_focus()
+	if Season.season_on:
+		$CenterContainer/VBoxContainer/Buttons/Rematch.visible = false
+		$CenterContainer/VBoxContainer/Buttons/Menu.visible = false
+		$CenterContainer/VBoxContainer/Buttons/Continue.visible = true
+		$CenterContainer/VBoxContainer/Buttons/Continue.grab_focus()
+	else:
+		$CenterContainer/VBoxContainer/Buttons/Rematch.visible = true
+		$CenterContainer/VBoxContainer/Buttons/Menu.visible = true
+		$CenterContainer/VBoxContainer/Buttons/Continue.visible = false
+		$CenterContainer/VBoxContainer/Buttons/Rematch.grab_focus()
+
 
 	score_label.text = "%d - %d" % [Globals.match_home_score, Globals.match_away_score]
 
@@ -109,3 +119,25 @@ func _on_menu_pressed() -> void:
 	Globals.match_home_score = 0
 	Globals.match_away_score = 0
 	get_tree().change_scene_to_file("res://menu/main_menu.tscn")
+
+func _on_continue_pressed() -> void:
+	Season.record_match(
+		Globals.home_team_index,
+		Globals.away_team_index,
+		Globals.match_home_score,
+		Globals.match_away_score
+	)
+	Season.simulate_other_matches()
+	Season.advance_week()
+
+	Globals.scorer_stats.clear()
+	Globals.assist_stats.clear()
+	Globals.shot_stats.clear()
+	Globals.faceoff_won_stats.clear()
+	Globals.penalty_stats.clear()
+	Globals.check_stats.clear()
+	Globals.hit_stats.clear()
+	Globals.down_stats.clear()
+	Globals.match_home_score = 0
+	Globals.match_away_score = 0
+	get_tree().change_scene_to_file("res://menu/season_hub.tscn")
