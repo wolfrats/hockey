@@ -41,7 +41,7 @@ Playing dirty in front of the ref may lead to penalties and a power play for the
 <summary>
 <h1>Team Bios</h1>
 </summary>
-The game currently features 11 totally original teams.
+The game currently features 17 totally original teams.
 
 ### The Wide Street Wackos
 The best team. Prefers violence over skilled hockey.
@@ -75,6 +75,9 @@ A fairly balanced team focused on winning the most.
 
 ### The Rockslides
 A team focused on generating scoring chances while sacrificing everything else.
+
+Plus 6 teams I did not yet write a bio for: The Queens, the Swords, the Syrups,
+the Evil Wrenches, the Tire Fires, and the Gasoline Fights.
 
 </details>
 
