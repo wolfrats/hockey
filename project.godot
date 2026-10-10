@@ -18,6 +18,7 @@ config/icon="uid://hn52xdfjj5e6"
 boot_splash/image="uid://dtnby12yywv7b"
 
 [autoload]
+Season="*res://objects/gods/season.gd"
 
 StatBook="*uid://1058ddid81yf"
 Globals="*uid://cf58uv3mr6hvc"

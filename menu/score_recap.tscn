@@ -94,10 +94,16 @@ custom_minimum_size = Vector2(200, 60)
 layout_mode = 2
 text = "Rematch"
 
+[node name="Continue" type="Button" parent="CenterContainer/VBoxContainer/Buttons" unique_id=484326118]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+text = "Continue"
+
 [node name="Menu" type="Button" parent="CenterContainer/VBoxContainer/Buttons" unique_id=484326117]
 custom_minimum_size = Vector2(200, 60)
 layout_mode = 2
 text = "Main Menu"
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Buttons/Rematch" to="." method="_on_rematch_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Buttons/Continue" to="." method="_on_continue_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Buttons/Menu" to="." method="_on_menu_pressed"]

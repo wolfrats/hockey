@@ -62,6 +62,11 @@ custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
 text = "Match"
 
+[node name="Season" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1144194095]
+custom_minimum_size = Vector2(300, 60)
+layout_mode = 2
+text = "Season"
+
 [node name="Setup" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1144194094]
 custom_minimum_size = Vector2(300, 60)
 layout_mode = 2
@@ -77,5 +82,6 @@ alignment = 1
 
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Practice" to="." method="_on_practice_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Match" to="." method="_on_match_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/Season" to="." method="_on_season_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/Setup" to="." method="_on_setup_pressed"]
 [connection signal="toggled" from="CenterContainer/VBoxContainer/JoystickToggle" to="." method="_on_joystick_toggled"]

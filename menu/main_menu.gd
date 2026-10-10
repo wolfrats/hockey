@@ -12,16 +12,16 @@ var BackHolder: Control
 
 func _ready() -> void:
 	Joy = VirtualJoystick.new()
-	Joy.action_left = &"skate_left" 
-	Joy.action_right = &"skate_right" 
+	Joy.action_left = &"skate_left"
+	Joy.action_right = &"skate_right"
 	Joy.action_up = &"skate_up"
 	Joy.action_down = &"skate_down"
 	Joy.joystick_mode = VirtualJoystick.JOYSTICK_DYNAMIC
 	Joy.visibility_mode = VirtualJoystick.VISIBILITY_ALWAYS
-	Joy.joystick_size = 150.0 
+	Joy.joystick_size = 150.0
 	Joy.tip_size = 60.0
 	Joy.deadzone_ratio = 0.2
-	Joy.custom_minimum_size = Vector2(100, 100) 
+	Joy.custom_minimum_size = Vector2(100, 100)
 	Shoot = TouchScreenButton.new()
 	Shoot.action = &"shoot"
 	Shoot.texture_normal = preload("res://sprites/shoot-button.svg")
@@ -44,8 +44,8 @@ func _ready() -> void:
 	Holder = Control.new()
 	Holder.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 50)
 	Holder.add_child(Swap)
-	Holder.add_child(Shoot) 
-	Holder.add_child(Slash) 
+	Holder.add_child(Shoot)
+	Holder.add_child(Slash)
 	Holder.add_child(Pass)
 	Holder.add_child(Grab)
 
@@ -87,7 +87,7 @@ func _on_setup_pressed() -> void:
 
 func _on_joystick_toggled(toggled_on: bool) -> void:
 	if Globals.get_node_or_null("Holder") == null && toggled_on:
-		Joy.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 150) 
+		Joy.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 150)
 		Holder.name = "Holder"
 		Globals.add_child(Holder)
 		BackHolder.name = "BackHolder"
@@ -103,3 +103,10 @@ func _on_joystick_toggled(toggled_on: bool) -> void:
 			Globals.remove_child(Globals.get_node("Joy"))
 	Globals.use_onscreen_controls = toggled_on
 	Globals.save_settings()
+
+func _on_season_pressed() -> void:
+	Season.load_season()
+	if Season.has_saved_season():
+		get_tree().change_scene_to_file("res://menu/season_hub.tscn")
+	else:
+		get_tree().change_scene_to_file("res://menu/season_team_setup.tscn")
