@@ -33,7 +33,7 @@ func new_season(player_team: int) -> void:
 
 	var standings = {}
 	for t in (a + b + c + d):
-		standings[str(t)] = {"wins": 0, "losses": 0}
+		standings[str(t)] = {"wins": 0, "losses": 0, "ties": 0}
 
 	var schedule = generate_schedule(a, b, c, d)
 
@@ -95,6 +95,13 @@ func record_match(home: int, away: int, home_score: int, away_score: int) -> voi
 	if home_score > away_score:
 		season_data["standings"][str(home)]["wins"] += 1
 		season_data["standings"][str(away)]["losses"] += 1
+	elif home_score == away_score:
+		if not season_data["standings"][str(away)].has("ties"):
+			season_data["standings"][str(away)]["ties"] = 0
+		if not season_data["standings"][str(home)].has("ties"):
+			season_data["standings"][str(home)]["ties"] = 0
+		season_data["standings"][str(away)]["ties"] += 1
+		season_data["standings"][str(home)]["ties"] += 1
 	else:
 		season_data["standings"][str(away)]["wins"] += 1
 		season_data["standings"][str(home)]["losses"] += 1
@@ -132,11 +139,6 @@ func simulate_other_matches() -> void:
 		var extra_goals = randi() % 4
 		home_score += randi() % (extra_goals + 1)
 		away_score += randi() % (extra_goals + 1)
-		if home_score == away_score:
-			if randf() < home_win_prob:
-				home_score += 1
-			else:
-				away_score += 1
 
 		record_match(home, away, home_score, away_score)
 
