@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dd8f1k3l4o7u"]
 
 [ext_resource type="Theme" uid="uid://c0b4q46jrp2me" path="res://menu/theme.tres" id="1_theme"]
-[ext_resource type="Script" uid="uid://tqvgh0rmayuq" path="res://menu/season_hub.gd" id="2_script"]
+[ext_resource type="Script" uid="uid://beg3r2jshvbrn" path="res://menu/season_hub.gd" id="2_wkts3"]
 [ext_resource type="Texture2D" uid="uid://cg1i3w702x3cu" path="res://sprites/rink.png" id="3_rink"]
 
 [sub_resource type="Gradient" id="Gradient_r7j8k"]
@@ -19,7 +19,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_theme")
-script = ExtResource("2_script")
+script = ExtResource("2_wkts3")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1863586043]
 modulate = Color(0.2, 0.2, 0.2, 1)

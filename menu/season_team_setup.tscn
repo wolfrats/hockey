@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dd8f1k3l4o6u"]
 
 [ext_resource type="Theme" uid="uid://c0b4q46jrp2me" path="res://menu/theme.tres" id="1_theme"]
-[ext_resource type="Script" uid="uid://tqvgh0rmayuq" path="res://menu/season_team_setup.gd" id="2_script"]
+[ext_resource type="Script" uid="uid://ptaleh0kw0f2" path="res://menu/season_team_setup.gd" id="2_r5r5d"]
 [ext_resource type="Texture2D" uid="uid://cg1i3w702x3cu" path="res://sprites/rink.png" id="3_rink"]
 
 [node name="SeasonTeamSetup" type="Control" unique_id=418654410]
@@ -12,7 +12,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_theme")
-script = ExtResource("2_script")
+script = ExtResource("2_r5r5d")
 
 [node name="Background" type="TextureRect" parent="." unique_id=1863586042]
 modulate = Color(0.5, 0.5, 0.5, 1)
@@ -96,8 +96,6 @@ text = "<"
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 text = ">"
-
-
 
 [node name="TimeLabel" type="Label" parent="VBoxContainer" unique_id=485428033]
 unique_name_in_owner = true

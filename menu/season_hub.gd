@@ -13,7 +13,7 @@ func _ready() -> void:
 	$VBoxContainer/Buttons/Play.grab_focus()
 	update_standings()
 	update_matchup()
-	update_schedule()
+	#update_schedule()
 
 
 func update_standings() -> void:
