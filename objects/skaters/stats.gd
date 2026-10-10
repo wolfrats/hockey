@@ -69,6 +69,8 @@ const TEAMS = [
 		"away_body_color": Color(0, 0, 0),
 		"away_foot_color": Color(0.965, 0.502, 0.142, 1.0),
 		"popularity": 0.89,
+		"conference": "sky",
+		"division": "sun"
 	},
 	{
 		"name": "Thunderbolts",
@@ -86,6 +88,8 @@ const TEAMS = [
 		"away_body_color": Color(0.9, 0.9, 0.9),
 		"away_foot_color": Color(0.5, 0.5, 1),
 		"popularity": 0.95,
+		"conference": "sky",
+		"division": "moon",
 	},
 	{
 		"name": "Flightless Birds",
@@ -103,6 +107,8 @@ const TEAMS = [
 		"away_body_color": Color(0.9, 0.9, 0.9),
 		"away_foot_color": Color(0.2, 0.2, 0.2),
 		"popularity": 0.73,
+		"conference": "sky",
+		"division": "sun"
 	},
 	{
 		"name": "Candy Canes",
@@ -120,6 +126,8 @@ const TEAMS = [
 		"away_body_color": Color(1, 0.2, 0.2),
 		"away_foot_color": Color(0.1, 0.1, 0.1),
 		"popularity": 0.88,
+		"conference": "sky",
+		"division": "sun"
 	},
 	{
 		"name": "Loch Ness Monsters",
@@ -137,6 +145,8 @@ const TEAMS = [
 		"away_body_color": Color(1, 1, 1),
 		"away_foot_color": Color(0.2, 0.7, 0.8),
 		"popularity": 0.76,
+		"conference": "earth",
+		"division": "fire",
 	},
 	{
 		"name": "Shapes",
@@ -154,6 +164,8 @@ const TEAMS = [
 		"away_body_color": Color(1, 1, 1),
 		"away_foot_color": Color(0.2, 0.6, 0.2),
 		"popularity": 0.90,
+		"conference": "earth",
+		"division": "fire",
 	},
 	{
 		"name": "Pinkertons",
@@ -171,6 +183,8 @@ const TEAMS = [
 		"away_body_color": Color(0.9, 0, 0.9),
 		"away_foot_color": Color(1, 0.5, 0.6),
 		"popularity": 0.50,
+		"conference": "n/a",
+		"division": "n/a",
 	},
 	{
 		"name": "Bears",
@@ -188,6 +202,8 @@ const TEAMS = [
 		"away_body_color": Color(0.8, 0.7, 0.4),
 		"away_foot_color": Color(1, 1, 1),
 		"popularity": 0.81,
+		"conference": "sky",
+		"division": "moon",
 	},
 	{
 		"name": "Long Island Ice Teas",
@@ -205,6 +221,8 @@ const TEAMS = [
 		"away_body_color": Color(1.0, 0.875, 1.0, 1.0),
 		"away_foot_color": Color(1.0, 0.464, 0.236, 1.0),
 		"popularity": 0.71,
+		"conference": "earth",
+		"division": "water",
 	},
 		{
 		"name": "Haberdashers",
@@ -222,6 +240,8 @@ const TEAMS = [
 		"away_body_color": Color(1, 1, 1),
 		"away_foot_color": Color(0.2, 0.7, 0.8),
 		"popularity": 0.98,
+		"conference": "earth",
+		"division": "water",
 	},
 	{
 		"name": "Rockslides",
@@ -239,6 +259,8 @@ const TEAMS = [
 		"away_body_color": Color(1.0, 0.875, 1.0, 1.0),
 		"away_foot_color": Color(0.578, 0.121, 0.254),
 		"popularity": 0.86,
+		"conference": "earth",
+		"division": "water",
 	},
 	{
 		"name": "Queens",
@@ -256,6 +278,8 @@ const TEAMS = [
 		"away_body_color": Color(0.9, 0.9, 0.9, 1.0),
 		"away_foot_color": Color(0.1, 0.1, 0.1),
 		"popularity": 0.86,
+		"conference": "earth",
+		"division": "fire",
 	},
 	{
 		"name": "Swords",
@@ -273,6 +297,8 @@ const TEAMS = [
 		"away_body_color": Color(0.9, 0.9, 0.2, 1),
 		"away_foot_color": Color(0.1, 0.3, 0.9),
 		"popularity": 0.86,
+		"conference": "sky",
+		"division": "moon",
 	},
 	{
 		"name": "Syrups",
@@ -290,6 +316,8 @@ const TEAMS = [
 		"away_body_color": Color(0.9, 0.9, 0.9, 1),
 		"away_foot_color": Color(0.12, 0.3, 0.9),
 		"popularity": 0.86,
+		"conference": "sky",
+		"division": "moon",
 	},
 	{
 		"name": "Evil Wrenches",
@@ -307,6 +335,8 @@ const TEAMS = [
 		"away_body_color": Color(0.1, 0.1, 0.1, 1),
 		"away_foot_color": Color(0.9, 0.9, 0.9),
 		"popularity": 0.86,
+		"conference": "sky",
+		"division": "sun"
 	},
 	{
 		"name": "Tire Fires",
@@ -324,6 +354,8 @@ const TEAMS = [
 		"away_body_color": Color(0.9, 0.9, 0.9, 1),
 		"away_foot_color": Color(0.9, 0.9, 0.9),
 		"popularity": 0.86,
+		"conference": "earth",
+		"division": "fire",
 	},
 	{
 		"name": "Gasoline Fights",
@@ -341,5 +373,7 @@ const TEAMS = [
 		"away_body_color": Color(0.923, 0.477, 0.139, 1.0),
 		"away_foot_color": Color(0.965, 0.965, 0.965, 1.0),
 		"popularity": 0.89,
+		"conference": "earth",
+		"division": "water",
 	},
 ]
