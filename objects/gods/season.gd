@@ -89,6 +89,7 @@ func generate_schedule(a: Array, b: Array, c: Array, d: Array) -> Array:
 					else:
 						week.append([t2, t1])
 			schedule.append(week)
+	schedule.shuffle()
 	return schedule
 
 func record_match(home: int, away: int, home_score: int, away_score: int) -> void:
