@@ -42,10 +42,10 @@ func _ready() -> void:
 	update_ui()
 
 func _on_home_difficulty_changed(value: float) -> void:
-	home_difficulty_label.text = "AI: Hard" if value > 0.5 else "AI: Easy"
+	home_difficulty_label.text = "AI: Hard" if value == 1 else "AI: Extra Hard" if value > 1.5 else "AI: Easy"
 
 func _on_away_difficulty_changed(value: float) -> void:
-	away_difficulty_label.text = "AI: Hard" if value > 0.5 else "AI: Easy"
+	away_difficulty_label.text = "AI: Hard" if value == 1 else "AI: Extra Hard" if value > 1.5 else "AI: Easy"
 
 func update_ui() -> void:
 	var home_team = StatBook.TEAMS[home_idx]
