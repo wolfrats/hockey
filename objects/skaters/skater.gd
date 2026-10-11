@@ -54,7 +54,7 @@ func _ready() -> void:
 	spring = $Spring #DampedSpringJoint2D.new()
 	#add_child(spring)
 	spring.node_a = get_path()
-	var st = Globals.generate_random_skin_tone()
+	var st = Globals.random_skin_tone()
 	# The texture itself will be updated dynamically in _physics_process based on animation state
 	if home_team:
 		facing_dir = Vector2(1, 0)

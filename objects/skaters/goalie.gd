@@ -89,7 +89,7 @@ func _ready() -> void:
 	prev_position = global_position
 	$Sprite.texture = $Sprite.texture.duplicate()
 	#$Sprite.texture.atlas = $Sprite.texture.atlas.duplicate()
-	var st = Globals.generate_random_skin_tone()
+	var st = Globals.random_skin_tone()
 	if home_team:
 		$Sprite.texture = Globals.home_goalie_textures["Stand"]
 		$Sprite.material = Globals.home_shader_material.duplicate()

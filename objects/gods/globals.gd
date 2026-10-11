@@ -262,7 +262,7 @@ func generate_random_eye_color() -> Color:
 	return eye_bucket.pop_back()
 
 func random_skin_tone() -> Array[Color]:
-	var s = (pow(randf()*.99, 5))
+	var s = (pow(randf()*.99, 7))
 	return [Globals.skin_tone.darkened(s), Globals.nose_color.darkened(s)]
 
 var skin_bucket = []
