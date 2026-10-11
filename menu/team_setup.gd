@@ -1,5 +1,13 @@
 extends Control
 
+const TIME_MAP = 	[
+	["30s", 30],
+	["1 min", 60],
+	["2 min", 120],
+	["3 min", 180],
+	["4 min", 240]
+]
+
 var home_idx: int = 0
 var away_idx: int = 1
 
@@ -18,14 +26,6 @@ var away_idx: int = 1
 @onready var away_difficulty = %AwayDifficulty
 @onready var away_difficulty_label = %AwayDifficultyLabel
 
-const TIME_MAP = 	[
-	["30s", 30],
-	["1 min", 60],
-	["2 min", 120],
-	["3 min", 180],
-	["4 min", 240]	
-]
-
 func _ready() -> void:
 	home_idx = Globals.home_team_index
 	away_idx = Globals.away_team_index
@@ -42,10 +42,20 @@ func _ready() -> void:
 	update_ui()
 
 func _on_home_difficulty_changed(value: float) -> void:
-	home_difficulty_label.text = "AI: Hard" if value > 0.5 else "AI: Easy"
+	if value > 1.5:
+		home_difficulty_label.text = "AI: Extra Hard"
+	elif value > 0.5:
+		home_difficulty_label.text = "AI: Hard"
+	else:
+		home_difficulty_label.text = "AI: Easy"
 
 func _on_away_difficulty_changed(value: float) -> void:
-	away_difficulty_label.text = "AI: Hard" if value > 0.5 else "AI: Easy"
+	if value > 1.5:
+		away_difficulty_label.text = "AI: Extra Hard"
+	elif value > 0.5:
+		away_difficulty_label.text = "AI: Hard"
+	else:
+		away_difficulty_label.text = "AI: Easy"
 
 func update_ui() -> void:
 	var home_team = StatBook.TEAMS[home_idx]

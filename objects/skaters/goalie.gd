@@ -1,13 +1,17 @@
 class_name Goalie
 extends RigidBody2D
-var counter = 0
+
 const OFFSET: int = 32
+
 @export var ghost: Ghost
 @export var home_team: bool
 @export var stats: Stats.ClassTypes
 @export var max_y: float = 650
 @export var min_y: float = 400
+
+var counter = 0
 var statbook: Stats.StatBlock
+var puck: Puck = null
 var rammed: bool = false
 var charging: bool = false
 var knocked_over: int = 0
@@ -143,18 +147,16 @@ func _physics_process(delta: float) -> void:
 	if ghost:
 		ghost.handle(delta, self)
 	else:
-		var diffx = clamp(global_position.x - home_x, -16, 16)
-		if abs(diffx) > 4:
-			apply_impulse(Vector2.LEFT * diffx)
+		var target_x = home_x
 		var puck_node = Globals.get_closest_node(global_position, "pucks")
 		if puck_node:
 			var target_y = clamp(puck_node.global_position.y + OFFSET, min_y, max_y)
 			var difficulty = Globals.home_ai_difficulty if home_team else Globals.away_ai_difficulty
-			if difficulty == 1 and puck_node.posessor and puck_node.posessor.charging:
+			if difficulty >= 1 and puck_node.posessor and puck_node.posessor.charging:
 				var shooter = puck_node.posessor
 				var aim_dir = Vector2.ZERO
-				if shooter.ghost and "shotDir" in shooter.ghost:
-					aim_dir = shooter.ghost.shotDir.normalized()
+				if shooter.ghost and "shot_dir" in shooter.ghost:
+					aim_dir = shooter.ghost.shot_dir.normalized()
 				elif shooter.ai and "shot_aim_dir" in shooter.ai:
 					aim_dir = shooter.ai.shot_aim_dir.normalized()
 				if aim_dir.length_squared() > 0 and aim_dir.x != 0:
@@ -162,9 +164,28 @@ func _physics_process(delta: float) -> void:
 					if (dist_x > 0 and aim_dir.x > 0) or (dist_x < 0 and aim_dir.x < 0):
 						var t = dist_x / aim_dir.x
 						target_y = clamp(shooter.global_position.y + aim_dir.y * t + OFFSET, min_y, max_y)
+			elif difficulty == 2:
+				if (not puck_node.posessor or not puck_node.posessor.charging) and \
+				puck_node.linear_velocity.length() > 50:
+					var dist_x = home_x - puck_node.global_position.x
+					if (dist_x > 0 and puck_node.linear_velocity.x > 0) or \
+					(dist_x < 0 and puck_node.linear_velocity.x < 0):
+						var t = dist_x / puck_node.linear_velocity.x
+						target_y = clamp(
+							puck_node.global_position.y + puck_node.linear_velocity.y * t + OFFSET,
+							min_y, max_y
+						)
+				if puck_node.posessor and puck_node.posessor.home_team != home_team:
+					if abs(puck_node.global_position.x - home_x) < 300:
+						target_x = home_x + clamp(puck_node.global_position.x - home_x, -120, 120)
+
 			var diffy = global_position.y - target_y
 			if abs(diffy) > 4:
 				apply_impulse(Vector2.UP * diffy)
+
+		var diffx = clamp(global_position.x - target_x, -16, 16)
+		if abs(diffx) > 4:
+			apply_impulse(Vector2.LEFT * diffx)
 	#counter += 1
 
 func impulse(dx: float, dy: float) -> void:
@@ -182,8 +203,6 @@ func do_grab(_is_just_pressed: bool = true) -> void:
 
 func release_grab() -> void:
 	pass
-
-var puck = null
 
 func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 	if puck:

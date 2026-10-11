@@ -1,18 +1,18 @@
 extends Ghost
+
+static var team_strategies: Dictionary = {}
+static var next_strategy_switch: Dictionary = {}
+
 var skater: Skater
 var puck: Puck
 var power: float = 0
 var charge: float = 0.03
-var shotDir: Vector2
+var shot_dir: Vector2
 var dx: float
 var dy: float
 var is_charging: bool = false
 var target_power: float = 0.0
 var shot_aim_dir: Vector2 = Vector2.ZERO
-
-static var team_strategies: Dictionary = {}
-static var next_strategy_switch: Dictionary = {}
-
 var current_random_spot: Vector2 = Vector2.ZERO
 var going_for_puck: bool = false
 var going_for_puck_timer: float = 0.0
@@ -74,15 +74,22 @@ func get_opponent_to_ram() -> Vector2:
 	var defend_x = 301.0 if skater.home_team else 1710.0
 	return Vector2(defend_x, 509)
 
-func get_preferred_spot(attack: bool, index: int, attack_x: float, defend_x: float, forward_dir: float) -> Vector2:
+func get_preferred_spot(
+	attack: bool, index: int, attack_x: float, defend_x: float, forward_dir: float,
+	difficulty: int = 0
+) -> Vector2:
 	var base_x = attack_x if attack else defend_x
 	var dir = -forward_dir if attack else forward_dir
 	match index:
 		0:
 			return Vector2(base_x + dir * 200, 509)
 		1:
+			if difficulty == 2 and attack:
+				return Vector2(base_x + dir * 150, 509 - 100)
 			return Vector2(base_x + dir * 300, 509 - 150)
 		2:
+			if difficulty == 2 and attack:
+				return Vector2(base_x + dir * 150, 509 + 100)
 			return Vector2(base_x + dir * 300, 509 + 150)
 		3:
 			return Vector2(base_x + dir * 400, 509 - 250)
@@ -91,8 +98,8 @@ func get_preferred_spot(attack: bool, index: int, attack_x: float, defend_x: flo
 		_:
 			return Vector2(base_x + dir * 200, 509)
 
-func handle(_delta: float, curSkater) -> void:
-	self.skater = curSkater
+func handle(_delta: float, cur_skater) -> void:
+	self.skater = cur_skater
 
 	if not team_strategies.has(skater.home_team):
 		team_strategies[skater.home_team] = 4
@@ -105,16 +112,16 @@ func handle(_delta: float, curSkater) -> void:
 	var difficulty = Globals.home_ai_difficulty if skater.home_team else Globals.away_ai_difficulty
 	var current_strategy = team_strategies[skater.home_team]
 
-	if difficulty == 1:
+	if difficulty >= 1:
 		current_strategy = 2
 
 	if last_health == 0.0:
-		last_health = curSkater.health
+		last_health = cur_skater.health
 
-	if curSkater.health < last_health:
-		var anger_mult = 10.0 if difficulty == 1 else 3.0
-		anger += (last_health - curSkater.health) * anger_mult
-	last_health = curSkater.health
+	if cur_skater.health < last_health:
+		var anger_mult = 10.0 if difficulty >= 1 else 3.0
+		anger += (last_health - cur_skater.health) * anger_mult
+	last_health = cur_skater.health
 
 	anger = max(0.0, anger - _delta * 10.0)
 
@@ -127,58 +134,66 @@ func handle(_delta: float, curSkater) -> void:
 	var defend_x = 301.0 if skater.home_team else 1710.0
 	var attack_x = 1710.0 if skater.home_team else 301.0
 
-	puck = Globals.get_closest_node(curSkater.global_position, "pucks") as Puck
-	var has_puck = (puck and puck.posessor == curSkater)
+	puck = Globals.get_closest_node(cur_skater.global_position, "pucks") as Puck
+	var has_puck = (puck and puck.posessor == cur_skater)
 
-	var target_pos = curSkater.global_position
-	var index = curSkater.get_index()
+	var target_pos = cur_skater.global_position
+	var index = cur_skater.get_index()
 
 	var team_has_puck = false
 	var other_team_has_puck = false
 	if puck and puck.posessor and puck.posessor is Skater:
-		if puck.posessor.home_team == curSkater.home_team:
+		if puck.posessor.home_team == cur_skater.home_team:
 			team_has_puck = true
 		else:
 			other_team_has_puck = true
 
 	if is_angry:
-		var all_skaters = curSkater.get_tree().get_nodes_in_group("skaters")
+		var all_skaters = cur_skater.get_tree().get_nodes_in_group("skaters")
 		var target_skater = null
 		var min_dist = INF
 		for s in all_skaters:
-			if s is Skater and s.home_team != curSkater.home_team:
-				var d = curSkater.global_position.distance_squared_to(s.global_position)
+			if s is Skater and s.home_team != cur_skater.home_team:
+				var d = cur_skater.global_position.distance_squared_to(s.global_position)
 				if d < min_dist:
 					min_dist = d
 					target_skater = s
 		if target_skater:
 			target_pos = target_skater.global_position
-			if curSkater.global_position.distance_to(target_pos) < 60:
-				if curSkater.spring.node_b.is_empty() and randf() < 0.3:
-					curSkater.do_grab(true)
+			if cur_skater.global_position.distance_to(target_pos) < 60:
+				if cur_skater.spring.node_b.is_empty() and randf() < 0.3:
+					cur_skater.do_grab(true)
 				else:
-					curSkater.do_check()
+					cur_skater.do_check()
 				anger = 0.0
 				is_angry = false
 	elif has_puck:
-		var target_distance = 500 if difficulty == 1 else 300
+		var target_distance = 800 if difficulty == 2 else (500 if difficulty >= 1 else 300)
 		if is_charging:
 			power += charge
-			curSkater.charging = true
+			cur_skater.charging = true
 			if power >= target_power:
-				var inaccuracy = 0.0 if difficulty == 1 else 1.0
-				curSkater.shoot(shot_aim_dir, power, inaccuracy)
+				var inaccuracy = 0.0 if difficulty >= 1 else 1.0
+				cur_skater.shoot(shot_aim_dir, power, inaccuracy)
 				power = 0
 				is_charging = false
-				curSkater.charging = false
-		elif abs(curSkater.global_position.x - attack_x) < target_distance:
+				cur_skater.charging = false
+		elif difficulty == 2 and \
+		abs(cur_skater.global_position.x - attack_x) >= target_distance and randf() < 0.02:
+			var teammate = get_most_forward_teammate()
+			if teammate:
+				shot_aim_dir = (teammate.global_position - cur_skater.global_position).normalized()
+				target_power = 0.4
+				is_charging = true
+				power = 0.0
+		elif abs(cur_skater.global_position.x - attack_x) < target_distance:
 			if randf() > 0.05 and index != 0:
 				var target_y = 509.0
-				var manager = curSkater.get_parent().get_parent()
+				var manager = cur_skater.get_parent().get_parent()
 				var target_goalie = null
 				if manager:
 					for child in manager.get_children():
-						if child is Goalie and child.home_team != curSkater.home_team:
+						if child is Goalie and child.home_team != cur_skater.home_team:
 							target_goalie = child
 							break
 
@@ -194,14 +209,20 @@ func handle(_delta: float, curSkater) -> void:
 					else:
 						target_y = bottom_post - (bottom_gap / 4.0)
 
-				shot_aim_dir = Vector2(attack_x - curSkater.global_position.x, target_y - curSkater.global_position.y).normalized()
-				target_power = 1.0
+				shot_aim_dir = Vector2(
+					attack_x - cur_skater.global_position.x,
+					target_y - cur_skater.global_position.y
+				).normalized()
+				if difficulty == 2 and abs(cur_skater.global_position.x - attack_x) < 200:
+					target_power = 0.4
+				else:
+					target_power = 1.0
 				is_charging = true
 				power = 0.0
 			else:
 				var teammate = get_most_forward_teammate()
 				if teammate:
-					shot_aim_dir = (teammate.global_position - curSkater.global_position).normalized()
+					shot_aim_dir = (teammate.global_position - cur_skater.global_position).normalized()
 					target_power = 0.4
 					is_charging = true
 					power = 0.0
@@ -211,19 +232,20 @@ func handle(_delta: float, curSkater) -> void:
 					is_charging = true
 					power = 0.0
 		else:
-			target_pos = Vector2(attack_x, curSkater.global_position.y)
+			target_pos = Vector2(attack_x, cur_skater.global_position.y)
 	else:
 		if is_charging:
 			is_charging = false
 			power = 0.0
-			curSkater.charging = false
+			cur_skater.charging = false
 
 		match current_strategy:
 			1:
 				if is_delegated_chaser():
-					target_pos = puck.global_position if puck else curSkater.global_position
+					target_pos = puck.global_position if puck else cur_skater.global_position
 				else:
-					if current_random_spot == Vector2.ZERO or curSkater.global_position.distance_to(current_random_spot) < 50:
+					if current_random_spot == Vector2.ZERO or \
+					cur_skater.global_position.distance_to(current_random_spot) < 50:
 						current_random_spot = Vector2(
 							randf_range(min(attack_x, defend_x), max(attack_x, defend_x)),
 							randf_range(100, 900)
@@ -231,22 +253,24 @@ func handle(_delta: float, curSkater) -> void:
 					target_pos = current_random_spot
 			2:
 				if is_delegated_chaser():
-					target_pos = puck.global_position if puck else curSkater.global_position
-					if difficulty == 1 and other_team_has_puck and \
-					curSkater.global_position.distance_to(target_pos) < 60:
-						if randf() < 0.05:
-							if curSkater.spring.node_b.is_empty() and randf() < 0.3:
-								curSkater.do_grab(true)
+					target_pos = puck.global_position if puck else cur_skater.global_position
+					if difficulty >= 1 and other_team_has_puck and \
+					cur_skater.global_position.distance_to(target_pos) < 60:
+						var bump_chance = 0.2 if difficulty == 2 else 0.05
+						if randf() < bump_chance:
+							if cur_skater.spring.node_b.is_empty() and randf() < 0.3:
+								cur_skater.do_grab(true)
 							else:
-								curSkater.do_check()
+								cur_skater.do_check()
 				else:
 					target_pos = get_opponent_to_ram()
-					if difficulty == 1 and curSkater.global_position.distance_to(target_pos) < 60:
-						if randf() < 0.05:
-							if curSkater.spring.node_b.is_empty() and randf() < 0.3:
-								curSkater.do_grab(true)
+					if difficulty >= 1 and cur_skater.global_position.distance_to(target_pos) < 60:
+						var bump_chance = 0.2 if difficulty == 2 else 0.05
+						if randf() < bump_chance:
+							if cur_skater.spring.node_b.is_empty() and randf() < 0.3:
+								cur_skater.do_grab(true)
 							else:
-								curSkater.do_check()
+								cur_skater.do_check()
 			3:
 				going_for_puck_timer -= _delta
 				if going_for_puck_timer <= 0:
@@ -255,34 +279,36 @@ func handle(_delta: float, curSkater) -> void:
 				if going_for_puck and puck:
 					target_pos = puck.global_position
 				else:
-					target_pos = curSkater.global_position # Stand still
+					target_pos = cur_skater.global_position # Stand still
 			_:
 				if not team_has_puck and is_delegated_chaser() and not other_team_has_puck:
-					target_pos = puck.global_position if puck else curSkater.global_position
+					target_pos = puck.global_position if puck else cur_skater.global_position
 				else:
-					target_pos = get_preferred_spot(team_has_puck, index, attack_x, defend_x, forward_dir)
+					target_pos = get_preferred_spot(
+						team_has_puck, index, attack_x, defend_x, forward_dir, difficulty
+					)
 
-	if not curSkater.spring.node_b.is_empty() and randf() < 0.02:
-		curSkater.release_grab()
+	if not cur_skater.spring.node_b.is_empty() and randf() < 0.02:
+		cur_skater.release_grab()
 
-	var dist = curSkater.global_position.distance_to(target_pos)
+	var dist = cur_skater.global_position.distance_to(target_pos)
 	if dist > 10:
-		var dir = (target_pos - curSkater.global_position).normalized()
+		var dir = (target_pos - cur_skater.global_position).normalized()
 
-		if difficulty == 1:
+		if difficulty >= 1:
 			var avoidance = Vector2.ZERO
 			var obstacles = []
 
 			obstacles.append({"pos": Vector2(301, 509), "radius": 120.0})
 			obstacles.append({"pos": Vector2(1710, 509), "radius": 120.0})
 
-			var all_skaters = curSkater.get_tree().get_nodes_in_group("skaters")
+			var all_skaters = cur_skater.get_tree().get_nodes_in_group("skaters")
 			for s in all_skaters:
-				if s != curSkater and s.is_inside_tree():
+				if s != cur_skater and s.is_inside_tree():
 					if target_pos.distance_to(s.global_position) > 40:
 						obstacles.append({"pos": s.global_position, "radius": 80.0})
 
-			var manager = curSkater.get_parent().get_parent()
+			var manager = cur_skater.get_parent().get_parent()
 			if manager:
 				for child in manager.get_children():
 					if child is Goalie and child.is_inside_tree():
@@ -290,9 +316,9 @@ func handle(_delta: float, curSkater) -> void:
 							obstacles.append({"pos": child.global_position, "radius": 80.0})
 
 			for obs in obstacles:
-				var d = curSkater.global_position.distance_to(obs.pos)
+				var d = cur_skater.global_position.distance_to(obs.pos)
 				if d < obs.radius and d > 0.0:
-					var to_obs = (obs.pos - curSkater.global_position).normalized()
+					var to_obs = (obs.pos - cur_skater.global_position).normalized()
 					if dir.dot(to_obs) > 0.3:
 						var repulse = -to_obs
 						var tangent = Vector2(-to_obs.y, to_obs.x)
