@@ -248,7 +248,7 @@ func handle(_delta: float, curSkater) -> void:
 					target_pos = puck.global_position if puck else curSkater.global_position
 					if difficulty >= 1 and other_team_has_puck and \
 					curSkater.global_position.distance_to(target_pos) < 60:
-						if randf() < 0.05:
+						if randf() < 0.005 * difficulty:
 							if curSkater.spring.node_b.is_empty() and randf() < 0.3:
 								curSkater.do_grab(true)
 							else:
@@ -256,7 +256,7 @@ func handle(_delta: float, curSkater) -> void:
 				else:
 					target_pos = get_opponent_to_ram()
 					if difficulty >= 1 and curSkater.global_position.distance_to(target_pos) < 60:
-						if randf() < 0.05:
+						if randf() < 0.005 * difficulty:
 							if curSkater.spring.node_b.is_empty() and randf() < 0.3:
 								curSkater.do_grab(true)
 							else:
@@ -276,7 +276,7 @@ func handle(_delta: float, curSkater) -> void:
 					# always chase the puck. They should try bumping the skater with the puck to take it.
 					# They should try to take the puck back in the other half of the rink, playing aggressively.
 					if curSkater.global_position.distance_to(target_pos) < 80:
-						if randf() < 0.1:
+						if randf() < 0.01 * difficulty:
 							if curSkater.spring.node_b.is_empty() and randf() < 0.3:
 								curSkater.do_grab(true)
 							else:
@@ -295,7 +295,7 @@ func handle(_delta: float, curSkater) -> void:
 						if (opponent.x - 1005.5) * forward_dir > 0: # If in opponent's half
 							target_pos = opponent
 							if curSkater.global_position.distance_to(target_pos) < 80:
-								if randf() < 0.05:
+								if randf() < 0.005 * difficulty:
 									if curSkater.spring.node_b.is_empty() and randf() < 0.3:
 										curSkater.do_grab(true)
 									else:

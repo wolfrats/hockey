@@ -163,11 +163,11 @@ func _on_play_pressed() -> void:
 
 	if home_team == player_team:
 		Globals.home_ai_difficulty = 0 # Doesn't matter, player controls
-		Globals.away_ai_difficulty = 1 if away_team in good_teams else 0
+		Globals.away_ai_difficulty = 2 if away_team in good_teams else 0
 		for i in range(Globals.player_teams.size()):
 			Globals.player_teams[i] = 0
 	else:
-		Globals.home_ai_difficulty = 1 if home_team in good_teams else 0
+		Globals.home_ai_difficulty = 2 if home_team in good_teams else 0
 		Globals.away_ai_difficulty = 0
 		for i in range(Globals.player_teams.size()):
 			Globals.player_teams[i] = 1
