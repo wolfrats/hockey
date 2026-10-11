@@ -151,6 +151,9 @@ func _on_back_pressed() -> void:
 	Season.season_on = false
 	get_tree().change_scene_to_file("res://menu/main_menu.tscn")
 
+func _on_roster_pressed() -> void:
+	get_tree().change_scene_to_file("res://menu/season_roster.tscn")
+
 func _on_play_pressed() -> void:
 	if is_season_over:
 		return

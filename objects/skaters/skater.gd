@@ -31,11 +31,7 @@ var needs_penalty_reset: bool = false
 var damage_tween: Tween
 var skater_size: String = "medium"
 
-enum LookDir {
-	SIDE,
-	DOWN,
-	UP
-}
+enum LookDir { SIDE, DOWN, UP }
 
 
 func _ready() -> void:
@@ -43,15 +39,38 @@ func _ready() -> void:
 	base_initial_position = initial_position
 	add_to_group("skaters")
 
-	var team_data = StatBook.TEAMS[Globals.home_team_index] if home_team else StatBook.TEAMS[Globals.away_team_index]
+	var team_data = (
+		StatBook.TEAMS[Globals.home_team_index]
+		if home_team
+		else StatBook.TEAMS[Globals.away_team_index]
+	)
 	var index = get_index()
 	if index >= 0 and index < team_data["composition"].size():
 		stats = team_data["composition"][index]
-	statbook = StatBook.Classes[stats]
+	statbook = StatBook.Classes[stats].duplicate_statblock()
+
+	if (
+		Season.season_on
+		and Season.season_data.has("roster")
+		and Season.season_data.has("player_team")
+	):
+		var is_player_team = (
+			(home_team and Globals.home_team_index == Season.season_data["player_team"])
+			or (not home_team and Globals.away_team_index == Season.season_data["player_team"])
+		)
+		if is_player_team and index >= 0 and index < Season.season_data["roster"].size():
+			var player_stats = Season.season_data["roster"][index]["stats"]
+			statbook.speed *= (0.8 + (player_stats["speed"] * 0.05))
+			statbook.shot_power *= (0.8 + (player_stats["shot_max_power"] * 0.05))
+			statbook.snap_power *= (0.8 + (player_stats["shot_snap_power"] * 0.05))
+			statbook.max_health *= (0.8 + (player_stats["health"] * 0.05))
+			statbook.check_damage *= (0.8 + (player_stats["check_damage"] * 0.05))
+			statbook.shot_variance *= (1.2 - (player_stats["shot_accuracy"] * 0.05))
+
 	skater_size = statbook.size
 	mass = statbook.weight
 	health = statbook.max_health
-	spring = $Spring #DampedSpringJoint2D.new()
+	spring = $Spring  #DampedSpringJoint2D.new()
 	#add_child(spring)
 	spring.node_a = get_path()
 	var st = Globals.random_skin_tone()
@@ -75,13 +94,14 @@ func _ready() -> void:
 	if not Globals.manager.is_practice:
 		ai = preload("res://objects/skaters/ai.tscn").instantiate()
 		add_child(ai)
-		
+
 
 func get_player_name() -> String:
 	var current_name = "Home AI" if home_team else "Away AI"
 	if ghost:
 		current_name = ghost.name
 	return current_name
+
 
 func home() -> void:
 	needs_reset = true
@@ -91,6 +111,7 @@ func home() -> void:
 	holding = 0
 	if not spring.node_b.is_empty():
 		spring.node_b = NodePath("")
+
 
 func penalty(duration: float) -> void:
 	var current_name = get_player_name()
@@ -108,8 +129,10 @@ func penalty(duration: float) -> void:
 	if not spring.node_b.is_empty():
 		spring.node_b = NodePath("")
 
+
 func _process(_delta: float) -> void:
 	pass
+
 
 func do_check() -> void:
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
@@ -156,7 +179,7 @@ func do_check() -> void:
 				var dmg = statbook.check_damage * randf_range(0.8, 1.2)
 				if spring and spring.node_b == s.get_path():
 					dmg *= 1.5
-				var target_downed_before = ("knocked_over" in s and s.knocked_over > Globals.ticks)
+				var target_downed_before = "knocked_over" in s and s.knocked_over > Globals.ticks
 				if s.has_method("take_damage"):
 					s.take_damage(dmg)
 				if "spring" in s and s.spring:
@@ -166,7 +189,11 @@ func do_check() -> void:
 					Globals.hit_stats[current_name] = 0
 				Globals.hit_stats[current_name] += 1
 
-				if not target_downed_before and "knocked_over" in s and s.knocked_over > Globals.ticks:
+				if (
+					not target_downed_before
+					and "knocked_over" in s
+					and s.knocked_over > Globals.ticks
+				):
 					if not Globals.down_stats.has(current_name):
 						Globals.down_stats[current_name] = 0
 					Globals.down_stats[current_name] += 1
@@ -183,17 +210,27 @@ func do_check() -> void:
 			var camera = get_viewport().get_camera_2d()
 			if camera:
 				var shake_tween = create_tween()
-				shake_tween.tween_property(camera, "offset", Vector2(randf_range(-10, 10), randf_range(-10, 10)), 0.05)
-				shake_tween.tween_property(camera, "offset", Vector2(randf_range(-5, 5), randf_range(-5, 5)), 0.05)
+				shake_tween.tween_property(
+					camera, "offset", Vector2(randf_range(-10, 10), randf_range(-10, 10)), 0.05
+				)
+				shake_tween.tween_property(
+					camera, "offset", Vector2(randf_range(-5, 5), randf_range(-5, 5)), 0.05
+				)
 				shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
 		else:
 			Globals.play_sound_at("CheckMiss", global_position)
 		for ref in referees:
 			if ref.has_method("is_in_cone") and ref.is_in_cone(global_position):
-				if randf() < 0.3: # 30% chance to be sent to penalty box
+				if randf() < 0.3:  # 30% chance to be sent to penalty box
 					penalty(30.0)
-					if Globals.manager and "anim_manager" in Globals.manager and Globals.manager.anim_manager:
-						Globals.manager.anim_manager.set_phase(AnimationManager.Phase.PRE_PENALTY_SKATE)
+					if (
+						Globals.manager
+						and "anim_manager" in Globals.manager
+						and Globals.manager.anim_manager
+					):
+						Globals.manager.anim_manager.set_phase(
+							AnimationManager.Phase.PRE_PENALTY_SKATE
+						)
 						if ref:
 							ref.anim_state = "skate_to"
 							ref.target_pos = Vector2(1005.5, 509)
@@ -202,6 +239,7 @@ func do_check() -> void:
 func release_grab() -> void:
 	spring.node_b = NodePath("")
 	holding = 0
+
 
 func do_grab(is_just_pressed: bool = true) -> void:
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
@@ -223,14 +261,24 @@ func do_grab(is_just_pressed: bool = true) -> void:
 				var camera = get_viewport().get_camera_2d()
 				if camera:
 					var shake_tween = create_tween()
-					shake_tween.tween_property(camera, "offset", Vector2(randf_range(-5, 5), randf_range(-5, 5)), 0.05)
-					shake_tween.tween_property(camera, "offset", Vector2(randf_range(-2, 2), randf_range(-2, 2)), 0.05)
+					shake_tween.tween_property(
+						camera, "offset", Vector2(randf_range(-5, 5), randf_range(-5, 5)), 0.05
+					)
+					shake_tween.tween_property(
+						camera, "offset", Vector2(randf_range(-2, 2), randf_range(-2, 2)), 0.05
+					)
 					shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
 				break
 
 
 func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
-	if knocked_over > Globals.ticks or anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
+	if (
+		knocked_over > Globals.ticks
+		or (
+			anim_state
+			in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]
+		)
+	):
 		return
 	if not spring.node_b.is_empty() and randf() < 0.3333:
 		release_grab()
@@ -247,6 +295,7 @@ func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
 		if puck:
 			puck.shoot(name, Vector2.ZERO)
 
+
 func _physics_process(delta: float) -> void:
 	set_collision_layer_value(4, true)
 	if puck and puck.posessor != self:
@@ -258,7 +307,7 @@ func _physics_process(delta: float) -> void:
 	if faceoff_cooldown > 0:
 		faceoff_cooldown -= delta
 	if knocked_over <= Globals.ticks and health < statbook.max_health:
-		health = min(statbook.max_health, health + delta * 15.0) # Regenerate 15 hp per second
+		health = min(statbook.max_health, health + delta * 15.0)  # Regenerate 15 hp per second
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		if anim_state == "entering_penalty":
 			linear_velocity = Vector2(0, 100)
@@ -269,7 +318,11 @@ func _physics_process(delta: float) -> void:
 		elif anim_state == "in_penalty":
 			$Sprite.modulate.a = min(1.0, $Sprite.modulate.a + delta * 2.0)
 			if penalty_time > 0:
-				if Globals.manager and "anim_manager" in Globals.manager and Globals.manager.anim_manager:
+				if (
+					Globals.manager
+					and "anim_manager" in Globals.manager
+					and Globals.manager.anim_manager
+				):
 					if Globals.manager.anim_manager.current_phase == AnimationManager.Phase.PLAYING:
 						penalty_time -= delta
 				else:
@@ -361,7 +414,11 @@ func _physics_process(delta: float) -> void:
 							Globals.faceoff_won_stats[current_name] = 0
 						Globals.faceoff_won_stats[current_name] += 1
 
-						var backward_dir = Vector2(-1, randf_range(-0.5, 0.5)) if home_team else Vector2(1, randf_range(-0.5, 0.5))
+						var backward_dir = (
+							Vector2(-1, randf_range(-0.5, 0.5))
+							if home_team
+							else Vector2(1, randf_range(-0.5, 0.5))
+						)
 						var shoot_dir = backward_dir.normalized()
 						# Temporarily act like we have puck to shoot it
 						p.posessor = self
@@ -369,7 +426,11 @@ func _physics_process(delta: float) -> void:
 						shoot(shoot_dir, 0.5)
 
 						# Change phase to PLAYING
-						if Globals.manager and "anim_manager" in Globals.manager and Globals.manager.anim_manager:
+						if (
+							Globals.manager
+							and "anim_manager" in Globals.manager
+							and Globals.manager.anim_manager
+						):
 							Globals.manager.anim_manager.set_phase(AnimationManager.Phase.PLAYING)
 					else:
 						# Too early
@@ -386,10 +447,10 @@ func _physics_process(delta: float) -> void:
 		if facing_dir.x != 0:
 			$Sprite.flip_h = (facing_dir.x > 0)
 
-	if (abs(facing_dir.x) < abs(facing_dir.y)):
+	if abs(facing_dir.x) < abs(facing_dir.y):
 		$Sprite.flip_h = false
 		look_dir = LookDir.DOWN
-		if (facing_dir.y < 0):
+		if facing_dir.y < 0:
 			look_dir = LookDir.UP
 
 	if not spring.node_b.is_empty():
@@ -499,7 +560,7 @@ func _physics_process(delta: float) -> void:
 			$Sprite.texture = Globals.away_textures[skater_size][anim_name]
 
 	var spacing = 192
-	$Sprite.region_rect = Rect2(frame * spacing, 0, 192, 192) #statbook.sprite_index
+	$Sprite.region_rect = Rect2(frame * spacing, 0, 192, 192)  #statbook.sprite_index
 	$Sprite.region_enabled = true
 	if abs(last_move.angle_to(linear_velocity)) > 3.1 and Globals.ticks > scrape_counter:
 		var s: Icesputter = preload("res://objects/environment/icesplutter.tscn").instantiate()
@@ -512,8 +573,16 @@ func _physics_process(delta: float) -> void:
 		s.global_position = (global_position + Vector2.DOWN * 16)
 	skate_dir = skate_dir.lerp(self.linear_velocity, 0.03)
 
+
 func impulse(dx: float, dy: float) -> void:
-	if knocked_over > Globals.ticks or checking > Globals.ticks or anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
+	if (
+		knocked_over > Globals.ticks
+		or checking > Globals.ticks
+		or (
+			anim_state
+			in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]
+		)
+	):
 		return
 	last_move = Vector2(dx, dy)
 	if last_move.length() > 0:
@@ -522,11 +591,24 @@ func impulse(dx: float, dy: float) -> void:
 		facing_dir = last_move.normalized()
 	apply_impulse(last_move * statbook.speed)
 
+
 func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
-	if knocked_over > Globals.ticks or checking > Globals.ticks or anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
+	if (
+		knocked_over > Globals.ticks
+		or checking > Globals.ticks
+		or (
+			anim_state
+			in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]
+		)
+	):
 		return
-	var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
-	var vec2 = vec.rotated(inaccuracy_modifier * statbook.shot_variance * (1 - (2*randf())))
+	var vec = (
+		dir.normalized()
+		* 200
+		* (statbook.snap_power + ((1 - statbook.snap_power) * power))
+		* statbook.shot_power
+	)
+	var vec2 = vec.rotated(inaccuracy_modifier * statbook.shot_variance * (1 - (2 * randf())))
 	if puck:
 		puck.shoot(name, vec2)
 		set_collision_layer_value(4, false)
@@ -544,9 +626,26 @@ func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 		if camera:
 			var shake_amount = 2.0 + (power * 8.0)
 			var shake_tween = create_tween()
-			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount, shake_amount), randf_range(-shake_amount, shake_amount)), 0.05)
-			shake_tween.tween_property(camera, "offset", Vector2(randf_range(-shake_amount/2.0, shake_amount/2.0), randf_range(-shake_amount/2.0, shake_amount/2.0)), 0.05)
+			shake_tween.tween_property(
+				camera,
+				"offset",
+				Vector2(
+					randf_range(-shake_amount, shake_amount),
+					randf_range(-shake_amount, shake_amount)
+				),
+				0.05
+			)
+			shake_tween.tween_property(
+				camera,
+				"offset",
+				Vector2(
+					randf_range(-shake_amount / 2.0, shake_amount / 2.0),
+					randf_range(-shake_amount / 2.0, shake_amount / 2.0)
+				),
+				0.05
+			)
 			shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
+
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	if (anim_state == "lerping" or anim_state == "face_off") and penalty_time <= 0:
@@ -570,7 +669,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 
 	if needs_penalty_reset:
 		var trans = state.get_transform()
-		trans.origin = Vector2(1000, 950) # Penalty box position
+		trans.origin = Vector2(1000, 950)  # Penalty box position
 		state.set_transform(trans)
 		state.linear_velocity = Vector2.ZERO
 		state.angular_velocity = 0

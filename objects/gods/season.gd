@@ -4,8 +4,10 @@ var season_on: bool = false
 var season_data: Dictionary = {}
 var save_path = "user://season.json"
 
+
 func has_saved_season() -> bool:
 	return FileAccess.file_exists(save_path)
+
 
 func load_season() -> void:
 	if has_saved_season():
@@ -15,9 +17,11 @@ func load_season() -> void:
 		if err == OK:
 			season_data = json.data
 
+
 func save_season() -> void:
 	var file = FileAccess.open(save_path, FileAccess.WRITE)
 	file.store_string(JSON.stringify(season_data))
+
 
 func new_season(player_team: int) -> void:
 	var a = [0, 2, 3, 14]
@@ -32,19 +36,41 @@ func new_season(player_team: int) -> void:
 	good_teams.append(d[randi() % 4])
 
 	var standings = {}
-	for t in (a + b + c + d):
+	for t in a + b + c + d:
 		standings[str(t)] = {"wins": 0, "losses": 0, "ties": 0}
 
 	var schedule = generate_schedule(a, b, c, d)
+
+	var roster = []
+	for i in range(5):
+		roster.append(
+			{
+				"name": "Player " + str(i + 1),
+				"xp": 0,
+				"level": 1,
+				"stat_points": 0,
+				"stats":
+				{
+					"speed": 4,
+					"shot_max_power": 4,
+					"shot_snap_power": 4,
+					"health": 4,
+					"check_damage": 4,
+					"shot_accuracy": 4
+				}
+			}
+		)
 
 	season_data = {
 		"player_team": player_team,
 		"current_week": 0,
 		"good_teams": good_teams,
 		"standings": standings,
-		"schedule": schedule
+		"schedule": schedule,
+		"roster": roster
 	}
 	save_season()
+
 
 func generate_schedule(a: Array, b: Array, c: Array, d: Array) -> Array:
 	var sky = a + b
@@ -54,7 +80,7 @@ func generate_schedule(a: Array, b: Array, c: Array, d: Array) -> Array:
 		var week = []
 		for i in range(8):
 			var t1 = sky[i]
-			var t2 = earth[(i+w)%8]
+			var t2 = earth[(i + w) % 8]
 			if w < 4:
 				week.append([t1, t2])
 			else:
@@ -64,19 +90,19 @@ func generate_schedule(a: Array, b: Array, c: Array, d: Array) -> Array:
 		var week = []
 		for i in range(4):
 			var t1 = a[i]
-			var t2 = b[(i+w)%4]
+			var t2 = b[(i + w) % 4]
 			if w < 4:
 				week.append([t1, t2])
 			else:
 				week.append([t2, t1])
 			t1 = c[i]
-			t2 = d[(i+w)%4]
+			t2 = d[(i + w) % 4]
 			if w < 4:
 				week.append([t1, t2])
 			else:
 				week.append([t2, t1])
 		schedule.append(week)
-	var matchups = [[[0,1], [2,3]], [[0,2], [3,1]], [[0,3], [1,2]]]
+	var matchups = [[[0, 1], [2, 3]], [[0, 2], [3, 1]], [[0, 3], [1, 2]]]
 	for _iter in range(4):
 		for r in range(3):
 			var week = []
@@ -92,6 +118,7 @@ func generate_schedule(a: Array, b: Array, c: Array, d: Array) -> Array:
 	schedule.shuffle()
 	return schedule
 
+
 func record_match(home: int, away: int, home_score: int, away_score: int) -> void:
 	if home_score > away_score:
 		season_data["standings"][str(home)]["wins"] += 1
@@ -106,6 +133,7 @@ func record_match(home: int, away: int, home_score: int, away_score: int) -> voi
 	else:
 		season_data["standings"][str(away)]["wins"] += 1
 		season_data["standings"][str(home)]["losses"] += 1
+
 
 func simulate_other_matches() -> void:
 	var week = int(season_data["current_week"])
@@ -142,6 +170,7 @@ func simulate_other_matches() -> void:
 		away_score += randi() % (extra_goals + 1)
 
 		record_match(home, away, home_score, away_score)
+
 
 func advance_week() -> void:
 	season_data["current_week"] += 1

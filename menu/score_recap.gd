@@ -3,6 +3,7 @@ extends Control
 @onready var score_label: Label = %ScoreLabel
 @onready var stats_container: VBoxContainer = %StatsContainer
 
+
 func _ready() -> void:
 	if Season.season_on:
 		$CenterContainer/VBoxContainer/Buttons/Rematch.visible = false
@@ -14,7 +15,6 @@ func _ready() -> void:
 		$CenterContainer/VBoxContainer/Buttons/Menu.visible = true
 		$CenterContainer/VBoxContainer/Buttons/Continue.visible = false
 		$CenterContainer/VBoxContainer/Buttons/Rematch.grab_focus()
-
 
 	score_label.text = "%d - %d" % [Globals.match_home_score, Globals.match_away_score]
 
@@ -86,13 +86,15 @@ func _ready() -> void:
 			stat_label.fit_content = true
 			stat_label.bbcode_enabled = true
 			stat_label.text = (
-				"[color=#%s]%s[/color]: %d Goals, %d Assists, %d Shots, %d Faceoffs Won, " %
-				[display_color_code, display_name, g, a, s, f] +
-				"%d Penalties, %d Checks, %d Hits, %d Downs" %
-				[pen, checks, hits, downs]
+				(
+					"[color=#%s]%s[/color]: %d Goals, %d Assists, %d Shots, %d Faceoffs Won, "
+					% [display_color_code, display_name, g, a, s, f]
+				)
+				+ "%d Penalties, %d Checks, %d Hits, %d Downs" % [pen, checks, hits, downs]
 			)
 			stat_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			stats_container.add_child(stat_label)
+
 
 func _on_rematch_pressed() -> void:
 	Globals.scorer_stats.clear()
@@ -107,6 +109,7 @@ func _on_rematch_pressed() -> void:
 	Globals.match_away_score = 0
 	get_tree().change_scene_to_file("res://objects/environment/match_rink.tscn")
 
+
 func _on_menu_pressed() -> void:
 	Globals.scorer_stats.clear()
 	Globals.assist_stats.clear()
@@ -120,6 +123,7 @@ func _on_menu_pressed() -> void:
 	Globals.match_away_score = 0
 	get_tree().change_scene_to_file("res://menu/main_menu.tscn")
 
+
 func _on_continue_pressed() -> void:
 	Season.record_match(
 		Globals.home_team_index,
@@ -129,6 +133,16 @@ func _on_continue_pressed() -> void:
 	)
 	Season.simulate_other_matches()
 	Season.advance_week()
+
+	if Season.season_data.has("roster"):
+		for i in range(Season.season_data["roster"].size()):
+			var player = Season.season_data["roster"][i]
+			player["xp"] += 1
+			if player["xp"] >= 4:
+				player["xp"] = 0
+				player["level"] += 1
+				player["stat_points"] += 1
+		Season.save_season()
 
 	Globals.scorer_stats.clear()
 	Globals.assist_stats.clear()

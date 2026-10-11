@@ -1,23 +1,35 @@
 class_name Stats extends Node
 var Classes = []
 
-enum ClassTypes {
-	LIGHT,
-	MEDIUM,
-	HEAVY
-}
+enum ClassTypes { LIGHT, MEDIUM, HEAVY }
 
-class StatBlock extends Node:
-	var weight: float          # mass of skater
-	var speed: float           # impulse applied when skating
-	var sprite_index: int      # y coordinate of sprite
-	var shot_power: float      # maximum shot velocity
-	var snap_power: float      # shot velocity with 0 charge
-	var shot_variance: float   # cone of inaccuracy
+
+class StatBlock:
+	extends Node
+	var weight: float  # mass of skater
+	var speed: float  # impulse applied when skating
+	var sprite_index: int  # y coordinate of sprite
+	var shot_power: float  # maximum shot velocity
+	var snap_power: float  # shot velocity with 0 charge
+	var shot_variance: float  # cone of inaccuracy
 	var check_damage: float
 	var max_health: float
 	var size: String
-	
+
+	func duplicate_statblock() -> StatBlock:
+		var new_block = StatBlock.new()
+		new_block.weight = weight
+		new_block.speed = speed
+		new_block.sprite_index = sprite_index
+		new_block.shot_power = shot_power
+		new_block.snap_power = snap_power
+		new_block.shot_variance = shot_variance
+		new_block.check_damage = check_damage
+		new_block.max_health = max_health
+		new_block.size = size
+		return new_block
+
+
 func _init() -> void:
 	for X in ClassTypes.values():
 		Classes.push_back(StatBlock.new())
@@ -30,7 +42,7 @@ func _init() -> void:
 	Classes[ClassTypes.LIGHT].check_damage = 20.0
 	Classes[ClassTypes.LIGHT].max_health = 80.0
 	Classes[ClassTypes.LIGHT].size = "light"
-	
+
 	Classes[ClassTypes.MEDIUM].weight = 1.5
 	Classes[ClassTypes.MEDIUM].speed = 5.5
 	Classes[ClassTypes.MEDIUM].sprite_index = 0
@@ -40,7 +52,7 @@ func _init() -> void:
 	Classes[ClassTypes.MEDIUM].check_damage = 30.0
 	Classes[ClassTypes.MEDIUM].max_health = 100.0
 	Classes[ClassTypes.MEDIUM].size = "medium"
-	
+
 	Classes[ClassTypes.HEAVY].weight = 2
 	Classes[ClassTypes.HEAVY].speed = 6
 	Classes[ClassTypes.HEAVY].sprite_index = 26
@@ -55,13 +67,8 @@ func _init() -> void:
 const TEAMS = [
 	{
 		"name": "Wide Street Wackos",
-		"composition": [
-			ClassTypes.HEAVY,
-			ClassTypes.HEAVY,
-			ClassTypes.HEAVY,
-			ClassTypes.MEDIUM,
-			ClassTypes.LIGHT
-		],
+		"composition":
+		[ClassTypes.HEAVY, ClassTypes.HEAVY, ClassTypes.HEAVY, ClassTypes.MEDIUM, ClassTypes.LIGHT],
 		"head_color": Color(0, 0, 0),
 		"body_color": Color(0.957, 0.363, 0.116, 1.0),
 		"foot_color": Color(0.874, 0.874, 0.874, 1.0),
@@ -74,7 +81,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Thunderbolts",
-		"composition": [
+		"composition":
+		[
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
 			ClassTypes.MEDIUM,
@@ -93,7 +101,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Flightless Birds",
-		"composition": [
+		"composition":
+		[
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
 			ClassTypes.MEDIUM,
@@ -112,7 +121,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Candy Canes",
-		"composition": [
+		"composition":
+		[
 			ClassTypes.MEDIUM,
 			ClassTypes.MEDIUM,
 			ClassTypes.LIGHT,
@@ -131,13 +141,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Loch Ness Monsters",
-		"composition": [
-			ClassTypes.MEDIUM,
-			ClassTypes.HEAVY,
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT
-		],
+		"composition":
+		[ClassTypes.MEDIUM, ClassTypes.HEAVY, ClassTypes.LIGHT, ClassTypes.LIGHT, ClassTypes.LIGHT],
 		"head_color": Color(0.2, 0.7, 0.8),
 		"body_color": Color(.1, .1, .1),
 		"foot_color": Color(0.2, 0.6, 0.9),
@@ -150,7 +155,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Shapes",
-		"composition": [
+		"composition":
+		[
 			ClassTypes.MEDIUM,
 			ClassTypes.MEDIUM,
 			ClassTypes.MEDIUM,
@@ -169,13 +175,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Pinkertons",
-		"composition": [
-			ClassTypes.HEAVY,
-			ClassTypes.HEAVY,
-			ClassTypes.HEAVY,
-			ClassTypes.HEAVY,
-			ClassTypes.HEAVY
-		],
+		"composition":
+		[ClassTypes.HEAVY, ClassTypes.HEAVY, ClassTypes.HEAVY, ClassTypes.HEAVY, ClassTypes.HEAVY],
 		"head_color": Color(1, 0.5, 0.6),
 		"body_color": Color(1, 0.6, 1),
 		"foot_color": Color(1, 0.5, 0.6),
@@ -188,13 +189,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Bears",
-		"composition": [
-			ClassTypes.LIGHT,
-			ClassTypes.HEAVY,
-			ClassTypes.HEAVY,
-			ClassTypes.HEAVY,
-			ClassTypes.HEAVY
-		],
+		"composition":
+		[ClassTypes.LIGHT, ClassTypes.HEAVY, ClassTypes.HEAVY, ClassTypes.HEAVY, ClassTypes.HEAVY],
 		"head_color": Color(0.8, 0.7, 0.4),
 		"body_color": Color(0.1, 0.1, 0.1),
 		"foot_color": Color(0.8, 0.7, 0.4),
@@ -207,7 +203,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Long Island Ice Teas",
-		"composition": [
+		"composition":
+		[
 			ClassTypes.MEDIUM,
 			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
@@ -224,15 +221,10 @@ const TEAMS = [
 		"conference": "earth",
 		"division": "water",
 	},
-		{
+	{
 		"name": "Haberdashers",
-		"composition": [
-			ClassTypes.HEAVY,
-			ClassTypes.HEAVY,
-			ClassTypes.MEDIUM,
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT
-		],
+		"composition":
+		[ClassTypes.HEAVY, ClassTypes.HEAVY, ClassTypes.MEDIUM, ClassTypes.LIGHT, ClassTypes.LIGHT],
 		"head_color": Color(0.9, 0.9, 0.9),
 		"body_color": Color(0.729, 0.0, 0.065),
 		"foot_color": Color(0.2, 0.6, 0.9),
@@ -245,13 +237,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Rockslides",
-		"composition": [
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.HEAVY
-		],
+		"composition":
+		[ClassTypes.LIGHT, ClassTypes.LIGHT, ClassTypes.LIGHT, ClassTypes.LIGHT, ClassTypes.HEAVY],
 		"head_color": Color(0.119, 0.388, 0.653),
 		"body_color": Color(0.578, 0.121, 0.254),
 		"foot_color": Color(0.119, 0.388, 0.653),
@@ -264,7 +251,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Queens",
-		"composition": [
+		"composition":
+		[
 			ClassTypes.LIGHT,
 			ClassTypes.MEDIUM,
 			ClassTypes.MEDIUM,
@@ -283,13 +271,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Swords",
-		"composition": [
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.MEDIUM,
-			ClassTypes.LIGHT
-		],
+		"composition":
+		[ClassTypes.LIGHT, ClassTypes.LIGHT, ClassTypes.LIGHT, ClassTypes.MEDIUM, ClassTypes.LIGHT],
 		"head_color": Color(0.9, 0.9, 0.1),
 		"body_color": Color(0.1, 0.3, 0.9),
 		"foot_color": Color(0.9, 0.9, 0.1),
@@ -302,13 +285,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Syrups",
-		"composition": [
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.HEAVY,
-			ClassTypes.LIGHT
-		],
+		"composition":
+		[ClassTypes.LIGHT, ClassTypes.LIGHT, ClassTypes.LIGHT, ClassTypes.HEAVY, ClassTypes.LIGHT],
 		"head_color": Color(0.9, 0.9, 0.9),
 		"body_color": Color(0.12, 0.3, 0.9),
 		"foot_color": Color(0.9, 0.9, 0.9),
@@ -321,13 +299,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Evil Wrenches",
-		"composition": [
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.LIGHT,
-			ClassTypes.HEAVY,
-			ClassTypes.LIGHT
-		],
+		"composition":
+		[ClassTypes.LIGHT, ClassTypes.LIGHT, ClassTypes.LIGHT, ClassTypes.HEAVY, ClassTypes.LIGHT],
 		"head_color": Color(0.1, 0.1, 0.1),
 		"body_color": Color(0.9, 0.3, 0.3),
 		"foot_color": Color(0.9, 0.9, 0.9),
@@ -340,13 +313,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Tire Fires",
-		"composition": [
-			ClassTypes.LIGHT,
-			ClassTypes.HEAVY,
-			ClassTypes.LIGHT,
-			ClassTypes.HEAVY,
-			ClassTypes.LIGHT
-		],
+		"composition":
+		[ClassTypes.LIGHT, ClassTypes.HEAVY, ClassTypes.LIGHT, ClassTypes.HEAVY, ClassTypes.LIGHT],
 		"head_color": Color(0.9, 0.9, 0.9),
 		"body_color": Color(0.9, 0.3, 0.3),
 		"foot_color": Color(0.9, 0.9, 0.9),
@@ -359,7 +327,8 @@ const TEAMS = [
 	},
 	{
 		"name": "Gasoline Fights",
-		"composition": [
+		"composition":
+		[
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,

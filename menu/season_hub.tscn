@@ -148,6 +148,11 @@ custom_minimum_size = Vector2(200, 60)
 layout_mode = 2
 text = "Reset Season"
 
+[node name="Roster" type="Button" parent="VBoxContainer/Buttons" unique_id=1113038405]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+text = "View Roster"
+
 [node name="Play" type="Button" parent="VBoxContainer/Buttons" unique_id=718801763]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 60)
@@ -156,4 +161,5 @@ text = "Play Match"
 
 [connection signal="pressed" from="VBoxContainer/Buttons/Back" to="." method="_on_back_pressed"]
 [connection signal="pressed" from="VBoxContainer/Buttons/Reset" to="." method="_on_reset_pressed"]
+[connection signal="pressed" from="VBoxContainer/Buttons/Roster" to="." method="_on_roster_pressed"]
 [connection signal="pressed" from="VBoxContainer/Buttons/Play" to="." method="_on_play_pressed"]
