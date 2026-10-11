@@ -115,8 +115,8 @@ horizontal_alignment = 1
 [node name="HomeDifficulty" type="HSlider" parent="VBoxContainer/HBoxContainer/HomeTeam" unique_id=240336065]
 unique_name_in_owner = true
 layout_mode = 2
-max_value = 1.0
-tick_count = 2
+max_value = 2.0
+tick_count = 3
 ticks_on_borders = true
 
 [node name="AwayTeam" type="VBoxContainer" parent="VBoxContainer/HBoxContainer" unique_id=984826549]
@@ -185,8 +185,8 @@ horizontal_alignment = 1
 [node name="AwayDifficulty" type="HSlider" parent="VBoxContainer/HBoxContainer/AwayTeam" unique_id=375298115]
 unique_name_in_owner = true
 layout_mode = 2
-max_value = 1.0
-tick_count = 2
+max_value = 2.0
+tick_count = 3
 ticks_on_borders = true
 
 [node name="GoalieControl" type="CheckBox" parent="VBoxContainer" unique_id=653139017]

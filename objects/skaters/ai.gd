@@ -107,12 +107,14 @@ func handle(_delta: float, curSkater) -> void:
 
 	if difficulty == 1:
 		current_strategy = 2
+	elif difficulty == 2:
+		current_strategy = 5
 
 	if last_health == 0.0:
 		last_health = curSkater.health
 
 	if curSkater.health < last_health:
-		var anger_mult = 10.0 if difficulty == 1 else 3.0
+		var anger_mult = 10.0 if difficulty >= 1 else 3.0
 		anger += (last_health - curSkater.health) * anger_mult
 	last_health = curSkater.health
 
@@ -161,12 +163,15 @@ func handle(_delta: float, curSkater) -> void:
 				anger = 0.0
 				is_angry = false
 	elif has_puck:
-		var target_distance = 500 if difficulty == 1 else 300
+		var target_distance = 500 if difficulty >= 1 else 300
+		if difficulty == 2:
+			target_distance = 650 # Take shots from fairly far away
+
 		if is_charging:
 			power += charge
 			curSkater.charging = true
 			if power >= target_power:
-				var inaccuracy = 0.0 if difficulty == 1 else 1.0
+				var inaccuracy = 0.0 if difficulty >= 1 else 1.0
 				curSkater.shoot(shot_aim_dir, power, inaccuracy)
 				power = 0
 				is_charging = false
@@ -210,6 +215,15 @@ func handle(_delta: float, curSkater) -> void:
 					target_power = 1.0
 					is_charging = true
 					power = 0.0
+		elif difficulty == 2 and randf() < 0.05: # pass frequently while moving up the rink
+			var teammate = get_most_forward_teammate()
+			if teammate and teammate.global_position.x * forward_dir > curSkater.global_position.x * forward_dir:
+				shot_aim_dir = (teammate.global_position - curSkater.global_position).normalized()
+				target_power = 0.6
+				is_charging = true
+				power = 0.0
+			else:
+				target_pos = Vector2(attack_x, curSkater.global_position.y)
 		else:
 			target_pos = Vector2(attack_x, curSkater.global_position.y)
 	else:
@@ -232,7 +246,7 @@ func handle(_delta: float, curSkater) -> void:
 			2:
 				if is_delegated_chaser():
 					target_pos = puck.global_position if puck else curSkater.global_position
-					if difficulty == 1 and other_team_has_puck and \
+					if difficulty >= 1 and other_team_has_puck and \
 					curSkater.global_position.distance_to(target_pos) < 60:
 						if randf() < 0.05:
 							if curSkater.spring.node_b.is_empty() and randf() < 0.3:
@@ -241,7 +255,7 @@ func handle(_delta: float, curSkater) -> void:
 								curSkater.do_check()
 				else:
 					target_pos = get_opponent_to_ram()
-					if difficulty == 1 and curSkater.global_position.distance_to(target_pos) < 60:
+					if difficulty >= 1 and curSkater.global_position.distance_to(target_pos) < 60:
 						if randf() < 0.05:
 							if curSkater.spring.node_b.is_empty() and randf() < 0.3:
 								curSkater.do_grab(true)
@@ -256,6 +270,38 @@ func handle(_delta: float, curSkater) -> void:
 					target_pos = puck.global_position
 				else:
 					target_pos = curSkater.global_position # Stand still
+			5: # Extra Hard strategy
+				if is_delegated_chaser():
+					target_pos = puck.global_position if puck else curSkater.global_position
+					# always chase the puck. They should try bumping the skater with the puck to take it.
+					# They should try to take the puck back in the other half of the rink, playing aggressively.
+					if curSkater.global_position.distance_to(target_pos) < 80:
+						if randf() < 0.1:
+							if curSkater.spring.node_b.is_empty() and randf() < 0.3:
+								curSkater.do_grab(true)
+							else:
+								curSkater.do_check()
+				else:
+					if team_has_puck:
+						# One skater should get to a spot of a likely rebound too, and shoot if they get the puck etc.
+						if index == 1:
+							# Go to rebound spot
+							target_pos = Vector2(attack_x - forward_dir * 150, 509 + randf_range(-100, 100))
+						else:
+							target_pos = get_preferred_spot(team_has_puck, index, attack_x, defend_x, forward_dir)
+					else:
+						# play aggressively in the other half of the rink
+						var opponent = get_opponent_to_ram()
+						if (opponent.x - 1005.5) * forward_dir > 0: # If in opponent's half
+							target_pos = opponent
+							if curSkater.global_position.distance_to(target_pos) < 80:
+								if randf() < 0.05:
+									if curSkater.spring.node_b.is_empty() and randf() < 0.3:
+										curSkater.do_grab(true)
+									else:
+										curSkater.do_check()
+						else:
+							target_pos = get_preferred_spot(team_has_puck, index, attack_x, defend_x, forward_dir)
 			_:
 				if not team_has_puck and is_delegated_chaser() and not other_team_has_puck:
 					target_pos = puck.global_position if puck else curSkater.global_position
@@ -269,7 +315,7 @@ func handle(_delta: float, curSkater) -> void:
 	if dist > 10:
 		var dir = (target_pos - curSkater.global_position).normalized()
 
-		if difficulty == 1:
+		if difficulty >= 1:
 			var avoidance = Vector2.ZERO
 			var obstacles = []
 
