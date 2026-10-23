@@ -17,9 +17,9 @@ class StatBlock extends Node:
 	var check_damage: float
 	var max_health: float
 	var size: String
-	
+
 func _init() -> void:
-	for X in ClassTypes.values():
+	for x in ClassTypes.values():
 		Classes.push_back(StatBlock.new())
 	Classes[ClassTypes.LIGHT].weight = 1
 	Classes[ClassTypes.LIGHT].speed = 5
@@ -30,7 +30,7 @@ func _init() -> void:
 	Classes[ClassTypes.LIGHT].check_damage = 20.0
 	Classes[ClassTypes.LIGHT].max_health = 80.0
 	Classes[ClassTypes.LIGHT].size = "light"
-	
+
 	Classes[ClassTypes.MEDIUM].weight = 1.5
 	Classes[ClassTypes.MEDIUM].speed = 5.5
 	Classes[ClassTypes.MEDIUM].sprite_index = 0
@@ -40,7 +40,7 @@ func _init() -> void:
 	Classes[ClassTypes.MEDIUM].check_damage = 30.0
 	Classes[ClassTypes.MEDIUM].max_health = 100.0
 	Classes[ClassTypes.MEDIUM].size = "medium"
-	
+
 	Classes[ClassTypes.HEAVY].weight = 2
 	Classes[ClassTypes.HEAVY].speed = 6
 	Classes[ClassTypes.HEAVY].sprite_index = 26
@@ -376,4 +376,309 @@ const TEAMS = [
 		"conference": "earth",
 		"division": "water",
 	},
+	{
+		"name": "Mighty Geese",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.HEAVY,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.8, 0.5, 0.1),
+		"body_color": Color(0.1, 0.1, 0.1),
+		"foot_color": Color(0.8, 0.5, 0.1),
+		"away_head_color": Color(0.1, 0.1, 0.1),
+		"away_body_color": Color(0.8, 0.5, 0.1),
+		"away_foot_color": Color(0.1, 0.1, 0.1),
+		"popularity": 0.85,
+		"conference": "earth",
+		"division": "fire",
+	},
+	{
+		"name": "Desert Dogs",
+		"composition": [
+			ClassTypes.LIGHT,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.HEAVY,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.4, 0.2, 0.1),
+		"body_color": Color(0.6, 0.1, 0.1),
+		"foot_color": Color(0.4, 0.2, 0.1),
+		"away_head_color": Color(0.4, 0.2, 0.1),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.4, 0.2, 0.1),
+		"popularity": 0.60,
+		"conference": "earth",
+		"division": "fire",
+	},
+	{
+		"name": "Windy City Pigeons",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.HEAVY,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.9, 0.1, 0.1),
+		"body_color": Color(0.1, 0.1, 0.1),
+		"foot_color": Color(0.9, 0.1, 0.1),
+		"away_head_color": Color(0.9, 0.1, 0.1),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.9, 0.1, 0.1),
+		"popularity": 0.92,
+		"conference": "earth",
+		"division": "fire",
+	},
+	{
+		"name": "Redcoats",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.1, 0.1, 0.5),
+		"body_color": Color(0.8, 0.1, 0.1),
+		"foot_color": Color(0.1, 0.1, 0.5),
+		"away_head_color": Color(0.1, 0.1, 0.5),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.1, 0.1, 0.5),
+		"popularity": 0.70,
+		"conference": "sky",
+		"division": "sun",
+	},
+	{
+		"name": "Swamp Cats",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.HEAVY,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.8, 0.1, 0.1),
+		"body_color": Color(0.1, 0.1, 0.4),
+		"foot_color": Color(0.8, 0.7, 0.2),
+		"away_head_color": Color(0.8, 0.1, 0.1),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.8, 0.7, 0.2),
+		"popularity": 0.88,
+		"conference": "sky",
+		"division": "moon",
+	},
+	{
+		"name": "Forest Tame",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.1, 0.4, 0.2),
+		"body_color": Color(0.8, 0.1, 0.1),
+		"foot_color": Color(0.8, 0.7, 0.2),
+		"away_head_color": Color(0.1, 0.4, 0.2),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.8, 0.7, 0.2),
+		"popularity": 0.82,
+		"conference": "earth",
+		"division": "fire",
+	},
+	{
+		"name": "Sabertooths",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.9, 0.7, 0.1),
+		"body_color": Color(0.1, 0.1, 0.4),
+		"foot_color": Color(0.9, 0.7, 0.1),
+		"away_head_color": Color(0.1, 0.1, 0.4),
+		"away_body_color": Color(0.9, 0.7, 0.1),
+		"away_foot_color": Color(0.1, 0.1, 0.4),
+		"popularity": 0.85,
+		"conference": "earth",
+		"division": "fire",
+	},
+	{
+		"name": "Turnpike Demons",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.9, 0.1, 0.1),
+		"body_color": Color(0.1, 0.1, 0.1),
+		"foot_color": Color(0.9, 0.1, 0.1),
+		"away_head_color": Color(0.9, 0.1, 0.1),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.9, 0.1, 0.1),
+		"popularity": 0.89,
+		"conference": "sky",
+		"division": "sun",
+	},
+	{
+		"name": "Bureaucrats",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.8, 0.1, 0.1),
+		"body_color": Color(0.1, 0.1, 0.1),
+		"foot_color": Color(0.8, 0.1, 0.1),
+		"away_head_color": Color(0.1, 0.1, 0.1),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.8, 0.1, 0.1),
+		"popularity": 0.75,
+		"conference": "sky",
+		"division": "moon",
+	},
+	{
+		"name": "Silicon Valley Minnows",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.1, 0.5, 0.5),
+		"body_color": Color(0.1, 0.1, 0.1),
+		"foot_color": Color(0.1, 0.5, 0.5),
+		"away_head_color": Color(0.1, 0.5, 0.5),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.1, 0.5, 0.5),
+		"popularity": 0.77,
+		"conference": "earth",
+		"division": "water",
+	},
+	{
+		"name": "Rain City Orcas",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.HEAVY,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.1, 0.2, 0.6),
+		"body_color": Color(0.1, 0.5, 0.3),
+		"foot_color": Color(0.9, 0.9, 0.9),
+		"away_head_color": Color(0.1, 0.2, 0.6),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.1, 0.5, 0.3),
+		"popularity": 0.88,
+		"conference": "earth",
+		"division": "water",
+	},
+	{
+		"name": "Silver Squires",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.5, 0.5, 0.5),
+		"body_color": Color(0.7, 0.6, 0.2),
+		"foot_color": Color(0.1, 0.1, 0.1),
+		"away_head_color": Color(0.5, 0.5, 0.5),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.7, 0.6, 0.2),
+		"popularity": 0.93,
+		"conference": "earth",
+		"division": "water",
+	},
+	{
+		"name": "Lowercase",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.8, 0.1, 0.1),
+		"body_color": Color(0.1, 0.1, 0.5),
+		"foot_color": Color(0.9, 0.9, 0.9),
+		"away_head_color": Color(0.1, 0.1, 0.5),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.8, 0.1, 0.1),
+		"popularity": 0.86,
+		"conference": "sky",
+		"division": "sun",
+	},
+	{
+		"name": "Propellers",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.HEAVY
+		],
+		"head_color": Color(0.1, 0.1, 0.4),
+		"body_color": Color(0.9, 0.9, 0.9),
+		"foot_color": Color(0.1, 0.1, 0.4),
+		"away_head_color": Color(0.1, 0.1, 0.4),
+		"away_body_color": Color(0.5, 0.5, 0.5),
+		"away_foot_color": Color(0.9, 0.9, 0.9),
+		"popularity": 0.81,
+		"conference": "earth",
+		"division": "fire",
+	},
+	{
+		"name": "Rhythm & Blues",
+		"composition": [
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.1, 0.2, 0.6),
+		"body_color": Color(0.9, 0.7, 0.1),
+		"foot_color": Color(0.1, 0.2, 0.6),
+		"away_head_color": Color(0.1, 0.2, 0.6),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.9, 0.7, 0.1),
+		"popularity": 0.84,
+		"conference": "earth",
+		"division": "fire",
+	},
+	{
+		"name": "Salty Lakers",
+		"composition": [
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT
+		],
+		"head_color": Color(0.1, 0.1, 0.1),
+		"body_color": Color(0.5, 0.7, 0.9),
+		"foot_color": Color(0.1, 0.1, 0.1),
+		"away_head_color": Color(0.5, 0.7, 0.9),
+		"away_body_color": Color(0.9, 0.9, 0.9),
+		"away_foot_color": Color(0.1, 0.1, 0.1),
+		"popularity": 0.70,
+		"conference": "earth",
+		"division": "fire",
+	}
+
 ]
