@@ -70,7 +70,9 @@ const TEAMS = [
 		"away_foot_color": Color(0.965, 0.502, 0.142, 1.0),
 		"popularity": 0.89,
 		"conference": "sky",
-		"division": "sun"
+		"division": "sun",
+		"logo": 1,
+		"logo_style": 2
 	},
 	{
 		"name": "Thunderbolts",
@@ -90,6 +92,8 @@ const TEAMS = [
 		"popularity": 0.95,
 		"conference": "sky",
 		"division": "moon",
+		"logo": 3,
+		"logo_style": 1
 	},
 	{
 		"name": "Flightless Birds",
@@ -108,7 +112,9 @@ const TEAMS = [
 		"away_foot_color": Color(0.2, 0.2, 0.2),
 		"popularity": 0.73,
 		"conference": "sky",
-		"division": "sun"
+		"division": "sun",
+		"logo": 2,
+		"logo_style": 1
 	},
 	{
 		"name": "Candy Canes",
@@ -127,7 +133,9 @@ const TEAMS = [
 		"away_foot_color": Color(0.1, 0.1, 0.1),
 		"popularity": 0.88,
 		"conference": "sky",
-		"division": "sun"
+		"division": "sun",
+		"logo": 4,
+		"logo_style": 1
 	},
 	{
 		"name": "Loch Ness Monsters",
@@ -147,6 +155,8 @@ const TEAMS = [
 		"popularity": 0.76,
 		"conference": "earth",
 		"division": "fire",
+		"logo": 5,
+		"logo_style": 1
 	},
 	{
 		"name": "Shapes",
@@ -166,6 +176,8 @@ const TEAMS = [
 		"popularity": 0.90,
 		"conference": "earth",
 		"division": "fire",
+		"logo": 6,
+		"logo_style": 1
 	},
 	{
 		"name": "Pinkertons",
@@ -185,6 +197,8 @@ const TEAMS = [
 		"popularity": 0.50,
 		"conference": "n/a",
 		"division": "n/a",
+		"logo": 1, #placeholder
+		"logo_style": 1
 	},
 	{
 		"name": "Bears",
@@ -204,6 +218,8 @@ const TEAMS = [
 		"popularity": 0.81,
 		"conference": "sky",
 		"division": "moon",
+		"logo": 16,
+		"logo_style": 1
 	},
 	{
 		"name": "Long Island Ice Teas",
@@ -223,6 +239,8 @@ const TEAMS = [
 		"popularity": 0.71,
 		"conference": "earth",
 		"division": "water",
+		"logo": 7,
+		"logo_style": 1
 	},
 		{
 		"name": "Haberdashers",
@@ -242,6 +260,8 @@ const TEAMS = [
 		"popularity": 0.98,
 		"conference": "earth",
 		"division": "water",
+		"logo": 8,
+		"logo_style": 1
 	},
 	{
 		"name": "Rockslides",
@@ -261,6 +281,8 @@ const TEAMS = [
 		"popularity": 0.86,
 		"conference": "earth",
 		"division": "water",
+		"logo": 9,
+		"logo_style": 1
 	},
 	{
 		"name": "Queens",
@@ -280,6 +302,8 @@ const TEAMS = [
 		"popularity": 0.86,
 		"conference": "earth",
 		"division": "fire",
+		"logo": 11,
+		"logo_style": 1
 	},
 	{
 		"name": "Swords",
@@ -299,6 +323,8 @@ const TEAMS = [
 		"popularity": 0.86,
 		"conference": "sky",
 		"division": "moon",
+		"logo": 13,
+		"logo_style": 1
 	},
 	{
 		"name": "Syrups",
@@ -318,6 +344,8 @@ const TEAMS = [
 		"popularity": 0.86,
 		"conference": "sky",
 		"division": "moon",
+		"logo": 12,
+		"logo_style": 1
 	},
 	{
 		"name": "Evil Wrenches",
@@ -336,7 +364,9 @@ const TEAMS = [
 		"away_foot_color": Color(0.9, 0.9, 0.9),
 		"popularity": 0.86,
 		"conference": "sky",
-		"division": "sun"
+		"division": "sun",
+		"logo": 10,
+		"logo_style": 1
 	},
 	{
 		"name": "Tire Fires",
@@ -356,6 +386,8 @@ const TEAMS = [
 		"popularity": 0.86,
 		"conference": "earth",
 		"division": "fire",
+		"logo": 14,
+		"logo_style": 1
 	},
 	{
 		"name": "Gasoline Fights",
@@ -375,5 +407,7 @@ const TEAMS = [
 		"popularity": 0.89,
 		"conference": "earth",
 		"division": "water",
+		"logo": 15,
+		"logo_style": 1
 	},
 ]

@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://daupcjejdlj5y" path="res://objects/environment/netsprite.tscn" id="8_jkole"]
 [ext_resource type="PackedScene" uid="uid://c7t4freferee" path="res://objects/skaters/referee.tscn" id="9_ref"]
 [ext_resource type="Script" uid="uid://carxvn5etqhdd" path="res://objects/environment/bench.gd" id="10_jkole"]
+[ext_resource type="Texture2D" uid="uid://c2t8p5fi48qsg" path="res://sprites/logos/Clip 1.png" id="11_ka43y"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ka43y"]
 texture = ExtResource("2_jkole")
@@ -606,6 +607,32 @@ position = Vector2(288, 495)
 [node name="Node2" parent="Manager" unique_id=1482667935 instance=ExtResource("8_jkole")]
 position = Vector2(1718, 495)
 scale = Vector2(-1, 1)
+
+[node name="Logo2R" type="Sprite2D" parent="Manager" unique_id=2104441930]
+visible = false
+modulate = Color(0.8235294, 0.8235294, 0.8235294, 1)
+z_index = -100
+position = Vector2(1058, 520)
+rotation = -1.5707964
+scale = Vector2(2, 2)
+texture = ExtResource("11_ka43y")
+
+[node name="Logo2L" type="Sprite2D" parent="Manager" unique_id=2056127743]
+visible = false
+modulate = Color(0.8221741, 0.8221741, 0.8221741, 1)
+z_index = -100
+position = Vector2(950, 520)
+rotation = 1.5707964
+scale = Vector2(2, 2)
+texture = ExtResource("11_ka43y")
+
+[node name="Logo1C" type="Sprite2D" parent="Manager" unique_id=1914655882]
+visible = false
+modulate = Color(0.8454793, 0.8454793, 0.8454793, 1)
+z_index = -100
+position = Vector2(1002, 520)
+scale = Vector2(3, 3)
+texture = ExtResource("11_ka43y")
 
 [node name="Boards" type="StaticBody2D" parent="." unique_id=897642293]
 unique_name_in_owner = true

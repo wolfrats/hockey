@@ -65,6 +65,23 @@ func _ready() -> void:
 		lights[1].color.v = 1
 		lights[2].color = StatBook.TEAMS[Globals.home_team_index]["foot_color"]
 		lights[2].color.v = 1
+		var home_logo = StatBook.TEAMS[Globals.home_team_index]["logo"]
+		var home_logo_type = StatBook.TEAMS[Globals.home_team_index]["logo_style"]
+		var logo_texture = load("res://sprites/logos/Clip {0}.png".format([home_logo]))
+		if home_logo_type == 2:
+			var logol = get_node_or_null("Logo2L")
+			var logor = get_node_or_null("Logo2R")
+			if logol: 
+				logol.visible = true
+				logol.texture = logo_texture
+			if logor:
+				logor.visible = true
+				logor.texture = logo_texture
+		elif home_logo_type == 1:
+			var logoc = get_node_or_null("Logo1C")
+			if logoc:
+				logoc.visible = true
+				logoc.texture = logo_texture
 	for y in range(0, 4):
 		for x in range(0, 2000, 50):
 			var path: int = x + y * 50
