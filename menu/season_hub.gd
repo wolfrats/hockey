@@ -163,11 +163,19 @@ func _on_play_pressed() -> void:
 
 	if home_team == player_team:
 		Globals.home_ai_difficulty = 0 # Doesn't matter, player controls
-		Globals.away_ai_difficulty = 2 if away_team in good_teams else 0
+		if away_team in good_teams:
+			Globals.away_ai_difficulty = 2
+		else:
+			var standings = Season.season_data["standings"][str(away_team)]
+			Globals.away_ai_difficulty = 0 if standings["losses"] > standings["wins"] else 1
 		for i in range(Globals.player_teams.size()):
 			Globals.player_teams[i] = 0
 	else:
-		Globals.home_ai_difficulty = 2 if home_team in good_teams else 0
+		if home_team in good_teams:
+			Globals.home_ai_difficulty = 2
+		else:
+			var standings = Season.season_data["standings"][str(home_team)]
+			Globals.home_ai_difficulty = 0 if standings["losses"] > standings["wins"] else 1
 		Globals.away_ai_difficulty = 0
 		for i in range(Globals.player_teams.size()):
 			Globals.player_teams[i] = 1
