@@ -79,6 +79,25 @@ A team focused on generating scoring chances while sacrificing everything else.
 Plus 6 teams I did not yet write a bio for: The Queens, the Swords, the Syrups,
 the Evil Wrenches, the Tire Fires, and the Gasoline Fights.
 
+To be added:  
+- The Hot Wings  
+- The Ranges  
+- The Music  
+- The Congressmen  
+- The Planes  
+- The Hammerheads  
+- The Hosers  
+- The Mighty Movie Tie-Ins  
+- The Elephants  
+- The Silver Squires  
+- The Apache Choppers  
+- The Blue Belts  
+- The Prey  
+- The Block Busters  
+- The Freeze  
+- The Lowers
+
+
 </details>
 
 # AI Disclosure
