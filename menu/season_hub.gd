@@ -77,10 +77,10 @@ func update_standings() -> void:
 	teams_records.sort_custom(func(a, b): return a["pts"] > b["pts"])
 
 	var divisions = {
-		"sun": [],
-		"moon": [],
-		"fire": [],
-		"water": []
+		"city": [],
+		"coastal": [],
+		"ocean": [],
+		"middle": []
 	}
 	for i in range(teams_records.size()):
 		var tr = teams_records[i]
@@ -89,7 +89,7 @@ func update_standings() -> void:
 		if divisions.has(division):
 			divisions[division].append({"record": tr, "rank": i + 1, "name": team_data["name"]})
 
-	for div_name in ["sun", "moon", "fire", "water"]:
+	for div_name in ["city", "coastal", "ocean", "middle"]:
 		if divisions[div_name].is_empty():
 			continue
 

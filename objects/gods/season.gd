@@ -20,16 +20,27 @@ func save_season() -> void:
 	file.store_string(JSON.stringify(season_data))
 
 func new_season(player_team: int) -> void:
-	var a = [0, 2, 3, 14]
-	var b = [1, 7, 12, 13]
-	var c = [4, 5, 11, 15]
-	var d = [8, 9, 10, 16]
+	var a = []
+	var b = []
+	var c = []
+	var d = []
+	
+	for i in range(0, 32):
+		var co = Stats.TEAMS[i]["division"]
+		if co == "city":
+			a.push_back(i)
+		elif co == "coastal":
+			b.push_back(i)
+		elif co == "middle":
+			c.push_back(i)
+		elif co == "ocean":
+			d.push_back(i)
 
 	var good_teams = []
-	good_teams.append(a[randi() % 4])
-	good_teams.append(b[randi() % 4])
-	good_teams.append(c[randi() % 4])
-	good_teams.append(d[randi() % 4])
+	good_teams.append(a[randi() % 8])
+	good_teams.append(b[randi() % 8])
+	good_teams.append(c[randi() % 8])
+	good_teams.append(d[randi() % 8])
 
 	var standings = {}
 	for t in (a + b + c + d):

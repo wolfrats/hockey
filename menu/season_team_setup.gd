@@ -9,7 +9,7 @@ const TIME_MAP = [
 ]
 
 var team_idx: int = 0
-var max_teams: int = 17
+var max_teams: int = 32
 
 @onready var team_label = %TeamLabel
 @onready var head = %Head
@@ -18,8 +18,6 @@ var max_teams: int = 17
 
 func _ready() -> void:
 	team_idx = Globals.home_team_index
-	if team_idx == 6:
-		team_idx = 7
 	Globals.period_length = TIME_MAP[2][1]
 
 	$VBoxContainer/Buttons/Start.grab_focus()
@@ -35,19 +33,13 @@ func update_ui() -> void:
 
 func _on_prev_pressed() -> void:
 	team_idx -= 1
-	if team_idx == 6:
-		team_idx -= 1
 	if team_idx < 0:
-		team_idx = StatBook.TEAMS.size() - 1
-		if team_idx == 6:
-			team_idx -= 1
+		team_idx = StatBook.TEAMS.size() - 2 # skip pinkertons
 	update_ui()
 
 func _on_next_pressed() -> void:
 	team_idx += 1
-	if team_idx == 6:
-		team_idx += 1
-	if team_idx >= StatBook.TEAMS.size():
+	if team_idx >= StatBook.TEAMS.size() - 1: # skip pinkertons
 		team_idx = 0
 	update_ui()
 
