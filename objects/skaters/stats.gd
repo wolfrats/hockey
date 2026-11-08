@@ -392,11 +392,11 @@ const TEAMS = [
 	{
 		"name": "Tire Fires",
 		"composition": [
-			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.LIGHT
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM
 		],
 		"head_color": Color(0.923, 0.003, 0.086, 1.0),
 		"body_color": Color(0.9, 0.067, 0.027, 1.0),
@@ -417,7 +417,7 @@ const TEAMS = [
 			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.LIGHT
+			ClassTypes.MEDIUM
 		],
 		"head_color": Color(0.06, 0.069, 0.923, 1.0),
 		"body_color": Color(0, 0, 0.9),
@@ -438,7 +438,7 @@ const TEAMS = [
 			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.LIGHT
+			ClassTypes.HEAVY
 		],
 		"head_color": Color(0.064, 0.014, 0.125, 1.0),
 		"body_color": Color(0, 0, 0.9),
@@ -457,9 +457,9 @@ const TEAMS = [
 		"composition": [
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.LIGHT
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM
 		],
 		"head_color": Color(0.031, 0.03, 0.031, 1.0),
 		"body_color": Color(0.022, 0.023, 0.023, 1.0),
@@ -478,9 +478,9 @@ const TEAMS = [
 		"composition": [
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.HEAVY,
+			ClassTypes.LIGHT,
 			ClassTypes.MEDIUM,
-			ClassTypes.LIGHT
+			ClassTypes.HEAVY
 		],
 		"head_color": Color(0.027, 0.028, 0.313, 1.0),
 		"body_color": Color(0.0, 0.0, 0.273, 1.0),
@@ -500,7 +500,7 @@ const TEAMS = [
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
-			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
 			ClassTypes.LIGHT
 		],
 		"head_color": Color(0.19, 0.367, 0.326, 1.0),
@@ -519,10 +519,10 @@ const TEAMS = [
 		"name": "Hosers",
 		"composition": [
 			ClassTypes.HEAVY,
-			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.LIGHT
+			ClassTypes.MEDIUM,
+			ClassTypes.MEDIUM
 		],
 		"head_color": Color(0.004, 0.184, 0.424, 1.0),
 		"body_color": Color(0.004, 0.184, 0.424, 1.0),
@@ -539,9 +539,9 @@ const TEAMS = [
 	{
 		"name": "Mighty Movie Tie-Ins",
 		"composition": [
-			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.HEAVY,
+			ClassTypes.LIGHT,
+			ClassTypes.MEDIUM,
 			ClassTypes.MEDIUM,
 			ClassTypes.LIGHT
 		],
@@ -560,7 +560,7 @@ const TEAMS = [
 	{
 		"name": "Elephants",
 		"composition": [
-			ClassTypes.HEAVY,
+			ClassTypes.LIGHT,
 			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
@@ -585,7 +585,7 @@ const TEAMS = [
 			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.LIGHT
+			ClassTypes.HEAVY
 		],
 		"head_color": Color(0.188, 0.235, 0.227, 1.0),
 		"body_color": Color(0.188, 0.235, 0.227, 1.0),
@@ -603,9 +603,9 @@ const TEAMS = [
 		"name": "Apache Choppers",
 		"composition": [
 			ClassTypes.HEAVY,
-			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
-			ClassTypes.MEDIUM,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY,
 			ClassTypes.LIGHT
 		],
 		"head_color": Color(0.016, 0.0, 0.0, 1.0),
@@ -625,7 +625,7 @@ const TEAMS = [
 		"composition": [
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
 			ClassTypes.MEDIUM,
 			ClassTypes.LIGHT
 		],
@@ -644,11 +644,11 @@ const TEAMS = [
 	{
 		"name": "Prey",
 		"composition": [
-			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
 			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.LIGHT
+			ClassTypes.MEDIUM
 		],
 		"head_color": Color(0.949, 0.663, 0.0, 1.0),
 		"body_color": Color(0.949, 0.663, 0.0, 1.0),
@@ -667,8 +667,8 @@ const TEAMS = [
 		"composition": [
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.HEAVY,
-			ClassTypes.MEDIUM,
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
 			ClassTypes.LIGHT
 		],
 		"head_color": Color(0.0, 0.039, 0.082, 1.0),
@@ -686,7 +686,7 @@ const TEAMS = [
 	{
 		"name": "Freeze",
 		"composition": [
-			ClassTypes.HEAVY,
+			ClassTypes.MEDIUM,
 			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
@@ -709,7 +709,7 @@ const TEAMS = [
 		"composition": [
 			ClassTypes.HEAVY,
 			ClassTypes.MEDIUM,
-			ClassTypes.HEAVY,
+			ClassTypes.LIGHT,
 			ClassTypes.MEDIUM,
 			ClassTypes.LIGHT
 		],
