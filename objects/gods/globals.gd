@@ -66,13 +66,13 @@ func _init() -> void:
 	for x in range(0, len(player_colors)):
 		player_colors_map["Player %d" % [x + 1]] = player_colors[x].to_html(false)
 	home_shader_material.shader = preload("res://shaders/skater.gdshader")
-	home_shader_material.set("shader_parameter/original_0", helmet_color);
-	home_shader_material.set("shader_parameter/original_1", shirt_color);
-	home_shader_material.set("shader_parameter/original_2", skate_color);
+	home_shader_material.set("shader_parameter/helmet", helmet_color);
+	home_shader_material.set("shader_parameter/shirt", shirt_color);
+	home_shader_material.set("shader_parameter/pants", skate_color);
 	away_shader_material.shader = preload("res://shaders/skater.gdshader")
-	away_shader_material.set("shader_parameter/original_0", helmet_color);
-	away_shader_material.set("shader_parameter/original_1", shirt_color);
-	away_shader_material.set("shader_parameter/original_2", skate_color);
+	away_shader_material.set("shader_parameter/helmet", helmet_color);
+	away_shader_material.set("shader_parameter/shirt", shirt_color);
+	away_shader_material.set("shader_parameter/pants", skate_color);
 func skater_texture(size, action) -> Texture2D:
 	return skater_textures[size + "/" + action]#.duplicate()
 
@@ -116,12 +116,14 @@ func update_team_textures() -> void:
 			if tex:
 				home_textures[t][s] = tex # swap_colors_in_texture_multi(tex, home_team["head_color"], home_team["body_color"], home_team["foot_color"])
 				away_textures[t][s] = tex # swap_colors_in_texture_multi(tex, away_team.get("away_head_color", away_team["head_color"]), away_team.get("away_body_color", away_team["body_color"]), away_team.get("away_foot_color", away_team["foot_color"]))
-	home_shader_material.set("shader_parameter/replace_0", home_team["head_color"]);
-	home_shader_material.set("shader_parameter/replace_1", home_team["body_color"]);
-	home_shader_material.set("shader_parameter/replace_2", home_team["foot_color"]);
-	away_shader_material.set("shader_parameter/replace_0", away_team["away_head_color"]);
-	away_shader_material.set("shader_parameter/replace_1", away_team["away_body_color"]);
-	away_shader_material.set("shader_parameter/replace_2", away_team["away_foot_color"]);
+	home_shader_material.set("shader_parameter/replace_helmet", home_team["head_color"]);
+	home_shader_material.set("shader_parameter/replace_shirt", home_team["body_color"]);
+	home_shader_material.set("shader_parameter/replace_sleeve", home_team["body_color"]);
+	home_shader_material.set("shader_parameter/replace_pants", home_team["foot_color"]);
+	away_shader_material.set("shader_parameter/replace_helmet", away_team["away_head_color"]);
+	away_shader_material.set("shader_parameter/replace_shirt", away_team["away_body_color"]);
+	away_shader_material.set("shader_parameter/replace_sleeve", away_team["body_color"]);
+	away_shader_material.set("shader_parameter/replace_pants", away_team["away_foot_color"]);
 		
 	for s in ["Stand", "Skate", "Block Puck", "Bump Player"]:
 		var tex = load("res://sprites/goalie/" + s + ".png")

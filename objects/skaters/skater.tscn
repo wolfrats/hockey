@@ -10,16 +10,17 @@ bounce = 0.5
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_e6fq4"]
 shader = ExtResource("2_e6fq4")
-shader_parameter/original_0 = Color(0, 0, 0, 1)
-shader_parameter/original_1 = Color(0, 0, 0, 1)
-shader_parameter/original_2 = Color(0, 0, 0, 1)
-shader_parameter/original_3 = Color(0, 0, 0, 1)
-shader_parameter/original_4 = Color(0, 0, 0, 1)
-shader_parameter/replace_0 = Color(0, 0, 0, 1)
-shader_parameter/replace_1 = Color(0, 0, 0, 1)
-shader_parameter/replace_2 = Color(0, 0, 0, 1)
-shader_parameter/replace_3 = Color(0, 0, 0, 1)
-shader_parameter/replace_4 = Color(0, 0, 0, 1)
+shader_parameter/helmet = Color(0, 0, 0, 1)
+shader_parameter/shirt = Color(0, 0, 0, 1)
+shader_parameter/pants = Color(0, 0, 0, 1)
+shader_parameter/skin = Vector4(0, 0, 0, 0)
+shader_parameter/nose = Vector4(0, 0, 0, 0)
+shader_parameter/replace_helmet = Color(0, 0, 0, 1)
+shader_parameter/replace_shirt = Color(0, 0, 0, 1)
+shader_parameter/replace_pants = Color(0, 0, 0, 1)
+shader_parameter/replace_sleeve = Color(0, 0, 0, 1)
+shader_parameter/replace_skin = Vector4(0, 0, 0, 0)
+shader_parameter/replace_nose = Vector4(0, 0, 0, 0)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0eafs"]
 atlas = ExtResource("2_0eafs")

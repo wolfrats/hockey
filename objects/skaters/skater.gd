@@ -62,10 +62,10 @@ func _ready() -> void:
 	else:
 		facing_dir = Vector2(-1, 0)
 		$Sprite.material = Globals.away_shader_material.duplicate()
-	$Sprite.material.set("shader_parameter/original_3", Globals.color_to_vec4(Globals.skin_tone))
-	$Sprite.material.set("shader_parameter/original_4", Globals.color_to_vec4(Globals.nose_color))
-	$Sprite.material.set("shader_parameter/replace_3", Globals.color_to_vec4(st[0]))
-	$Sprite.material.set("shader_parameter/replace_4", Globals.color_to_vec4(st[1]))
+	$Sprite.material.set("shader_parameter/skin", Globals.color_to_vec4(Globals.skin_tone))
+	$Sprite.material.set("shader_parameter/nose", Globals.color_to_vec4(Globals.nose_color))
+	$Sprite.material.set("shader_parameter/replace_skin", Globals.color_to_vec4(st[0]))
+	$Sprite.material.set("shader_parameter/replace_nose", Globals.color_to_vec4(st[1]))
 	if stats == Stats.ClassTypes.LIGHT:
 		$Sprite.scale.x = 0.9
 		$Sprite.scale.y = 1.1

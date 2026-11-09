@@ -62,9 +62,9 @@ const TEAMS = [
 			ClassTypes.MEDIUM,
 			ClassTypes.LIGHT
 		],
-		"head_color": Color(0, 0, 0),
+		"head_color": Color(1.0, 1.0, 1.0, 1.0),
 		"body_color": Color(0.957, 0.363, 0.116, 1.0),
-		"foot_color": Color(0.874, 0.874, 0.874, 1.0),
+		"foot_color": Color(0.035, 0.035, 0.035, 1.0),
 		"away_head_color": Color(0.945, 0.945, 0.945, 1.0),
 		"away_body_color": Color(0.898, 0.906, 0.902, 1.0),
 		"away_foot_color": Color(0.043, 0.047, 0.063, 1.0),
