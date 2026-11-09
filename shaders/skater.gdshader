@@ -19,7 +19,7 @@ uniform vec4 replace_skin;
 uniform vec4 replace_nose;
 
 
-const float precision = 0.01;
+const float precision = 0.1;
 
 
 vec4 swap_color(vec4 color){
