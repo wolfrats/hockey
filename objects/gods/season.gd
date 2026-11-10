@@ -24,7 +24,7 @@ func new_season(player_team: int) -> void:
 	var b = []
 	var c = []
 	var d = []
-	
+
 	for i in range(0, 32):
 		var co = Stats.TEAMS[i]["division"]
 		if co == "city":
@@ -61,35 +61,43 @@ func generate_schedule(a: Array, b: Array, c: Array, d: Array) -> Array:
 	var sky = a + b
 	var earth = c + d
 	var schedule = []
-	for w in range(8):
+	for w in range(16):
 		var week = []
-		for i in range(8):
+		for i in range(16):
 			var t1 = sky[i]
-			var t2 = earth[(i+w)%8]
-			if w < 4:
+			var t2 = earth[(i + w) % 16]
+			if w < 8:
 				week.append([t1, t2])
 			else:
 				week.append([t2, t1])
 		schedule.append(week)
 	for w in range(8):
 		var week = []
-		for i in range(4):
+		for i in range(8):
 			var t1 = a[i]
-			var t2 = b[(i+w)%4]
+			var t2 = b[(i + w) % 8]
 			if w < 4:
 				week.append([t1, t2])
 			else:
 				week.append([t2, t1])
 			t1 = c[i]
-			t2 = d[(i+w)%4]
+			t2 = d[(i + w) % 8]
 			if w < 4:
 				week.append([t1, t2])
 			else:
 				week.append([t2, t1])
 		schedule.append(week)
-	var matchups = [[[0,1], [2,3]], [[0,2], [3,1]], [[0,3], [1,2]]]
-	for _iter in range(4):
-		for r in range(3):
+	var matchups = [
+		[[0, 7], [1, 6], [2, 5], [3, 4]],
+		[[0, 6], [7, 5], [1, 4], [2, 3]],
+		[[0, 5], [6, 4], [7, 3], [1, 2]],
+		[[0, 4], [5, 3], [6, 2], [7, 1]],
+		[[0, 3], [4, 2], [5, 1], [6, 7]],
+		[[0, 2], [3, 1], [4, 7], [5, 6]],
+		[[0, 1], [2, 7], [3, 6], [4, 5]]
+	]
+	for _iter in range(2):
+		for r in range(7):
 			var week = []
 			for div in [a, b, c, d]:
 				for pair in matchups[r]:
