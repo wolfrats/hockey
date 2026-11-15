@@ -746,4 +746,25 @@ const TEAMS = [
 		"logo": 1,
 		"logo_style": 1
 	},
+	{
+		"name": "Bananas",
+		"composition": [
+			ClassTypes.LIGHT,
+			ClassTypes.LIGHT,
+			ClassTypes.MEDIUM,
+			ClassTypes.HEAVY,
+			ClassTypes.HEAVY
+		],
+		"head_color": Color(84.0/255.0, 59.0/255.0, 0),
+		"body_color": Color(1, 0.88235294117, 0),
+		"foot_color": Color(1, 0.88235294117, 0),
+		"away_head_color": Color(84.0/255.0, 59.0/255.0, 0),
+		"away_body_color": Color(255.0/255.0, 251.0/255.0, 217.0/255.0),
+		"away_foot_color": Color(1, 0.88235294117, 0),
+		"popularity": 0.50,
+		"conference": "n/a",
+		"division": "n/a",
+		"logo": 1,
+		"logo_style": 1
+	},
 ]
