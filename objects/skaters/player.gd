@@ -148,24 +148,7 @@ func get_pass_direction(shooter: Skater, teammate: Skater) -> Vector2:
 	var a = target_velocity.length_squared() - speed * speed
 	var b = 2.0 * to_target.dot(target_velocity)
 	var c = to_target.length_squared()
-	var intercept_time = -1.0
-	if abs(a) < 0.001:
-		if abs(b) > 0.001:
-			var linear_time = -c / b
-			if linear_time > 0.0:
-				intercept_time = linear_time
-	elif b * b - 4.0 * a * c >= 0.0:
-		var root = sqrt(b * b - 4.0 * a * c)
-		var time_a = (-b - root) / (2.0 * a)
-		var time_b = (-b + root) / (2.0 * a)
-		if time_a > 0.0:
-			intercept_time = time_a
-		if time_b > 0.0 and (intercept_time < 0.0 or time_b < intercept_time):
-			intercept_time = time_b
-
-	# If a true intercept is impossible, still lead by the estimated puck travel time.
-	if intercept_time < 0.0:
-		intercept_time = to_target.length() / max(speed, 1.0)
+	intercept_time = to_target.length() / max(speed, 1.0)
 	var predicted_target = to_target + target_velocity * intercept_time
 	return predicted_target.normalized()
 
