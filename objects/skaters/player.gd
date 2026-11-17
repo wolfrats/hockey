@@ -161,7 +161,7 @@ func get_pass_direction(shooter: Skater, teammate: Skater) -> Vector2:
 	var b = 2.0 * to_target.dot(target_velocity)
 	var c = to_target.length_squared()
 	var intercept_time = to_target.length() / max(speed, 1.0)
-	var predicted_target = to_target + target_velocity * intercept_time
+	var predicted_target = to_target + (target_velocity * intercept_time / 20.0)
 	return predicted_target.normalized()
 
 func handle(_delta: float, cur_skater) -> void:
