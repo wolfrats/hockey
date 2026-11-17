@@ -271,7 +271,7 @@ func _physics_process(delta: float) -> void:
 		health = randf_range(0.0, 0.25) * statbook.max_health
 	var is_actively_sprinting = sprinting and health > 1.0 and knocked_over <= Globals.ticks and checking <= Globals.ticks and not charging and anim_state == ""
 	if is_actively_sprinting:
-		health = max(1.0, health - delta * 15.0)
+		health = max(1.0, health - delta * 15.0 * statbook.weight * statbook.weight)
 	elif not sprinting and knocked_over <= Globals.ticks and health < statbook.max_health:
 		health = min(statbook.max_health, health + delta * 15.0) # Regenerate 15 hp per second
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
