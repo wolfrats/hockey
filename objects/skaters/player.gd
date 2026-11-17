@@ -14,9 +14,14 @@ var action_map = {
 	"swap": JOY_BUTTON_Y,
 	"check": JOY_BUTTON_B,
 	"grab": JOY_BUTTON_RIGHT_SHOULDER,
+	"sprint": JOY_BUTTON_LEFT_SHOULDER,
 	"shoot": JOY_BUTTON_X,
 	"pass": JOY_BUTTON_A,
 }
+
+func _ready() -> void:
+	if has_node("CircleFill") and $CircleFill.material:
+		$CircleFill.material = $CircleFill.material.duplicate()
 
 func _update_buttons() -> void:
 	if device_id < 0:
@@ -94,6 +99,11 @@ func _physics_process(_delta: float) -> void:
 	if not skater:
 		return
 	global_position = skater.global_position#global_position.lerp(skater.global_position, 0.1)
+	if has_node("CircleFill") and $CircleFill.material is ShaderMaterial:
+		var health_ratio = 1.0
+		if "health" in skater and "statbook" in skater and skater.statbook and skater.statbook.max_health > 0:
+			health_ratio = clamp(skater.health / skater.statbook.max_health, 0.0, 1.0)
+		$CircleFill.material.set_shader_parameter("health", health_ratio)
 	_update_pointer()
 	if is_action_just_pressed_custom("swap"):
 		var team_node = "Team1" if skater.home_team else "Team2"
@@ -114,6 +124,8 @@ func _physics_process(_delta: float) -> void:
 			var newskater = siblings[idx]
 			if ("ghost" in newskater) and newskater.ghost == null:
 				skater.release_grab()
+				if "sprinting" in skater:
+					skater.sprinting = false
 				skater.ghost = null
 				newskater.ghost = self
 				skater = newskater
@@ -165,6 +177,9 @@ func handle(_delta: float, cur_skater) -> void:
 	if is_action_just_released_custom("grab"):
 		if cur_skater.has_method("release_grab"):
 			cur_skater.release_grab()
+
+	if "sprinting" in cur_skater:
+		cur_skater.sprinting = is_action_pressed_custom("sprint")
 
 	if is_action_just_pressed_custom("pass") and cur_skater.puck:
 		var input_dir = Vector2(dx, dy)
@@ -242,4 +257,3 @@ func _update_pointer() -> void:
 		var point_dir = (screen_pos - clamped_pos).normalized()
 		if point_dir.length_squared() > 0:
 			pointer.global_rotation = point_dir.angle() + PI/2
-

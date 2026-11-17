@@ -14,8 +14,8 @@ config/name="Hockey"
 run/main_scene="uid://tn613bbsa4xm"
 config/features=PackedStringArray("4.8", "Mobile")
 boot_splash/bg_color=Color(0.9376526, 0.9376526, 0.9376526, 1)
-boot_splash/image="uid://dtnby12yywv7b"
 config/icon="uid://hn52xdfjj5e6"
+boot_splash/image="uid://dtnby12yywv7b"
 
 [autoload]
 
@@ -219,6 +219,27 @@ grab={
 "physical_keycode": 77,
 "key_label": 0,
 "unicode": 109,
+"location": 0,
+"echo": false,
+"script": null
+)]
+}
+sprint={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,
+"resource_local_to_scene": false,
+"resource_name": "",
+"device": -1,
+"window_id": 0,
+"alt_pressed": false,
+"shift_pressed": false,
+"ctrl_pressed": false,
+"meta_pressed": false,
+"pressed": false,
+"keycode": 0,
+"physical_keycode": 4194325,
+"key_label": 0,
+"unicode": 0,
 "location": 0,
 "echo": false,
 "script": null

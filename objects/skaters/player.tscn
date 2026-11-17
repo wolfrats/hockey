@@ -8,6 +8,29 @@
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_7fj4o"]
 
+[sub_resource type="Shader" id="Shader_health"]
+code = "shader_type canvas_item;
+
+uniform float health : hint_range(0.0, 1.0) = 1.0;
+
+void fragment() {
+	vec2 center = vec2(0.5, 0.75078125);
+	vec2 rel = (UV - center) / vec2(112.5, 51.5);
+	float angle = atan(rel.x, -rel.y);
+	if (angle < 0.0) {
+		angle += 2.0 * PI;
+	}
+	float progress = angle / (2.0 * PI);
+	if (progress > health) {
+		COLOR.a = 0.0;
+	}
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_health"]
+shader = SubResource("Shader_health")
+shader_parameter/health = 1.0
+
 [node name="Player" type="Node2D" unique_id=1253797390]
 z_index = 2
 script = ExtResource("1_uce12")
@@ -44,7 +67,7 @@ texture = ExtResource("3_bfqqb")
 modulate = Color(0.93142647, 1, 0.6463891, 1)
 z_index = -5
 z_as_relative = false
-material = SubResource("CanvasItemMaterial_7fj4o")
+material = SubResource("ShaderMaterial_health")
 position = Vector2(-0.5, 20)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("4_dyjsn")

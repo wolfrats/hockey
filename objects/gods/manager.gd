@@ -88,9 +88,10 @@ func _ready() -> void:
 			@warning_ignore("integer_division")
 			if int(path / 150) % 3 == 0:
 				continue
-			var fan = FAN_SCENE.instantiate()
-			add_child(fan)
-			fan.global_position = Vector2(x + y * 20, 50 + y * -50)
+			if not (y == 0 and ((x >= 450 and x <= 660) or (x >= 1350 and x <= 1560))):
+				var fan = FAN_SCENE.instantiate()
+				add_child(fan)
+				fan.global_position = Vector2(x + y * 20, 50 + y * -50)
 
 			if x > 900 and x < 1120 and y == 0:  # no people near penalty box
 				continue

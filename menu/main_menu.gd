@@ -6,6 +6,7 @@ var Swap: TouchScreenButton
 var Slash: TouchScreenButton
 var Pass: TouchScreenButton
 var Grab: TouchScreenButton
+var Sprint: TouchScreenButton
 var Back: TouchScreenButton
 var Holder: Control
 var BackHolder: Control
@@ -37,6 +38,9 @@ func _ready() -> void:
 	Grab = TouchScreenButton.new()
 	Grab.action = &"grab"
 	Grab.texture_normal = preload("res://sprites/grab-button.svg")
+	Sprint = TouchScreenButton.new()
+	Sprint.action = &"sprint"
+	Sprint.texture_normal = preload("res://sprites/red-button.svg")
 	Back = TouchScreenButton.new()
 	Back.action = &"ui_cancel"
 	Back.texture_normal = preload("res://sprites/red-button.svg") # Using red-button.svg for Back
@@ -48,6 +52,7 @@ func _ready() -> void:
 	Holder.add_child(Slash)
 	Holder.add_child(Pass)
 	Holder.add_child(Grab)
+	Holder.add_child(Sprint)
 
 	BackHolder = Control.new()
 	BackHolder.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE, 50)
@@ -63,6 +68,8 @@ func _ready() -> void:
 	Pass.scale = Vector2.ONE*(128.0/320.0)
 	Grab.position = Vector2(-25, -300)
 	Grab.scale = Vector2.ONE*(128.0/320.0)
+	Sprint.position = Vector2(-175, -300)
+	Sprint.scale = Vector2.ONE*(128.0/320.0)
 
 	Back.position = Vector2(20, 20)
 	Back.scale = Vector2.ONE*(128.0/320.0)

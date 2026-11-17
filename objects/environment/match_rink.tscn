@@ -694,6 +694,11 @@ home = true
 position = Vector2(554.25, 137.5)
 shape = SubResource("RectangleShape2D_4jwb7")
 
+[node name="Line2D" type="Line2D" parent="HomeBench" unique_id=2107940132]
+points = PackedVector2Array(454.25, 135, 454.25, 50, 654.25, 50, 654.25, 135)
+width = 5.0
+default_color = Color(0, 0, 0, 1)
+
 [node name="AwayBench" type="Area2D" parent="." unique_id=274359506]
 collision_layer = 9
 collision_mask = 9
@@ -702,6 +707,11 @@ script = ExtResource("10_jkole")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="AwayBench" unique_id=131011547]
 position = Vector2(1452, 151)
 shape = SubResource("RectangleShape2D_4jwb7")
+
+[node name="Line2D" type="Line2D" parent="AwayBench" unique_id=131011548]
+points = PackedVector2Array(1352, 135, 1352, 50, 1552, 50, 1552, 135)
+width = 5.0
+default_color = Color(0, 0, 0, 1)
 
 [node name="Lights" type="Node2D" parent="." unique_id=1881172458]
 unique_name_in_owner = true

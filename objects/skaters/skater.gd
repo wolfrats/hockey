@@ -8,8 +8,10 @@ var ai: Ghost
 var statbook: Stats.StatBlock
 var rammed: bool = false
 var charging: bool = false
+var sprinting: bool = false
 var started_charge: int = 0
 var knocked_over: int = 0
+var was_knocked_over: bool = false
 var checking: int = 0
 var holding: int = 0
 var swapping: int = 0
@@ -89,6 +91,9 @@ func home() -> void:
 	health = statbook.max_health
 	penalty_time = 0.0
 	holding = 0
+	sprinting = false
+	knocked_over = 0
+	was_knocked_over = false
 	if not spring.node_b.is_empty():
 		spring.node_b = NodePath("")
 
@@ -102,6 +107,7 @@ func penalty(duration: float) -> void:
 	anim_state = "entering_penalty"
 	checking = 0
 	charging = false
+	sprinting = false
 	holding = 0
 	if puck:
 		puck.shoot(name, Vector2.ZERO)
@@ -241,9 +247,12 @@ func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
 	damage_tween = create_tween()
 	damage_tween.tween_property($Sprite, "modulate", Color.WHITE, 0.3)
 	if health <= 0:
+		health = 0.0
 		knocked_over = Globals.ticks + 120
+		was_knocked_over = true
 		checking = 0
 		charging = false
+		sprinting = false
 		if puck:
 			puck.shoot(name, Vector2.ZERO)
 
@@ -257,7 +266,13 @@ func _physics_process(delta: float) -> void:
 		faceoff_shake -= delta
 	if faceoff_cooldown > 0:
 		faceoff_cooldown -= delta
-	if knocked_over <= Globals.ticks and health < statbook.max_health:
+	if was_knocked_over and knocked_over <= Globals.ticks:
+		was_knocked_over = false
+		health = randf_range(0.0, 0.25) * statbook.max_health
+	var is_actively_sprinting = sprinting and health > 1.0 and knocked_over <= Globals.ticks and checking <= Globals.ticks and not charging and anim_state == ""
+	if is_actively_sprinting:
+		health = max(1.0, health - delta * 15.0)
+	elif not sprinting and knocked_over <= Globals.ticks and health < statbook.max_health:
 		health = min(statbook.max_health, health + delta * 15.0) # Regenerate 15 hp per second
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		if anim_state == "entering_penalty":
@@ -520,7 +535,8 @@ func impulse(dx: float, dy: float) -> void:
 		counter += 1
 	if last_move.length_squared() > 0:
 		facing_dir = last_move.normalized()
-	apply_impulse(last_move * statbook.speed)
+	var speed_mult = 1.25 if (sprinting and health > 1.0 and anim_state == "") else 1.0
+	apply_impulse(last_move * statbook.speed * speed_mult)
 
 func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 	if knocked_over > Globals.ticks or checking > Globals.ticks or anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
