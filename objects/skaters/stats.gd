@@ -22,7 +22,7 @@ func _init() -> void:
 	for X in ClassTypes.values():
 		Classes.push_back(StatBlock.new())
 	Classes[ClassTypes.LIGHT].weight = 1
-	Classes[ClassTypes.LIGHT].speed = 5
+	Classes[ClassTypes.LIGHT].speed = 7
 	Classes[ClassTypes.LIGHT].sprite_index = 60
 	Classes[ClassTypes.LIGHT].shot_power = 1.3
 	Classes[ClassTypes.LIGHT].snap_power = 0.4
@@ -32,7 +32,7 @@ func _init() -> void:
 	Classes[ClassTypes.LIGHT].size = "light"
 	
 	Classes[ClassTypes.MEDIUM].weight = 1.5
-	Classes[ClassTypes.MEDIUM].speed = 5.5
+	Classes[ClassTypes.MEDIUM].speed = 7.5
 	Classes[ClassTypes.MEDIUM].sprite_index = 0
 	Classes[ClassTypes.MEDIUM].shot_power = 1
 	Classes[ClassTypes.MEDIUM].snap_power = 0.3
@@ -42,7 +42,7 @@ func _init() -> void:
 	Classes[ClassTypes.MEDIUM].size = "medium"
 	
 	Classes[ClassTypes.HEAVY].weight = 2
-	Classes[ClassTypes.HEAVY].speed = 6
+	Classes[ClassTypes.HEAVY].speed = 7
 	Classes[ClassTypes.HEAVY].sprite_index = 26
 	Classes[ClassTypes.HEAVY].shot_power = 1.3
 	Classes[ClassTypes.HEAVY].snap_power = 0.2
