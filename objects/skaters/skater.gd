@@ -505,7 +505,11 @@ func _physics_process(delta: float) -> void:
 				anim_name = "Skate Down"
 			else:
 				anim_name = "Skate Left"
-
+	
+	if anim_state == "in_penalty":
+		anim_name = "Skate Up"
+		z_index = 1
+	
 	if home_team:
 		if Globals.home_textures[skater_size].has(anim_name):
 			$Sprite.texture = Globals.home_textures[skater_size][anim_name]

@@ -12,7 +12,9 @@
 [ext_resource type="Script" uid="uid://carxvn5etqhdd" path="res://objects/environment/bench.gd" id="10_jkole"]
 [ext_resource type="Texture2D" uid="uid://c2t8p5fi48qsg" path="res://sprites/logos/Clip 1.png" id="11_ka43y"]
 [ext_resource type="Texture2D" uid="uid://d1g10rd2qe8j0" path="res://sprites/rink_glass_top.png" id="12_y3hp8"]
+[ext_resource type="Shader" uid="uid://nlg62q8wv86y" path="res://shaders/rink_glass_bottom.gdshader" id="13_6d2ki"]
 [ext_resource type="Texture2D" uid="uid://b6h23spthpf7h" path="res://sprites/rink_glass_bottom.png" id="13_xvcn5"]
+[ext_resource type="Script" uid="uid://fq64bs0sff3b" path="res://objects/environment/rink_glass_bottom.gd" id="15_foic5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ka43y"]
 texture = ExtResource("2_jkole")
@@ -514,6 +516,13 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.85, 0.85)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0puxa"]
+shader = ExtResource("13_6d2ki")
+shader_parameter/puck_count = 0
+shader_parameter/puck_positions = PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+shader_parameter/inner_radius = 4.0
+shader_parameter/outer_radius = 9.0
+
 [node name="Rink" type="Node2D" unique_id=608511731]
 texture_filter = 1
 
@@ -672,6 +681,7 @@ polygon = PackedVector2Array(329, 434, 289, 437, 268, 468, 260, 515, 268, 563, 2
 position = Vector2(1710, 516)
 
 [node name="PenaltyBox" type="StaticBody2D" parent="." unique_id=1714978849]
+z_index = 1
 collision_layer = 22
 collision_mask = 31
 
@@ -752,9 +762,11 @@ scale = Vector2(4, 4)
 texture = ExtResource("12_y3hp8")
 
 [node name="RinkGlassBottom" type="Sprite2D" parent="." unique_id=34588313]
+material = SubResource("ShaderMaterial_0puxa")
 position = Vector2(1003.48486, 490.92798)
 scale = Vector2(4, 4)
 texture = ExtResource("13_xvcn5")
+script = ExtResource("15_foic5")
 
 [connection signal="body_entered" from="HomeBench" to="HomeBench" method="_on_bench_body_entered"]
 [connection signal="body_entered" from="AwayBench" to="AwayBench" method="_on_bench_body_entered"]
