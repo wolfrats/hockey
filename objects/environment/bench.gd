@@ -55,8 +55,8 @@ func _ready() -> void:
 			sprite.scale = Vector2(1.2, 1.0)
 
 		var offset_x = (i - (count - 1) / 2.0) * 34.0
-		sprite.position = Vector2(center_x + offset_x, 88.0)
-		sprite.z_index = -1
+		sprite.position = Vector2(center_x + offset_x, 70.0)
+		sprite.z_index = -3
 		add_child(sprite)
 		bench_sprites.append(sprite)
 

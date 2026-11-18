@@ -23,6 +23,7 @@ shader_parameter/replace_5 = Vector4(0, 0, 0, 0)
 shader_parameter/replace_6 = Vector4(0, 0, 0, 0)
 
 [node name="Fan" type="Node2D" unique_id=870400134]
+z_index = -4
 script = ExtResource("1_vd4dr")
 
 [node name="Chair" type="Sprite2D" parent="." unique_id=996727030]
