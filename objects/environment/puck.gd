@@ -9,9 +9,15 @@ var last_possessor: String = ""
 var assist_possessor: String = ""
 var possessor_team: bool = false
 var shot_on_goal_counted: bool = false
+var replay_possessed: bool = false
 
 func _ready() -> void:
 	initial_position = global_position
+
+func get_visual_position() -> Vector2:
+	if has_node("Sprite"):
+		return $Sprite.global_position + Vector2(4.0, 2.0)
+	return global_position + Vector2(0.0, 38.0)
 
 func home() -> void:
 	needs_reset = true
@@ -20,6 +26,8 @@ func home() -> void:
 	self.posessor = null
 	self.freeze = false
 	shot_on_goal_counted = false
+	if has_node("Trail"):
+		$Trail.clear()
 
 func _process(delta: float) -> void:
 	if posessor:
@@ -42,7 +50,7 @@ func _process(delta: float) -> void:
 	for key in to_erase:
 		blocklist.erase(key)
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if global_position.x < -200 or global_position.x > 2200 or global_position.y < -200 or global_position.y > 1400:
 		home()
 	_update_pointer()
@@ -60,6 +68,11 @@ func _physics_process(_delta: float) -> void:
 			if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck:
 				assign_possessor(body)
 				break
+
+	if has_node("Trail"):
+		var is_replay: bool = Globals.manager != null and Globals.manager.is_replay
+		var is_possessed: bool = (posessor != null) or (is_replay and replay_possessed)
+		$Trail.step_physics(delta, get_visual_position(), linear_velocity, is_possessed, is_replay, is_visible_in_tree(), needs_reset)
 			
 func assign_possessor(body: Skater) -> void:
 	var prev_possessor = posessor
@@ -107,6 +120,13 @@ func do_shoot(vector):
 	var new_transform = get_transform() 
 	new_transform.origin = global_position
 	set_transform(new_transform)
+	if has_node("Trail"):
+		$Trail.start_from_shot(get_visual_position(), vector / maxf(mass, 0.001))
+
+func passPuck(shooter, vector):
+	self.shoot(shooter, vector)
+	if has_node("Trail"):
+		$Trail.reset_color()
 
 func shoot(shooter, vector) -> bool:
 	if not posessor or shooter != posessor.name:
@@ -115,6 +135,12 @@ func shoot(shooter, vector) -> bool:
 	Globals.manager.shot.emit(posessor.home_team, global_position, vector)
 	posessor = null
 	blocklist[shooter] = 0.25
+	if has_node("Trail"):
+		if vector.length() > 100:
+			$Trail.set_hue(0.1388 / (vector.length() / 100))
+		else:
+			$Trail.reset_color()
+	
 	#block_all = Globals.ticks + 1
 	#get_tree().create_timer(1.0/60.0).timeout.connect(_enable_collision)
 	#set_collision_mask_value(4, false)
@@ -134,6 +160,8 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		state.linear_velocity = Vector2.ZERO
 		state.angular_velocity = 0
 		needs_reset = false
+		if has_node("Trail"):
+			$Trail.clear()
 		
 func _update_pointer() -> void:
 	if not has_node("Pointer"):

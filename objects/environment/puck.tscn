@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bl2luahqyy0ss" path="res://objects/environment/puck.gd" id="1_0yy2u"]
 [ext_resource type="Texture2D" uid="uid://gus727oakv01" path="res://sprites/puck.png" id="2_i0e0h"]
 [ext_resource type="Texture2D" uid="uid://i5qm0g4tkuh0" path="res://sprites/character-arrow.svg" id="3_i0e0h"]
+[ext_resource type="Script" uid="uid://csnexjtn7n0sw" path="res://objects/environment/puck_trail.gd" id="4_trail"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_est1s"]
 friction = 0.1
@@ -53,3 +54,9 @@ z_as_relative = false
 position = Vector2(-1, -48.999996)
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("3_i0e0h")
+
+[node name="Trail" type="Node2D" parent="." unique_id=1089304363]
+top_level = true
+z_index = -1
+z_as_relative = false
+script = ExtResource("4_trail")

@@ -185,7 +185,7 @@ func handle(_delta: float, cur_skater) -> void:
 		var input_dir = Vector2(dx, dy)
 		var teammate = get_best_pass_target(cur_skater, input_dir)
 		if teammate:
-			cur_skater.shoot(get_pass_direction(cur_skater, teammate), 0.5, 0)
+			cur_skater.passPuck(get_pass_direction(cur_skater, teammate), 0.5)
 
 
 	if is_action_just_released_custom("pass") and not cur_skater.puck:

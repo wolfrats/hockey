@@ -542,6 +542,15 @@ func impulse(dx: float, dy: float) -> void:
 	var speed_mult = 1.25 if (sprinting and health > 1.0 and anim_state == "") else 1.0
 	apply_impulse(last_move * statbook.speed * speed_mult)
 
+func passPuck(dir: Vector2, power: float) -> void:
+	if knocked_over > Globals.ticks or checking > Globals.ticks or anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
+		return
+	var vec = dir.normalized() * 200 * (statbook.snap_power + ((1 - statbook.snap_power) * power)) * statbook.shot_power
+	if puck:
+		puck.passPuck(name, vec)
+		set_collision_layer_value(4, false)
+		Globals.play_sound_at("HitSlow", global_position)
+
 func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 	if knocked_over > Globals.ticks or checking > Globals.ticks or anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		return

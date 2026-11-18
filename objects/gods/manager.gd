@@ -284,6 +284,9 @@ func start_replay() -> void:
 
 func stop_replay() -> void:
 	is_replay = false
+	for p in get_tree().get_nodes_in_group("pucks"):
+		if "replay_possessed" in p:
+			p.replay_possessed = false
 	if replay_label:
 		replay_label.queue_free()
 		replay_label = null
@@ -319,7 +322,8 @@ func _physics_process(_delta: float) -> void:
 				"type": "puck",
 				"position": p.global_position,
 				"rotation": p.rotation,
-				"visible": p.visible
+				"visible": p.visible,
+				"possessed": p.posessor != null
 			}
 
 		replay_buffer.append(frame_data)
@@ -347,6 +351,7 @@ func _physics_process(_delta: float) -> void:
 						if node.posessor:
 							node.posessor.puck = null
 						node.posessor = null
+						node.replay_possessed = data.get("possessed", false)
 						node.global_position = data["position"]
 						node.rotation = data["rotation"]
 						node.visible = data["visible"]
