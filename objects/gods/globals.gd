@@ -89,6 +89,11 @@ func generate_referee_textures() -> void:
 func _ready() -> void:
 	for s in get_node("Sounds").get_children():
 		sounds[s.name] = s
+	for btn in [JOY_BUTTON_A, JOY_BUTTON_START]:
+		var ev = InputEventJoypadButton.new()
+		ev.button_index = btn
+		if not InputMap.action_has_event("ui_accept", ev):
+			InputMap.action_add_event("ui_accept", ev)
 
 func color_to_vec4(color: Color) -> Vector4: 
 	return Vector4(color.r, color.g, color.b, color.a)
