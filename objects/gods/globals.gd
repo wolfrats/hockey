@@ -52,12 +52,12 @@ var save_path = "user://settings.cfg"
 var use_onscreen_controls: bool = DisplayServer.is_touchscreen_available()
 
 var texture_logo_offsets = {
-	"Skate Down": [{
+	"Grab Down": [{
 		"x": 88,
 		"y" : 109,
 		"offsetx": 0,
 	}],
-	"Grab Down": [{
+	"Skate Down": [{
 		"x": 88,
 		"y" : 109,
 		"offsetx": 0,
@@ -102,6 +102,31 @@ var texture_logo_offsets = {
 		"y" : 109,
 		"offsetx": 0,
 	}],
+	"Skate Left": [{
+		"x": 94,
+		"y" : 109,
+		"offsetx": 16,
+	}],
+	"Check Left": [{
+		"x": 94,
+		"y" : 109,
+		"offsetx": 16,
+	}],
+	"Glide Left": [{
+		"x": 94,
+		"y" : 109,
+		"offsetx": 16,
+	}],
+	"Grab Left": [{
+		"x": 94,
+		"y" : 109,
+		"offsetx": 16,
+	}],
+	"Shoot Left": [{
+		"x": 94,
+		"y" : 109,
+		"offsetx": 16,
+	}],
 }
 
 func _init() -> void:
@@ -122,10 +147,12 @@ func _init() -> void:
 	home_shader_material.set("shader_parameter/helmet", helmet_color);
 	home_shader_material.set("shader_parameter/shirt", shirt_color);
 	home_shader_material.set("shader_parameter/pants", skate_color);
+	home_shader_material.set("shader_parameter/draw_logo", false);
 	away_shader_material.shader = preload("res://shaders/skater.gdshader")
 	away_shader_material.set("shader_parameter/helmet", helmet_color);
 	away_shader_material.set("shader_parameter/shirt", shirt_color);
 	away_shader_material.set("shader_parameter/pants", skate_color);
+	away_shader_material.set("shader_parameter/draw_logo", false);
 func skater_texture(size, action) -> Texture2D:
 	return skater_textures[size + "/" + action]#.duplicate()
 
@@ -178,16 +205,31 @@ func update_team_textures() -> void:
 	home_shader_material.set("shader_parameter/replace_shirt", home_team["body_color"]);
 	home_shader_material.set("shader_parameter/replace_sleeve", home_team["body_color"]);
 	home_shader_material.set("shader_parameter/replace_pants", home_team["foot_color"]);
+	home_shader_material.set("shader_parameter/logo", load("res://sprites/logos/Clip {0}.png".format([home_team["logo"]])));
 	away_shader_material.set("shader_parameter/replace_helmet", away_team["away_head_color"]);
 	away_shader_material.set("shader_parameter/replace_shirt", away_team["away_body_color"]);
 	away_shader_material.set("shader_parameter/replace_sleeve", away_team["body_color"]);
 	away_shader_material.set("shader_parameter/replace_pants", away_team["away_foot_color"]);
+	away_shader_material.set("shader_parameter/logo", load("res://sprites/logos/Clip {0}.png".format([away_team["logo"]])));
 		
 	for s in ["Stand", "Skate", "Block Puck", "Bump Player"]:
 		var tex = load("res://sprites/goalie/" + s + ".png")
 		if tex:
 			home_goalie_textures[s] = tex # swap_colors_in_texture_multi(tex, home_team["head_color"], home_team["body_color"], home_team["foot_color"])
 			away_goalie_textures[s] = tex # swap_colors_in_texture_multi(tex, away_team.get("away_head_color", away_team["head_color"]), away_team.get("away_body_color", away_team["body_color"]), away_team.get("away_foot_color", away_team["foot_color"]))
+
+
+func apply_logo_offset(material: ShaderMaterial, anim_name: String, frame: int, flipped: bool) -> void:
+	if material == null:
+		return
+	if texture_logo_offsets.has(anim_name) and not texture_logo_offsets[anim_name].is_empty():
+		var frames = texture_logo_offsets[anim_name]
+		var offset = frames[frame % frames.size()]
+		material.set("shader_parameter/draw_logo", true)
+		material.set("shader_parameter/logo_pos", Vector2(offset["x"] - (8 if not flipped else 16), offset["y"] - 8))
+		material.set("shader_parameter/logo_offset_x", float(offset.get("offsetx", 0)) if not flipped else 0.0)
+	else:
+		material.set("shader_parameter/draw_logo", false)
 
 
 func _physics_process(_delta: float) -> void:

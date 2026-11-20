@@ -520,6 +520,7 @@ func _physics_process(delta: float) -> void:
 	var spacing = 192
 	$Sprite.region_rect = Rect2(frame * spacing, 0, 192, 192) #statbook.sprite_index
 	$Sprite.region_enabled = true
+	Globals.apply_logo_offset($Sprite.material, anim_name, frame, $Sprite.flip_h)
 	if abs(last_move.angle_to(linear_velocity)) > 3.1 and Globals.ticks > scrape_counter:
 		var s: Icesputter = preload("res://objects/environment/icesplutter.tscn").instantiate()
 		Globals.manager.add_child(s)

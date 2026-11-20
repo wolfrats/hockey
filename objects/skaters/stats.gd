@@ -743,7 +743,7 @@ const TEAMS = [
 		"popularity": 0.50,
 		"conference": "n/a",
 		"division": "n/a",
-		"logo": 1,
+		"logo": 33,
 		"logo_style": 1
 	},
 	{
@@ -764,7 +764,7 @@ const TEAMS = [
 		"popularity": 0.50,
 		"conference": "n/a",
 		"division": "n/a",
-		"logo": 1,
+		"logo": 34,
 		"logo_style": 1
 	},
 ]

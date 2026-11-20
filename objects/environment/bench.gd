@@ -47,6 +47,7 @@ func _ready() -> void:
 		mat.set("shader_parameter/nose", Globals.color_to_vec4(Globals.nose_color))
 		mat.set("shader_parameter/replace_skin", Globals.color_to_vec4(st[0]))
 		mat.set("shader_parameter/replace_nose", Globals.color_to_vec4(st[1]))
+		Globals.apply_logo_offset(mat, "Skate Down", 0, false)
 		sprite.material = mat
 
 		if stats_type == Stats.ClassTypes.LIGHT:

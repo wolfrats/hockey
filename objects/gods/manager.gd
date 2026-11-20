@@ -303,7 +303,7 @@ func _physics_process(_delta: float) -> void:
 		for s in all_skaters:
 			var sprite = s.get_node_or_null("Sprite")
 			if sprite:
-				frame_data[s.get_instance_id()] = {
+				var entry = {
 					"type": "skater",
 					"position": s.global_position,
 					"rotation": s.rotation,
@@ -314,6 +314,12 @@ func _physics_process(_delta: float) -> void:
 					"flip_h": sprite.flip_h,
 					"modulate": sprite.modulate
 				}
+				if s is Skater and sprite.material is ShaderMaterial:
+					var mat: ShaderMaterial = sprite.material
+					entry["draw_logo"] = mat.get_shader_parameter("draw_logo")
+					entry["logo_pos"] = mat.get_shader_parameter("logo_pos")
+					entry["logo_offset_x"] = mat.get_shader_parameter("logo_offset_x")
+				frame_data[s.get_instance_id()] = entry
 
 		# Pucks
 		var pucks = get_tree().get_nodes_in_group("pucks")
@@ -347,6 +353,11 @@ func _physics_process(_delta: float) -> void:
 							sprite.region_rect = data["region_rect"]
 							sprite.flip_h = data["flip_h"]
 							sprite.modulate = data["modulate"]
+							if node is Skater and sprite.material is ShaderMaterial:
+								var mat: ShaderMaterial = sprite.material
+								mat.set("shader_parameter/draw_logo", data.get("draw_logo", false))
+								mat.set("shader_parameter/logo_pos", data.get("logo_pos", Vector2.ZERO))
+								mat.set("shader_parameter/logo_offset_x", data.get("logo_offset_x", 0.0))
 					elif data["type"] == "puck":
 						if node.posessor:
 							node.posessor.puck = null

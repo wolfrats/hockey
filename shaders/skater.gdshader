@@ -17,15 +17,22 @@ uniform vec4 replace_pants: source_color;
 uniform vec4 replace_sleeve: source_color;
 uniform vec4 replace_skin;
 uniform vec4 replace_nose;
+uniform sampler2D logo: filter_nearest, repeat_disable, hint_default_transparent;
+uniform bool draw_logo = false;
+uniform vec2 logo_pos = vec2(0.0, 0.0);
+uniform float logo_offset_x = 0.0;
 
+const vec4 sleeves = vec4(float(0x7C) / 255.0, float(0xB0) / 255.0, float(0xF8) / 255.0, 1);
 
 const float precision = 0.1;
+const float logo_size = 32.0;
+const float frame_width = 192.0;
 
 
 vec4 swap_color(vec4 color){
-	vec4 original_colors[5] = vec4[5] (helmet, shirt, pants, skin, nose);
-	vec4 replace_colors[5] = vec4[5] (replace_helmet, replace_shirt, replace_shirt, replace_skin, replace_nose);
-	for (int i = 0; i < 5; i ++) {
+	vec4 original_colors[6] = vec4[6] (helmet, shirt, pants, skin, nose, sleeves);
+	vec4 replace_colors[6] = vec4[6] (replace_helmet, replace_shirt, replace_shirt, replace_skin, replace_nose, replace_sleeve);
+	for (int i = 0; i < 6; i ++) {
 		if (distance(color, original_colors[i]) <= precision) {
 			return replace_colors[i];
 		}
@@ -37,14 +44,26 @@ vec4 swap_color(vec4 color){
 
 void fragment() {
 	// Called for every pixel the material is visible on.
-	vec4 me = swap_color(texture(TEXTURE, UV));
-	if (distance(texture(TEXTURE, UV), shirt) <= precision) {
+	vec4 orig = texture(TEXTURE, UV);
+	vec4 me = swap_color(orig);
+	if (distance(orig, shirt) <= precision) {
 		//if (distance(texture(TEXTURE, UV + TEXTURE_PIXEL_SIZE * vec2(0, 6)), skin) <= precision) me = replace_sleeve;
 		//if (distance(texture(TEXTURE, UV + TEXTURE_PIXEL_SIZE * vec2(0, -6)), skin) <= precision) me = replace_sleeve;
 		//if (distance(texture(TEXTURE, UV + TEXTURE_PIXEL_SIZE * vec2(6,0)), skin) <= precision) me = replace_sleeve;
 		//if (distance(texture(TEXTURE, UV + TEXTURE_PIXEL_SIZE * vec2(-6,0)), skin) <= precision) me = replace_sleeve;
 		if (UV.y > 0.64) me = replace_pants;
 		if (UV.y < 0.54) me = replace_sleeve;
+		if (draw_logo) {
+			vec2 tex_px = UV / TEXTURE_PIXEL_SIZE;
+			vec2 frame_px = vec2(mod(tex_px.x, frame_width), tex_px.y);
+			vec2 rel = frame_px - logo_pos;
+			float lx = rel.x + logo_offset_x;
+			float ly = rel.y;
+			if (rel.x >= 0.0 && lx >= 0.0 && lx < logo_size && ly >= 0.0 && ly < logo_size) {
+				vec4 logo_color = texture(logo, vec2(lx, ly) / logo_size);
+				me.rgb = mix(me.rgb, logo_color.rgb, logo_color.a);
+			}
+		}
 	}
 	float neighbors = max(me.a, max(max(max(
 		texture(TEXTURE, UV + TEXTURE_PIXEL_SIZE * vec2(0,1)).a,
