@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://c0b4q46jrp2me" path="res://menu/theme.tres" id="1_theme"]
 [ext_resource type="Script" uid="uid://cdt0yfejregm0" path="res://menu/player_setup.gd" id="2_script"]
-[ext_resource type="Texture2D" uid="uid://cg1i3w702x3cu" path="res://sprites/rink.png" id="3_rink"]
+[ext_resource type="Texture2D" uid="uid://2icg6jtq52fo" path="res://sprites/rink_full.png" id="3_pnv6x"]
 
 [node name="PlayerSetup" type="Control" unique_id=794449159]
 layout_mode = 3
@@ -22,7 +22,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_rink")
+texture = ExtResource("3_pnv6x")
 expand_mode = 1
 stretch_mode = 6
 

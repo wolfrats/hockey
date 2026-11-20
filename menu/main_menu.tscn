@@ -2,7 +2,7 @@
 
 [ext_resource type="Theme" uid="uid://c0b4q46jrp2me" path="res://menu/theme.tres" id="1_chmv6"]
 [ext_resource type="Script" uid="uid://2dakwbknt74l" path="res://menu/main_menu.gd" id="2_f5okj"]
-[ext_resource type="Texture2D" uid="uid://cg1i3w702x3cu" path="res://sprites/rink.png" id="3_rink"]
+[ext_resource type="Texture2D" uid="uid://2icg6jtq52fo" path="res://sprites/rink_full.png" id="3_o5w3e"]
 
 [node name="MainMenu" type="Control" unique_id=1177999504]
 layout_mode = 3
@@ -22,7 +22,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_rink")
+texture = ExtResource("3_o5w3e")
 expand_mode = 1
 stretch_mode = 6
 

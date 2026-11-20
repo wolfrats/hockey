@@ -294,9 +294,11 @@ func reset_color() -> void:
 	head_color = base_head_color
 	
 func set_hue(h: float) -> void:
-	tail_color.h = h
-	mid_color.h = h
+	tail_color.h = h * 1.5
+	mid_color.h = h * 1.2
 	head_color.h = h
+	mid_color.v += 0.1
+	head_color.v += 0.1
 
 func _draw() -> void:
 	if _points.size() < 2 or _current_alpha <= 0.005:

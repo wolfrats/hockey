@@ -102,31 +102,31 @@ var texture_logo_offsets = {
 		"y" : 109,
 		"offsetx": 0,
 	}],
-	"Skate Left": [{
-		"x": 94,
-		"y" : 109,
-		"offsetx": 16,
-	}],
-	"Check Left": [{
-		"x": 94,
-		"y" : 109,
-		"offsetx": 16,
-	}],
-	"Glide Left": [{
-		"x": 94,
-		"y" : 109,
-		"offsetx": 16,
-	}],
-	"Grab Left": [{
-		"x": 94,
-		"y" : 109,
-		"offsetx": 16,
-	}],
-	"Shoot Left": [{
-		"x": 94,
-		"y" : 109,
-		"offsetx": 16,
-	}],
+	#"Skate Left": [{
+	#	"x": 94,
+	#	"y" : 109,
+	#	"offsetx": 16,
+	#}],
+	#"Check Left": [{
+	#	"x": 94,
+	#	"y" : 109,
+	#	"offsetx": 16,
+	#}],
+	#"Glide Left": [{
+	#	"x": 94,
+	#	"y" : 109,
+	#	"offsetx": 16,
+	#}],
+	#"Grab Left": [{
+	#	"x": 94,
+	#	"y" : 109,
+	#	"offsetx": 16,
+	#}],
+	#"Shoot Left": [{
+	#	"x": 94,
+	#	"y" : 109,
+	#	"offsetx": 16,
+	#}],
 }
 
 func _init() -> void:
