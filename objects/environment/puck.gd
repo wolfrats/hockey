@@ -63,7 +63,7 @@ func _physics_process(delta: float) -> void:
 					#assign_possessor(skater)
 					#break # Only one stealer per frame
 
-	if not posessor:
+	if not posessor and not freeze:
 		for body in get_colliding_bodies():
 			if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck:
 				assign_possessor(body)

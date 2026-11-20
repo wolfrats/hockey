@@ -30,6 +30,7 @@ var health: float
 var spring: DampedSpringJoint2D
 var penalty_time: float = 0.0
 var needs_penalty_reset: bool = false
+const PENALTY_STATES = ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]
 const GRAB_FABRIC_SCRIPT = preload("res://objects/skaters/grab_fabric.gd")
 
 var damage_tween: Tween
@@ -126,8 +127,11 @@ func penalty(duration: float) -> void:
 func _process(_delta: float) -> void:
 	pass
 
+func is_in_penalty() -> bool:
+	return anim_state in PENALTY_STATES
+
 func do_check() -> void:
-	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
+	if is_in_penalty():
 		return
 	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
 		checking = Globals.ticks + 20
@@ -144,6 +148,8 @@ func do_check() -> void:
 		var referees = get_tree().get_nodes_in_group("referees")
 		var checkable_targets = skaters + referees
 		for s in checkable_targets:
+			if s is Skater and s.is_in_penalty():
+				continue
 			var is_opponent = true
 			if "home_team" in s:
 				is_opponent = s.home_team != home_team
@@ -167,6 +173,8 @@ func do_check() -> void:
 
 		var hit_target = false
 		for s in checkable_targets:
+			if s is Skater and s.is_in_penalty():
+				continue
 			if s != self and global_position.distance_to(s.global_position) < 80:
 				var dmg = statbook.check_damage * randf_range(0.8, 1.2)
 				if spring and spring.node_b == s.get_path():
@@ -297,7 +305,7 @@ func get_sprite_scale() -> Vector2:
 	return $Sprite.scale
 
 func do_grab(is_just_pressed: bool = true) -> void:
-	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
+	if is_in_penalty():
 		return
 	holding = 1
 	if not spring.node_b.is_empty():
@@ -308,6 +316,8 @@ func do_grab(is_just_pressed: bool = true) -> void:
 	if knocked_over <= Globals.ticks:
 		var skaters = get_tree().get_nodes_in_group("skaters")
 		for s in skaters:
+			if s is Skater and s.is_in_penalty():
+				continue
 			if s != self and global_position.distance_to(s.global_position) < 80:
 				spring.node_b = s.get_path()
 				s.take_damage(0, Color.DIM_GRAY)

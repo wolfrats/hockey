@@ -37,7 +37,7 @@ func is_delegated_chaser() -> bool:
 	var closest_teammate = null
 	var min_distance: float = INF
 	for node in nodes:
-		if node is Skater and node.home_team == skater.home_team:
+		if node is Skater and node.home_team == skater.home_team and not node.is_in_penalty():
 			var idx = node.get_index()
 			if idx in [1, 2, 3]:
 				var distance = node.global_position.distance_squared_to(puck.global_position)
@@ -52,23 +52,30 @@ func get_most_forward_teammate() -> Node2D:
 	var max_forward: float = -INF
 	var forward_dir = 1.0 if skater.home_team else -1.0
 	for node in nodes:
-		if node is Skater and node.home_team == skater.home_team and node != skater:
+		if node is Skater and node.home_team == skater.home_team and node != skater and not node.is_in_penalty():
 			var forward_pos = node.global_position.x * forward_dir
 			if forward_pos > max_forward:
 				max_forward = forward_pos
 				forward_teammate = node
 	return forward_teammate
 
-func get_opponent_to_ram() -> Vector2:
+func get_opponent_skater_to_ram() -> Skater:
 	var nodes = skater.get_tree().get_nodes_in_group("skaters")
-	var opponents = []
+	var opponents: Array[Skater] = []
 	for node in nodes:
-		if node is Skater and node.home_team != skater.home_team:
+		if node is Skater and node.home_team != skater.home_team and not node.is_in_penalty():
 			opponents.append(node)
 
 	if opponents.size() > 0:
 		var target_idx = skater.get_index() % opponents.size()
-		return opponents[target_idx].global_position
+		return opponents[target_idx]
+
+	return null
+
+func get_opponent_to_ram() -> Vector2:
+	var opponent = get_opponent_skater_to_ram()
+	if opponent:
+		return opponent.global_position
 
 	# Fallback if no matching opponent is found
 	var defend_x = 301.0 if skater.home_team else 1710.0
@@ -143,25 +150,26 @@ func handle(_delta: float, curSkater) -> void:
 		else:
 			other_team_has_puck = true
 
+	var angry_target: Skater = null
 	if is_angry:
 		var all_skaters = curSkater.get_tree().get_nodes_in_group("skaters")
-		var target_skater = null
 		var min_dist = INF
 		for s in all_skaters:
-			if s is Skater and s.home_team != curSkater.home_team:
+			if s is Skater and s.home_team != curSkater.home_team and not s.is_in_penalty():
 				var d = curSkater.global_position.distance_squared_to(s.global_position)
 				if d < min_dist:
 					min_dist = d
-					target_skater = s
-		if target_skater:
-			target_pos = target_skater.global_position
-			if curSkater.global_position.distance_to(target_pos) < 60:
-				if curSkater.spring.node_b.is_empty() and randf() < 0.3:
-					curSkater.do_grab(true)
-				else:
-					curSkater.do_check()
-				anger = 0.0
-				is_angry = false
+					angry_target = s
+
+	if angry_target:
+		target_pos = angry_target.global_position
+		if curSkater.global_position.distance_to(target_pos) < 60:
+			if curSkater.spring.node_b.is_empty() and randf() < 0.3:
+				curSkater.do_grab(true)
+			else:
+				curSkater.do_check()
+			anger = 0.0
+			is_angry = false
 	elif has_puck:
 		var target_distance = 500 if difficulty >= 1 else 300
 		if difficulty == 2:
@@ -254,13 +262,17 @@ func handle(_delta: float, curSkater) -> void:
 							else:
 								curSkater.do_check()
 				else:
-					target_pos = get_opponent_to_ram()
-					if difficulty >= 1 and curSkater.global_position.distance_to(target_pos) < 60:
-						if randf() < 0.005 * difficulty:
-							if curSkater.spring.node_b.is_empty() and randf() < 0.3:
-								curSkater.do_grab(true)
-							else:
-								curSkater.do_check()
+					var opponent = get_opponent_skater_to_ram()
+					if opponent:
+						target_pos = opponent.global_position
+						if difficulty >= 1 and curSkater.global_position.distance_to(target_pos) < 60:
+							if randf() < 0.005 * difficulty:
+								if curSkater.spring.node_b.is_empty() and randf() < 0.3:
+									curSkater.do_grab(true)
+								else:
+									curSkater.do_check()
+					else:
+						target_pos = Vector2(defend_x, 509)
 			3:
 				going_for_puck_timer -= _delta
 				if going_for_puck_timer <= 0:
@@ -291,9 +303,9 @@ func handle(_delta: float, curSkater) -> void:
 							target_pos = get_preferred_spot(team_has_puck, index, attack_x, defend_x, forward_dir)
 					else:
 						# play aggressively in the other half of the rink
-						var opponent = get_opponent_to_ram()
-						if (opponent.x - 1005.5) * forward_dir > 0: # If in opponent's half
-							target_pos = opponent
+						var opponent = get_opponent_skater_to_ram()
+						if opponent and (opponent.global_position.x - 1005.5) * forward_dir > 0: # If in opponent's half
+							target_pos = opponent.global_position
 							if curSkater.global_position.distance_to(target_pos) < 80:
 								if randf() < 0.005 * difficulty:
 									if curSkater.spring.node_b.is_empty() and randf() < 0.3:
@@ -324,7 +336,7 @@ func handle(_delta: float, curSkater) -> void:
 
 			var all_skaters = curSkater.get_tree().get_nodes_in_group("skaters")
 			for s in all_skaters:
-				if s != curSkater and s.is_inside_tree():
+				if s != curSkater and s.is_inside_tree() and not (s is Skater and s.is_in_penalty()):
 					if target_pos.distance_to(s.global_position) > 40:
 						obstacles.append({"pos": s.global_position, "radius": 80.0})
 
