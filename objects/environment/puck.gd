@@ -131,7 +131,7 @@ func passPuck(shooter, vector):
 func shoot(shooter, vector) -> bool:
 	if not posessor or shooter != posessor.name:
 		return false
-	posessor.puck = null
+	
 	Globals.manager.shot.emit(posessor.home_team, global_position, vector)
 	posessor = null
 	blocklist[shooter] = 0.25

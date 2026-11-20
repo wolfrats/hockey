@@ -559,6 +559,7 @@ func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 	var vec2 = vec.rotated(inaccuracy_modifier * statbook.shot_variance * (1 - (2*randf())))
 	if puck:
 		puck.shoot(name, vec2)
+		puck = null
 		set_collision_layer_value(4, false)
 		if power < 0.33:
 			Globals.play_sound_at("HitSlow", global_position)
