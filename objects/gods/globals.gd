@@ -51,6 +51,59 @@ var manager: Manager = null
 var save_path = "user://settings.cfg"
 var use_onscreen_controls: bool = DisplayServer.is_touchscreen_available()
 
+var texture_logo_offsets = {
+	"Skate Down": [{
+		"x": 88,
+		"y" : 109,
+		"offsetx": 0,
+	}],
+	"Grab Down": [{
+		"x": 88,
+		"y" : 109,
+		"offsetx": 0,
+	},
+	{
+		"x": 87,
+		"y" : 109,
+		"offsetx": 0,
+	},
+	{
+		"x": 86,
+		"y" : 109,
+		"offsetx": 0,
+	},
+	{
+		"x": 87,
+		"y" : 109,
+		"offsetx": 0,
+	},
+	{
+		"x": 89,
+		"y" : 109,
+		"offsetx": 0,
+	},
+	{
+		"x": 90,
+		"y" : 109,
+		"offsetx": 0,
+	},
+	{
+		"x": 89,
+		"y" : 109,
+		"offsetx": 0,
+	}],
+	"Pummel Down": [{
+		"x": 88,
+		"y" : 109,
+		"offsetx": 0,
+	}],
+	"Check Down": [{
+		"x": 88,
+		"y" : 109,
+		"offsetx": 0,
+	}],
+}
+
 func _init() -> void:
 	load_settings()
 	var sprites = [
