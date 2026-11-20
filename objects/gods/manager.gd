@@ -267,6 +267,9 @@ func _process(delta: float) -> void:
 func start_replay() -> void:
 	is_replay = true
 	replay_index = 0
+	for s in get_tree().get_nodes_in_group("skaters"):
+		if s is Skater:
+			s.replay_grab_target = null
 	if ui_layer and not replay_label:
 		replay_label = Label.new()
 		replay_label.text = "REPLAY"
@@ -287,6 +290,9 @@ func stop_replay() -> void:
 	for p in get_tree().get_nodes_in_group("pucks"):
 		if "replay_possessed" in p:
 			p.replay_possessed = false
+	for s in get_tree().get_nodes_in_group("skaters"):
+		if s is Skater:
+			s.replay_grab_target = null
 	if replay_label:
 		replay_label.queue_free()
 		replay_label = null
@@ -314,11 +320,15 @@ func _physics_process(_delta: float) -> void:
 					"flip_h": sprite.flip_h,
 					"modulate": sprite.modulate
 				}
-				if s is Skater and sprite.material is ShaderMaterial:
-					var mat: ShaderMaterial = sprite.material
-					entry["draw_logo"] = mat.get_shader_parameter("draw_logo")
-					entry["logo_pos"] = mat.get_shader_parameter("logo_pos")
-					entry["logo_offset_x"] = mat.get_shader_parameter("logo_offset_x")
+				if s is Skater:
+					entry["anim_name"] = s.current_anim_name
+					var grabbed: Skater = s.get_grabbed_skater()
+					entry["grabbed_id"] = grabbed.get_instance_id() if grabbed else 0
+					if sprite.material is ShaderMaterial:
+						var mat: ShaderMaterial = sprite.material
+						entry["draw_logo"] = mat.get_shader_parameter("draw_logo")
+						entry["logo_pos"] = mat.get_shader_parameter("logo_pos")
+						entry["logo_offset_x"] = mat.get_shader_parameter("logo_offset_x")
 				frame_data[s.get_instance_id()] = entry
 
 		# Pucks
@@ -353,11 +363,19 @@ func _physics_process(_delta: float) -> void:
 							sprite.region_rect = data["region_rect"]
 							sprite.flip_h = data["flip_h"]
 							sprite.modulate = data["modulate"]
-							if node is Skater and sprite.material is ShaderMaterial:
-								var mat: ShaderMaterial = sprite.material
-								mat.set("shader_parameter/draw_logo", data.get("draw_logo", false))
-								mat.set("shader_parameter/logo_pos", data.get("logo_pos", Vector2.ZERO))
-								mat.set("shader_parameter/logo_offset_x", data.get("logo_offset_x", 0.0))
+							if node is Skater:
+								node.current_anim_name = data.get("anim_name", "Skate Left")
+								var grabbed_id: int = data.get("grabbed_id", 0)
+								var grab_target = instance_from_id(grabbed_id) if grabbed_id != 0 else null
+								if grab_target != null and is_instance_valid(grab_target) and grab_target is Skater:
+									node.replay_grab_target = grab_target
+								else:
+									node.replay_grab_target = null
+								if sprite.material is ShaderMaterial:
+									var mat: ShaderMaterial = sprite.material
+									mat.set("shader_parameter/draw_logo", data.get("draw_logo", false))
+									mat.set("shader_parameter/logo_pos", data.get("logo_pos", Vector2.ZERO))
+									mat.set("shader_parameter/logo_offset_x", data.get("logo_offset_x", 0.0))
 					elif data["type"] == "puck":
 						if node.posessor:
 							node.posessor.puck = null

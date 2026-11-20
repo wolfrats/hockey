@@ -30,8 +30,13 @@ var health: float
 var spring: DampedSpringJoint2D
 var penalty_time: float = 0.0
 var needs_penalty_reset: bool = false
+const GRAB_FABRIC_SCRIPT = preload("res://objects/skaters/grab_fabric.gd")
+
 var damage_tween: Tween
 var skater_size: String = "medium"
+var current_anim_name: String = "Skate Left"
+var replay_grab_target: Skater = null
+var grab_fabric: Node2D = null
 
 enum LookDir {
 	SIDE,
@@ -77,6 +82,10 @@ func _ready() -> void:
 	if not Globals.manager.is_practice:
 		ai = preload("res://objects/skaters/ai.tscn").instantiate()
 		add_child(ai)
+
+	grab_fabric = GRAB_FABRIC_SCRIPT.new()
+	grab_fabric.name = "GrabFabric"
+	add_child(grab_fabric)
 		
 
 func get_player_name() -> String:
@@ -208,6 +217,84 @@ func do_check() -> void:
 func release_grab() -> void:
 	spring.node_b = NodePath("")
 	holding = 0
+
+
+func get_grabbed_skater() -> Skater:
+	if spring == null or spring.node_b.is_empty():
+		return null
+	var held := get_node_or_null(spring.node_b)
+	if held != null and is_instance_valid(held) and held is Skater:
+		return held as Skater
+	return null
+
+
+func get_visual_grab_target() -> Skater:
+	if Globals.manager != null and Globals.manager.is_replay:
+		if replay_grab_target != null and is_instance_valid(replay_grab_target):
+			return replay_grab_target
+		return null
+	return get_grabbed_skater()
+
+
+func get_grab_hand_global_position() -> Vector2:
+	var offset := Vector2(-34.0, 10.0)
+	match current_anim_name:
+		"Grab Left":
+			offset = Vector2(-34.0, 10.0)
+		"Grab Down", "Pummel Down", "Check Down":
+			offset = Vector2(-33.0, 3.0)
+		"Grab Up", "Check Up":
+			offset = Vector2(-32.0, 1.0)
+		"Pummel Up":
+			offset = Vector2(-31.0, 3.0)
+		"Check Left":
+			offset = Vector2(-28.5, 15.5)
+		"Shoot Left":
+			offset = Vector2(-30.0, 19.0)
+		"Die 1":
+			offset = Vector2(-11.0, 17.0)
+	if $Sprite.flip_h:
+		offset.x = -offset.x
+	return $Sprite.to_global(offset)
+
+
+func get_jersey_anchor_info() -> Dictionary:
+	var center_offset := Vector2(9.0, 17.5)
+	var radii := Vector2(15.5, 9.0)
+	match current_anim_name:
+		"Skate Down", "Skate Up", "Grab Down", "Grab Up", "Check Down", "Check Up", "Pummel Down", "Pummel Up":
+			center_offset = Vector2(-1.0, 17.5)
+			radii = Vector2(17.0, 9.0)
+		"Die 1":
+			center_offset = Vector2(5.0, 11.0)
+			radii = Vector2(16.0, 10.5)
+	if $Sprite.flip_h:
+		center_offset.x = -center_offset.x
+	var sprite_scale: Vector2 = $Sprite.scale.abs()
+	return {
+		"center": $Sprite.to_global(center_offset),
+		"radii": Vector2(radii.x * sprite_scale.x, radii.y * sprite_scale.y),
+	}
+
+
+func get_jersey_color() -> Color:
+	if $Sprite.material is ShaderMaterial:
+		var shader_shirt = $Sprite.material.get_shader_parameter("replace_shirt")
+		if shader_shirt is Color:
+			return shader_shirt
+	return Globals.home_color if home_team else Globals.away_color
+
+
+func get_sprite_modulate() -> Color:
+	return $Sprite.modulate
+
+
+func get_sprite_global_y() -> float:
+	return $Sprite.global_position.y
+
+
+func get_sprite_scale() -> Vector2:
+	return $Sprite.scale
 
 func do_grab(is_just_pressed: bool = true) -> void:
 	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
@@ -509,6 +596,8 @@ func _physics_process(delta: float) -> void:
 	if anim_state == "in_penalty":
 		anim_name = "Skate Up"
 		z_index = 1
+
+	current_anim_name = anim_name
 	
 	if home_team:
 		if Globals.home_textures[skater_size].has(anim_name):

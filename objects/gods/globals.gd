@@ -54,52 +54,52 @@ var use_onscreen_controls: bool = DisplayServer.is_touchscreen_available()
 var texture_logo_offsets = {
 	"Grab Down": [{
 		"x": 88,
-		"y" : 109,
+		"y" : 109 - 4,
 		"offsetx": 0,
 	}],
 	"Skate Down": [{
 		"x": 88,
-		"y" : 109,
+		"y" : 109  - 4,
 		"offsetx": 0,
 	},
 	{
 		"x": 87,
-		"y" : 109,
+		"y" : 109 - 4,
 		"offsetx": 0,
 	},
 	{
 		"x": 86,
-		"y" : 109,
+		"y" : 109 - 4,
 		"offsetx": 0,
 	},
 	{
 		"x": 87,
-		"y" : 109,
+		"y" : 109 - 4,
 		"offsetx": 0,
 	},
 	{
 		"x": 89,
-		"y" : 109,
+		"y" : 109 - 4,
 		"offsetx": 0,
 	},
 	{
 		"x": 90,
-		"y" : 109,
+		"y" : 109 - 4,
 		"offsetx": 0,
 	},
 	{
 		"x": 89,
-		"y" : 109,
+		"y" : 109 - 4,
 		"offsetx": 0,
 	}],
 	"Pummel Down": [{
 		"x": 88,
-		"y" : 109,
+		"y" : 109 - 4,
 		"offsetx": 0,
 	}],
 	"Check Down": [{
 		"x": 88,
-		"y" : 109,
+		"y" : 109 - 4,
 		"offsetx": 0,
 	}],
 	#"Skate Left": [{
