@@ -19,6 +19,8 @@ uniform vec4 replace_skin;
 uniform vec4 replace_nose;
 uniform sampler2D logo: filter_nearest, repeat_disable, hint_default_transparent;
 uniform bool draw_logo = false;
+uniform sampler2D number_tex: filter_nearest, repeat_disable, hint_default_transparent;
+uniform bool draw_number = false;
 uniform vec2 logo_pos = vec2(0.0, 0.0);
 uniform float logo_offset_x = 0.0;
 
@@ -55,15 +57,16 @@ void fragment() {
 		//if (distance(texture(TEXTURE, UV + TEXTURE_PIXEL_SIZE * vec2(-6,0)), skin) <= precision) me = replace_sleeve;
 		if (UV.y > 0.64) me = replace_pants;
 		//if (UV.y < 0.54) me = replace_sleeve;
-		if (draw_logo) {
+		if (draw_logo || draw_number) {
 			vec2 tex_px = UV / TEXTURE_PIXEL_SIZE;
 			vec2 frame_px = vec2(mod(tex_px.x, frame_width), tex_px.y);
 			vec2 rel = frame_px - logo_pos;
 			float lx = rel.x + logo_offset_x;
 			float ly = rel.y;
 			if (rel.x >= 0.0 && lx >= 0.0 && lx < logo_size && ly >= 0.0 && ly < logo_size) {
-				vec4 logo_color = texture(logo, vec2(lx, ly) / logo_size);
-				me.rgb = mix(me.rgb, logo_color.rgb, logo_color.a);
+				vec2 overlay_uv = vec2(lx, ly) / logo_size;
+				vec4 overlay_color = draw_logo ? texture(logo, overlay_uv) : texture(number_tex, overlay_uv);
+				me.rgb = mix(me.rgb, overlay_color.rgb, overlay_color.a);
 			}
 		}
 	}

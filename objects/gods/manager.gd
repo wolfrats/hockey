@@ -327,6 +327,7 @@ func _physics_process(_delta: float) -> void:
 					if sprite.material is ShaderMaterial:
 						var mat: ShaderMaterial = sprite.material
 						entry["draw_logo"] = mat.get_shader_parameter("draw_logo")
+						entry["draw_number"] = mat.get_shader_parameter("draw_number")
 						entry["logo_pos"] = mat.get_shader_parameter("logo_pos")
 						entry["logo_offset_x"] = mat.get_shader_parameter("logo_offset_x")
 				frame_data[s.get_instance_id()] = entry
@@ -374,6 +375,7 @@ func _physics_process(_delta: float) -> void:
 								if sprite.material is ShaderMaterial:
 									var mat: ShaderMaterial = sprite.material
 									mat.set("shader_parameter/draw_logo", data.get("draw_logo", false))
+									mat.set("shader_parameter/draw_number", data.get("draw_number", false))
 									mat.set("shader_parameter/logo_pos", data.get("logo_pos", Vector2.ZERO))
 									mat.set("shader_parameter/logo_offset_x", data.get("logo_offset_x", 0.0))
 					elif data["type"] == "puck":

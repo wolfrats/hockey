@@ -5,6 +5,7 @@ var counter = 0
 var ai: Ghost
 @export var home_team: bool
 @export var stats: Stats.ClassTypes
+@export var jersey_number: int = 0
 var statbook: Stats.StatBlock
 var rammed: bool = false
 var charging: bool = false
@@ -75,6 +76,11 @@ func _ready() -> void:
 	$Sprite.material.set("shader_parameter/nose", Globals.color_to_vec4(Globals.nose_color))
 	$Sprite.material.set("shader_parameter/replace_skin", Globals.color_to_vec4(st[0]))
 	$Sprite.material.set("shader_parameter/replace_nose", Globals.color_to_vec4(st[1]))
+	if jersey_number < 1 or jersey_number > 98:
+		jersey_number = _pick_unique_jersey_number()
+	var number_tex = Globals.get_number_texture(jersey_number)
+	if number_tex:
+		$Sprite.material.set("shader_parameter/number_tex", number_tex)
 	if stats == Stats.ClassTypes.LIGHT:
 		$Sprite.scale.x = 0.9
 		$Sprite.scale.y = 1.1
@@ -91,6 +97,21 @@ func _ready() -> void:
 	grab_fabric = GRAB_FABRIC_SCRIPT.new()
 	grab_fabric.name = "GrabFabric"
 	add_child(grab_fabric)
+
+
+func _pick_unique_jersey_number() -> int:
+	var used: Dictionary = {}
+	for s in get_tree().get_nodes_in_group("skaters"):
+		if s != self and s is Skater and s.home_team == home_team:
+			if s.jersey_number >= 1 and s.jersey_number <= 98:
+				used[s.jersey_number] = true
+	var available: Array[int] = []
+	for n in range(1, 99):
+		if not used.has(n):
+			available.append(n)
+	if available.is_empty():
+		return randi_range(1, 98)
+	return available[randi() % available.size()]
 		
 
 func get_player_name() -> String:
@@ -626,6 +647,7 @@ func _physics_process(delta: float) -> void:
 	
 	if anim_state == "in_penalty":
 		anim_name = "Skate Up"
+		$Sprite.flip_h = false
 		z_index = 1
 
 	current_anim_name = anim_name

@@ -11,6 +11,8 @@ var away_goalie_textures: Dictionary = {}
 var home_shader_material: ShaderMaterial = ShaderMaterial.new()
 var away_shader_material: ShaderMaterial = ShaderMaterial.new()
 var fan_textures: Dictionary = {}
+var digit_images: Dictionary = {}
+var number_textures: Dictionary = {}
 
 var ticks: int = 0
 var period_length: float = 120.0
@@ -129,6 +131,59 @@ var texture_logo_offsets = {
 	#}],
 }
 
+var texture_number_offsets = {
+	"Grab Up": [{
+		"x": 88,
+		"y": 109 - 4,
+		"offsetx": 0,
+	}],
+	"Skate Up": [{
+		"x": 88,
+		"y": 109 - 4,
+		"offsetx": 0,
+	},
+	{
+		"x": 87,
+		"y": 109 - 4,
+		"offsetx": 0,
+	},
+	{
+		"x": 86,
+		"y": 109 - 4,
+		"offsetx": 0,
+	},
+	{
+		"x": 87,
+		"y": 109 - 4,
+		"offsetx": 0,
+	},
+	{
+		"x": 89,
+		"y": 109 - 4,
+		"offsetx": 0,
+	},
+	{
+		"x": 90,
+		"y": 109 - 4,
+		"offsetx": 0,
+	},
+	{
+		"x": 89,
+		"y": 109 - 4,
+		"offsetx": 0,
+	}],
+	"Pummel Up": [{
+		"x": 88,
+		"y": 109 - 4,
+		"offsetx": 0,
+	}],
+	"Check Up": [{
+		"x": 88,
+		"y": 109 - 4,
+		"offsetx": 0,
+	}],
+}
+
 func _init() -> void:
 	load_settings()
 	var sprites = [
@@ -148,11 +203,13 @@ func _init() -> void:
 	home_shader_material.set("shader_parameter/shirt", shirt_color);
 	home_shader_material.set("shader_parameter/pants", skate_color);
 	home_shader_material.set("shader_parameter/draw_logo", false);
+	home_shader_material.set("shader_parameter/draw_number", false);
 	away_shader_material.shader = preload("res://shaders/skater.gdshader")
 	away_shader_material.set("shader_parameter/helmet", helmet_color);
 	away_shader_material.set("shader_parameter/shirt", shirt_color);
 	away_shader_material.set("shader_parameter/pants", skate_color);
 	away_shader_material.set("shader_parameter/draw_logo", false);
+	away_shader_material.set("shader_parameter/draw_number", false);
 func skater_texture(size, action) -> Texture2D:
 	return skater_textures[size + "/" + action]#.duplicate()
 
@@ -219,6 +276,108 @@ func update_team_textures() -> void:
 			away_goalie_textures[s] = tex # swap_colors_in_texture_multi(tex, away_team.get("away_head_color", away_team["head_color"]), away_team.get("away_body_color", away_team["body_color"]), away_team.get("away_foot_color", away_team["foot_color"]))
 
 
+func _ensure_digit_images() -> void:
+	if not digit_images.is_empty():
+		return
+	var img: Image = null
+	var digits_tex: Texture2D = load("res://sprites/numbers/Digits.png")
+	if digits_tex != null:
+		img = digits_tex.get_image()
+	if img == null:
+		var fallback := Image.new()
+		if fallback.load(ProjectSettings.globalize_path("res://sprites/numbers/Digits.png")) == OK:
+			img = fallback
+	if img == null:
+		return
+	if img.is_compressed():
+		img.decompress()
+	if img.get_format() != Image.FORMAT_RGBA8:
+		img.convert(Image.FORMAT_RGBA8)
+
+	var cell_w: int = int(img.get_width() / 10.0)
+	var cell_h: int = img.get_height()
+	if cell_w <= 0 or cell_h <= 0:
+		return
+
+	var cells: Dictionary = {}
+	var rects: Dictionary = {}
+	var common_top: int = cell_h
+	var common_bottom: int = 0
+	for d in range(10):
+		# Digits.png cells are ordered 1, 2, 3, 4, 5, 6, 7, 8, 9, 0
+		var cell_idx: int = 9 if d == 0 else d - 1
+		var cell: Image = img.get_region(Rect2i(cell_idx * cell_w, 0, cell_w, cell_h))
+		var used: Rect2i = cell.get_used_rect()
+		cells[d] = cell
+		rects[d] = used
+		if used.size.x > 0 and used.size.y > 0:
+			common_top = mini(common_top, used.position.y)
+			common_bottom = maxi(common_bottom, used.position.y + used.size.y)
+
+	var common_h: int = common_bottom - common_top
+	if common_h <= 0:
+		return
+
+	for d in range(10):
+		var cell: Image = cells[d]
+		var used: Rect2i = rects[d]
+		if used.size.x > 0 and used.size.y > 0:
+			digit_images[d] = cell.get_region(Rect2i(used.position.x, common_top, used.size.x, common_h))
+
+
+func get_number_texture(number: int) -> ImageTexture:
+	var clamped: int = clampi(number, 1, 98)
+	if number_textures.has(clamped):
+		return number_textures[clamped]
+	_ensure_digit_images()
+	if digit_images.is_empty():
+		return null
+
+	var num_str: String = str(clamped)
+	var glyphs: Array[Image] = []
+	for i in range(num_str.length()):
+		var d: int = int(num_str.substr(i, 1))
+		if not digit_images.has(d):
+			return null
+		glyphs.append(digit_images[d])
+
+	var digit_h: int = glyphs[0].get_height()
+	var digit_scale: int = maxi(1, int(floor(16.0 / float(digit_h))))
+	while digit_scale > 1:
+		var scaled_w: int = 0
+		for g in glyphs:
+			scaled_w += g.get_width() * digit_scale
+		if scaled_w + (glyphs.size() - 1) <= 32:
+			break
+		digit_scale -= 1
+
+	var scaled_glyphs: Array[Image] = []
+	var total_w: int = 0
+	for g in glyphs:
+		var s_img: Image = g.duplicate()
+		if digit_scale != 1:
+			s_img.resize(g.get_width() * digit_scale, g.get_height() * digit_scale, Image.INTERPOLATE_NEAREST)
+		scaled_glyphs.append(s_img)
+		total_w += s_img.get_width()
+
+	var gap: int = 1 if (scaled_glyphs.size() > 1 and total_w + (scaled_glyphs.size() - 1) <= 32) else 0
+	total_w += gap * (scaled_glyphs.size() - 1)
+	var total_h: int = scaled_glyphs[0].get_height()
+
+	var out: Image = Image.create_empty(32, 32, false, Image.FORMAT_RGBA8)
+	out.fill(Color(0, 0, 0, 0))
+	var start_x: int = maxi(0, int(floor(float(32 - total_w) / 2.0)))
+	var start_y: int = maxi(0, int(floor(float(32 - total_h) / 2.0)))
+	var cx: int = start_x
+	for s_img in scaled_glyphs:
+		out.blit_rect(s_img, Rect2i(0, 0, s_img.get_width(), s_img.get_height()), Vector2i(cx, start_y))
+		cx += s_img.get_width() + gap
+
+	var tex: ImageTexture = ImageTexture.create_from_image(out)
+	number_textures[clamped] = tex
+	return tex
+
+
 func apply_logo_offset(material: ShaderMaterial, anim_name: String, frame: int, flipped: bool) -> void:
 	if material == null:
 		return
@@ -226,10 +385,19 @@ func apply_logo_offset(material: ShaderMaterial, anim_name: String, frame: int, 
 		var frames = texture_logo_offsets[anim_name]
 		var offset = frames[frame % frames.size()]
 		material.set("shader_parameter/draw_logo", true)
+		material.set("shader_parameter/draw_number", false)
+		material.set("shader_parameter/logo_pos", Vector2(offset["x"] - (8 if not flipped else 16), offset["y"] - 8))
+		material.set("shader_parameter/logo_offset_x", float(offset.get("offsetx", 0)) if not flipped else 0.0)
+	elif texture_number_offsets.has(anim_name) and not texture_number_offsets[anim_name].is_empty():
+		var frames = texture_number_offsets[anim_name]
+		var offset = frames[frame % frames.size()]
+		material.set("shader_parameter/draw_logo", false)
+		material.set("shader_parameter/draw_number", true)
 		material.set("shader_parameter/logo_pos", Vector2(offset["x"] - (8 if not flipped else 16), offset["y"] - 8))
 		material.set("shader_parameter/logo_offset_x", float(offset.get("offsetx", 0)) if not flipped else 0.0)
 	else:
 		material.set("shader_parameter/draw_logo", false)
+		material.set("shader_parameter/draw_number", false)
 
 
 func _physics_process(_delta: float) -> void:
