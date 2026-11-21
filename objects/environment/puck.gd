@@ -11,6 +11,27 @@ var possessor_team: bool = false
 var shot_on_goal_counted: bool = false
 var replay_possessed: bool = false
 
+const FAST_SHOT_MIN_DAMAGE_CHANCE: float = 0.35
+const FAST_SHOT_MAX_DAMAGE_CHANCE: float = 0.85
+const FAST_SHOT_CHANCE_EXCESS_RANGE: float = 500.0
+const FAST_SHOT_MIN_DAMAGE: float = 12.0
+const FAST_SHOT_MAX_DAMAGE: float = 30.0
+const FAST_SHOT_DAMAGE_EXCESS_RANGE: float = 600.0
+const PASS_THROUGH_COOLDOWN: float = 0.25
+
+var shot_active: bool = false
+var _shot_launched: bool = false
+var shot_team: bool = false
+var shot_shooter_name: String = ""
+var pending_shot_speed: float = 0.0
+var pending_shot_frames: int = 0
+var excepted_skaters: Dictionary = {}
+var overlapping_fast_skaters: Dictionary[int, bool] = {}
+var pass_through_cooldowns: Dictionary[int, float] = {}
+var _prev_collision_pos: Vector2 = Vector2.ZERO
+var _has_prev_collision_pos: bool = false
+var _prev_speed: float = 0.0
+
 func _ready() -> void:
 	initial_position = global_position
 
@@ -26,8 +47,124 @@ func home() -> void:
 	self.posessor = null
 	self.freeze = false
 	shot_on_goal_counted = false
+	_reset_shot_tracking()
 	if has_node("Trail"):
 		$Trail.clear()
+
+func _reset_shot_tracking() -> void:
+	shot_active = false
+	_shot_launched = false
+	shot_shooter_name = ""
+	pending_shot_speed = 0.0
+	pending_shot_frames = 0
+	_clear_skater_collision_exceptions()
+	overlapping_fast_skaters.clear()
+	pass_through_cooldowns.clear()
+	_has_prev_collision_pos = false
+	_prev_speed = 0.0
+
+func _can_skater_intercept(skater: Skater, puck_speed: float) -> bool:
+	if not shot_active:
+		return true
+	if skater.home_team == shot_team:
+		return true
+	if skater.statbook == null:
+		return true
+	return puck_speed <= skater.statbook.max_block_speed
+
+func _clear_skater_collision_exceptions() -> void:
+	for skater_id in excepted_skaters:
+		var skater = excepted_skaters[skater_id]
+		if is_instance_valid(skater):
+			remove_collision_exception_with(skater)
+	excepted_skaters.clear()
+
+func _update_skater_collision_exceptions(puck_speed: float) -> void:
+	var active_exceptions: Dictionary[int, bool] = {}
+	if shot_active and colidable and posessor == null:
+		for node in get_tree().get_nodes_in_group("skaters"):
+			if not (node is Skater):
+				continue
+			var skater := node as Skater
+			if skater.is_in_penalty() or skater.statbook == null:
+				continue
+			var skater_id: int = skater.get_instance_id()
+			if not _can_skater_intercept(skater, puck_speed) or overlapping_fast_skaters.has(skater_id):
+				active_exceptions[skater_id] = true
+				if not excepted_skaters.has(skater_id):
+					add_collision_exception_with(skater)
+					excepted_skaters[skater_id] = skater
+
+	var to_remove: Array[int] = []
+	for skater_id in excepted_skaters:
+		if not active_exceptions.has(skater_id):
+			to_remove.append(skater_id)
+	for skater_id in to_remove:
+		var skater = excepted_skaters[skater_id]
+		if is_instance_valid(skater):
+			remove_collision_exception_with(skater)
+		excepted_skaters.erase(skater_id)
+
+func _get_body_collision_circle(body: Node2D) -> Dictionary:
+	var shape_node := body.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if shape_node != null and shape_node.shape is CircleShape2D:
+		var circle := shape_node.shape as CircleShape2D
+		var scale_abs := shape_node.global_scale.abs()
+		var radius: float = circle.radius * maxf(scale_abs.x, scale_abs.y)
+		return {"center": shape_node.global_position, "radius": radius}
+	return {"center": body.global_position, "radius": 16.0}
+
+func _check_fast_shot_pass_through(impact_speed: float) -> void:
+	var puck_circle := _get_body_collision_circle(self)
+	var curr_pos: Vector2 = puck_circle["center"]
+	var puck_radius: float = puck_circle["radius"]
+	var prev_pos: Vector2 = _prev_collision_pos if _has_prev_collision_pos else curr_pos
+	var moved: bool = prev_pos.distance_squared_to(curr_pos) > 0.0001
+
+	var still_overlapping: Dictionary[int, bool] = {}
+	for skater_id in excepted_skaters:
+		var skater = excepted_skaters[skater_id]
+		if not is_instance_valid(skater) or not (skater is Skater):
+			continue
+		if skater.is_in_penalty() or skater.statbook == null:
+			continue
+
+		var skater_circle := _get_body_collision_circle(skater)
+		var skater_pos: Vector2 = skater_circle["center"]
+		var combined_radius: float = puck_radius + float(skater_circle["radius"])
+		var radius_sq: float = combined_radius * combined_radius
+		var closest: Vector2 = Geometry2D.get_closest_point_to_segment(skater_pos, prev_pos, curr_pos) if moved else curr_pos
+
+		if closest.distance_squared_to(skater_pos) <= radius_sq:
+			if not overlapping_fast_skaters.has(skater_id) and not pass_through_cooldowns.has(skater_id):
+				pass_through_cooldowns[skater_id] = PASS_THROUGH_COOLDOWN
+				_try_fast_shot_damage(skater, impact_speed)
+		if curr_pos.distance_squared_to(skater_pos) <= radius_sq:
+			still_overlapping[skater_id] = true
+
+	overlapping_fast_skaters = still_overlapping
+
+func _try_fast_shot_damage(skater: Skater, impact_speed: float) -> void:
+	if skater.statbook == null or skater.knocked_over > Globals.ticks or skater.is_in_penalty():
+		return
+	var excess_speed: float = impact_speed - skater.statbook.max_block_speed
+	if excess_speed <= 0.0:
+		return
+	var chance_t: float = clampf(excess_speed / FAST_SHOT_CHANCE_EXCESS_RANGE, 0.0, 1.0)
+	var damage_chance: float = lerpf(FAST_SHOT_MIN_DAMAGE_CHANCE, FAST_SHOT_MAX_DAMAGE_CHANCE, chance_t)
+	if randf() >= damage_chance:
+		return
+
+	var dmg_t: float = clampf(excess_speed / FAST_SHOT_DAMAGE_EXCESS_RANGE, 0.0, 1.0)
+	var dmg: float = lerpf(FAST_SHOT_MIN_DAMAGE, FAST_SHOT_MAX_DAMAGE, dmg_t) * randf_range(0.85, 1.15)
+	var target_downed_before: bool = skater.knocked_over > Globals.ticks
+	skater.take_damage(dmg)
+	Globals.play_sound_at("Bump", skater.global_position)
+
+	if not target_downed_before and skater.knocked_over > Globals.ticks and shot_shooter_name != "":
+		if not Globals.down_stats.has(shot_shooter_name):
+			Globals.down_stats[shot_shooter_name] = 0
+		Globals.down_stats[shot_shooter_name] += 1
 
 func _process(delta: float) -> void:
 	if posessor:
@@ -55,27 +192,66 @@ func _physics_process(delta: float) -> void:
 		home()
 	_update_pointer()
 
-	#if posessor:
-		## Manual check for stealing when frozen
-		#for skater in get_tree().get_nodes_in_group("skaters"):
-			#if skater != posessor and (not blocklist.has(skater.name)) and colidable and not skater.puck:
-				#if skater.global_position.distance_to(global_position) < 40.0:
-					#assign_possessor(skater)
-					#break # Only one stealer per frame
+	var is_replay: bool = Globals.manager != null and Globals.manager.is_replay
 
-	if not posessor and not freeze:
-		for body in get_colliding_bodies():
-			if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck:
-				assign_possessor(body)
-				break
+	if not is_replay:
+		var expired_cooldowns: Array[int] = []
+		for skater_id in pass_through_cooldowns:
+			pass_through_cooldowns[skater_id] -= delta
+			if pass_through_cooldowns[skater_id] <= 0.0:
+				expired_cooldowns.append(skater_id)
+		for skater_id in expired_cooldowns:
+			pass_through_cooldowns.erase(skater_id)
+
+		var current_speed: float = linear_velocity.length()
+		var is_launching_shot: bool = shot_active and not _shot_launched and posessor == null and colidable
+		var is_live_shot: bool = shot_active and _shot_launched and posessor == null and not freeze and colidable
+		if is_live_shot:
+			if pending_shot_frames > 0:
+				if current_speed > 1.0:
+					pending_shot_frames = 0
+					pending_shot_speed = 0.0
+				else:
+					current_speed = maxf(current_speed, pending_shot_speed)
+					pending_shot_frames -= 1
+					if pending_shot_frames <= 0:
+						pending_shot_speed = 0.0
+
+			if not excepted_skaters.is_empty():
+				_check_fast_shot_pass_through(maxf(current_speed, _prev_speed))
+		elif not is_launching_shot:
+			if not excepted_skaters.is_empty():
+				_clear_skater_collision_exceptions()
+			overlapping_fast_skaters.clear()
+			_has_prev_collision_pos = false
+			_prev_speed = 0.0
+
+		if not posessor and not freeze and not is_launching_shot:
+			var pickup_speed: float = maxf(current_speed, pending_shot_speed)
+			for body in get_colliding_bodies():
+				if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck:
+					var skater_id: int = body.get_instance_id()
+					if pass_through_cooldowns.has(skater_id) or not _can_skater_intercept(body, pickup_speed):
+						continue
+					assign_possessor(body)
+					break
+
+		if shot_active and _shot_launched and posessor == null and not freeze and colidable:
+			if current_speed < 1.0 and pending_shot_frames <= 0:
+				_reset_shot_tracking()
+			else:
+				_update_skater_collision_exceptions(current_speed)
+				_prev_collision_pos = _get_body_collision_circle(self)["center"]
+				_has_prev_collision_pos = true
+				_prev_speed = current_speed
 
 	if has_node("Trail"):
-		var is_replay: bool = Globals.manager != null and Globals.manager.is_replay
 		var is_possessed: bool = (posessor != null) or (is_replay and replay_possessed)
 		$Trail.step_physics(delta, get_visual_position(), linear_velocity, is_possessed, is_replay, is_visible_in_tree(), needs_reset)
 			
 func assign_possessor(body: Skater) -> void:
 	var prev_possessor = posessor
+	_reset_shot_tracking()
 
 	if posessor:
 		posessor.puck = null
@@ -120,6 +296,12 @@ func do_shoot(vector):
 	var new_transform = get_transform() 
 	new_transform.origin = global_position
 	set_transform(new_transform)
+	if shot_active:
+		_shot_launched = true
+		_prev_collision_pos = _get_body_collision_circle(self)["center"]
+		_has_prev_collision_pos = true
+		_prev_speed = maxf(linear_velocity.length(), pending_shot_speed)
+		_update_skater_collision_exceptions(_prev_speed)
 	if has_node("Trail"):
 		$Trail.start_from_shot(get_visual_position(), vector / maxf(mass, 0.001))
 
@@ -132,9 +314,29 @@ func shoot(shooter, vector) -> bool:
 	if not posessor or shooter != posessor.name:
 		return false
 	
-	Globals.manager.shot.emit(posessor.home_team, global_position, vector)
+	var shooter_home_team: bool = posessor.home_team
+	var shooter_name: String = posessor.get_player_name() if posessor.has_method("get_player_name") else last_possessor
+	Globals.manager.shot.emit(shooter_home_team, global_position, vector)
 	posessor = null
 	blocklist[shooter] = 0.25
+
+	pass_through_cooldowns.clear()
+	overlapping_fast_skaters.clear()
+	var launch_speed: float = vector.length() / maxf(mass, 0.001)
+	if vector.length_squared() > 0.0:
+		shot_active = true
+		_shot_launched = false
+		shot_team = shooter_home_team
+		shot_shooter_name = shooter_name
+		pending_shot_speed = launch_speed
+		pending_shot_frames = 2
+		_prev_speed = launch_speed
+		_prev_collision_pos = _get_body_collision_circle(self)["center"]
+		_has_prev_collision_pos = true
+		_update_skater_collision_exceptions(launch_speed)
+	else:
+		_reset_shot_tracking()
+
 	if has_node("Trail"):
 		if vector.length() > 100:
 			$Trail.set_hue(0.1388 / (vector.length() / 100))

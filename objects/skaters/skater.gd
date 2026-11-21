@@ -721,6 +721,8 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 			state.linear_velocity = bounce_dir * 300.0
 			Globals.play_sound_at("Bump", global_position)
 			continue
+		if collider is Puck:
+			continue
 
 		if "mass" in collider:
 			myimpulse *= 1 + (collider.mass - mass)

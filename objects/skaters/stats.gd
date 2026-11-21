@@ -16,6 +16,7 @@ class StatBlock extends Node:
 	var shot_variance: float   # cone of inaccuracy
 	var check_damage: float
 	var max_health: float
+	var max_block_speed: float # max opposing shot speed the skater can intercept/block
 	var size: String
 	
 func _init() -> void:
@@ -29,6 +30,7 @@ func _init() -> void:
 	Classes[ClassTypes.LIGHT].shot_variance = deg_to_rad(5)
 	Classes[ClassTypes.LIGHT].check_damage = 20.0
 	Classes[ClassTypes.LIGHT].max_health = 80.0
+	Classes[ClassTypes.LIGHT].max_block_speed = 550.0
 	Classes[ClassTypes.LIGHT].size = "light"
 	
 	Classes[ClassTypes.MEDIUM].weight = 1.5
@@ -39,6 +41,7 @@ func _init() -> void:
 	Classes[ClassTypes.MEDIUM].shot_variance = deg_to_rad(10)
 	Classes[ClassTypes.MEDIUM].check_damage = 30.0
 	Classes[ClassTypes.MEDIUM].max_health = 100.0
+	Classes[ClassTypes.MEDIUM].max_block_speed = 750.0
 	Classes[ClassTypes.MEDIUM].size = "medium"
 	
 	Classes[ClassTypes.HEAVY].weight = 2
@@ -49,6 +52,7 @@ func _init() -> void:
 	Classes[ClassTypes.HEAVY].shot_variance = deg_to_rad(30)
 	Classes[ClassTypes.HEAVY].check_damage = 45.0
 	Classes[ClassTypes.HEAVY].max_health = 130.0
+	Classes[ClassTypes.HEAVY].max_block_speed = 950.0
 	Classes[ClassTypes.HEAVY].size = "heavy"
 
 
