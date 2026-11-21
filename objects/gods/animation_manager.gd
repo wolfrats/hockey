@@ -34,6 +34,37 @@ func _ready() -> void:
 	set_phase(Phase.PRE_GAME_SKATE)
 	lights = get_tree().root.get_node_or_null("Rink/Lights")
 
+func _unhandled_input(event: InputEvent) -> void:
+	if current_phase != Phase.REPLAY:
+		return
+	if not manager:
+		return
+	if event.is_action_pressed("ui_cancel"):
+		return
+
+	var skip_device_id: int = -1
+	if event is InputEventJoypadButton and event.pressed and not event.is_echo():
+		skip_device_id = event.device
+	elif not (event is InputEventJoypadButton) and not (event is InputEventJoypadMotion):
+		if event.is_action_pressed("ui_accept") or event.is_action_pressed("pass") \
+				or event.is_action_pressed("shoot") or event.is_action_pressed("swap") \
+				or event.is_action_pressed("check") or event.is_action_pressed("grab") \
+				or event.is_action_pressed("sprint"):
+			skip_device_id = -2
+
+	if skip_device_id != -1 and manager.has_method("mark_player_replay_skip"):
+		var all_skipped: bool = manager.mark_player_replay_skip(skip_device_id)
+		get_viewport().set_input_as_handled()
+		if all_skipped:
+			_finish_replay()
+
+
+func _finish_replay() -> void:
+	if manager and manager.has_method("stop_replay"):
+		manager.stop_replay()
+	set_phase(Phase.FACE_OFF)
+
+
 func _process(delta: float) -> void:
 	if current_phase == Phase.PLAYING:
 		return
@@ -84,22 +115,9 @@ func _process(delta: float) -> void:
 			if phase_timer <= 0:
 				set_phase(Phase.REPLAY)
 		Phase.REPLAY:
-			var skip = false
-			if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("pass") \
-					or Input.is_action_just_pressed("shoot") or Input.is_action_just_pressed("swap") \
-					or Input.is_action_just_pressed("check"):
-				skip = true
-			for device in Globals.player_devices:
-				if device >= 0:
-					if Input.is_joy_button_pressed(device, JOY_BUTTON_A) or \
-					Input.is_joy_button_pressed(device, JOY_BUTTON_X) \
-						or Input.is_joy_button_pressed(device, JOY_BUTTON_Y) \
-				or Input.is_joy_button_pressed(device, JOY_BUTTON_B):
-						skip = true
-			if skip:
-				if manager and manager.has_method("stop_replay"):
-					manager.stop_replay()
-				set_phase(Phase.FACE_OFF)
+			if manager and manager.has_method("are_all_players_skipping_replay") \
+					and manager.are_all_players_skipping_replay():
+				_finish_replay()
 		Phase.POST_PERIOD_SKATE_OUT:
 			if phase_timer <= 0:
 				set_phase(Phase.POST_PERIOD_WAIT)

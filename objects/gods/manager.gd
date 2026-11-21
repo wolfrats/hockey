@@ -22,6 +22,9 @@ var replay_buffer: Array = []
 var is_replay: bool = false
 var replay_index: int = 0
 var replay_label: Label = null
+var replay_skip_margin: MarginContainer = null
+var replay_skip_container: HBoxContainer = null
+var replay_skipped_devices: Dictionary = {}
 
 
 func _enter_tree() -> void:
@@ -210,6 +213,20 @@ func _update_players() -> void:
 		else:
 			p.device_id = -1
 
+	if is_replay:
+		update_replay_skip_ui()
+
+
+func get_active_players() -> Array:
+	var players: Array = []
+	var ghosts_node = get_node_or_null("Ghosts")
+	if not ghosts_node:
+		return players
+	for child in ghosts_node.get_children():
+		if child.name.begins_with("Player") and child.device_id != -1:
+			players.append(child)
+	return players
+
 
 func _process(delta: float) -> void:
 	if not is_practice:
@@ -267,6 +284,7 @@ func _process(delta: float) -> void:
 func start_replay() -> void:
 	is_replay = true
 	replay_index = 0
+	replay_skipped_devices.clear()
 	for s in get_tree().get_nodes_in_group("skaters"):
 		if s is Skater:
 			s.replay_grab_target = null
@@ -283,10 +301,81 @@ func start_replay() -> void:
 		replay_label.label_settings.font_color = Color.RED
 		replay_label.position = Vector2(0, 100)
 		ui_layer.add_child(replay_label)
+	if ui_layer and not replay_skip_margin:
+		replay_skip_margin = MarginContainer.new()
+		replay_skip_margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		replay_skip_margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		replay_skip_margin.add_theme_constant_override("margin_left", 24)
+		replay_skip_margin.add_theme_constant_override("margin_top", 24)
+		replay_skip_margin.add_theme_constant_override("margin_right", 24)
+		replay_skip_margin.add_theme_constant_override("margin_bottom", 24)
+		ui_layer.add_child(replay_skip_margin)
+
+		replay_skip_container = HBoxContainer.new()
+		replay_skip_container.size_flags_horizontal = Control.SIZE_SHRINK_END
+		replay_skip_container.size_flags_vertical = Control.SIZE_SHRINK_END
+		replay_skip_container.alignment = BoxContainer.ALIGNMENT_END
+		replay_skip_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		replay_skip_container.add_theme_constant_override("separation", 12)
+		replay_skip_margin.add_child(replay_skip_container)
+	update_replay_skip_ui()
+
+
+func mark_player_replay_skip(device_id: int) -> bool:
+	if not is_replay:
+		return false
+	var found := false
+	for p in get_active_players():
+		if p.device_id == device_id:
+			found = true
+			break
+	if not found:
+		return false
+	if not replay_skipped_devices.get(device_id, false):
+		replay_skipped_devices[device_id] = true
+		update_replay_skip_ui()
+	return are_all_players_skipping_replay()
+
+
+func are_all_players_skipping_replay() -> bool:
+	var active_players := get_active_players()
+	if active_players.is_empty():
+		return true
+	for p in active_players:
+		if not replay_skipped_devices.get(p.device_id, false):
+			return false
+	return true
+
+
+func update_replay_skip_ui() -> void:
+	if not replay_skip_container:
+		return
+	for child in replay_skip_container.get_children():
+		replay_skip_container.remove_child(child)
+		child.queue_free()
+	for p in get_active_players():
+		if replay_skipped_devices.get(p.device_id, false):
+			continue
+		var player_color := Color.WHITE
+		if p.player_index >= 0 and p.player_index < Globals.player_colors.size():
+			player_color = Globals.player_colors[p.player_index]
+		var circle := Panel.new()
+		circle.custom_minimum_size = Vector2(36, 36)
+		circle.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var style := StyleBoxFlat.new()
+		style.bg_color = player_color
+		style.set_corner_radius_all(18)
+		style.corner_detail = 16
+		style.border_color = Color.BLACK
+		style.set_border_width_all(3)
+		style.anti_aliasing = true
+		circle.add_theme_stylebox_override("panel", style)
+		replay_skip_container.add_child(circle)
 
 
 func stop_replay() -> void:
 	is_replay = false
+	replay_skipped_devices.clear()
 	for p in get_tree().get_nodes_in_group("pucks"):
 		if "replay_possessed" in p:
 			p.replay_possessed = false
@@ -296,6 +385,10 @@ func stop_replay() -> void:
 	if replay_label:
 		replay_label.queue_free()
 		replay_label = null
+	if replay_skip_margin:
+		replay_skip_margin.queue_free()
+		replay_skip_margin = null
+		replay_skip_container = null
 
 
 func _physics_process(_delta: float) -> void:
