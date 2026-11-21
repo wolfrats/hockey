@@ -23,6 +23,8 @@ uniform sampler2D number_tex: filter_nearest, repeat_disable, hint_default_trans
 uniform bool draw_number = false;
 uniform vec2 logo_pos = vec2(0.0, 0.0);
 uniform float logo_offset_x = 0.0;
+uniform float overlay_rotation = 0.0;
+uniform bool overlay_flip_x = false;
 
 const vec4 sleeves = vec4(float(0x7C) / 255.0, float(0xB0) / 255.0, float(0xF8) / 255.0, 1);
 const vec4 neckline = vec4(float(0x49) / 255.0, float(0xB0) / 255.0, float(0xF8) / 255.0, 1);
@@ -61,9 +63,21 @@ void fragment() {
 			vec2 tex_px = UV / TEXTURE_PIXEL_SIZE;
 			vec2 frame_px = vec2(mod(tex_px.x, frame_width), tex_px.y);
 			vec2 rel = frame_px - logo_pos;
-			float lx = rel.x + logo_offset_x;
-			float ly = rel.y;
-			if (rel.x >= 0.0 && lx >= 0.0 && lx < logo_size && ly >= 0.0 && ly < logo_size) {
+			vec2 overlay_px = rel;
+			if (overlay_rotation != 0.0 || overlay_flip_x) {
+				float half_size = logo_size * 0.5;
+				vec2 d = rel - vec2(half_size);
+				float c = cos(overlay_rotation);
+				float s = sin(overlay_rotation);
+				vec2 rot_d = vec2(c * d.x + s * d.y, -s * d.x + c * d.y);
+				if (overlay_flip_x) {
+					rot_d.x = -rot_d.x;
+				}
+				overlay_px = rot_d + vec2(half_size);
+			}
+			float lx = overlay_px.x + logo_offset_x;
+			float ly = overlay_px.y;
+			if ((logo_offset_x == 0.0 || rel.x >= 0.0) && lx >= 0.0 && lx < logo_size && ly >= 0.0 && ly < logo_size) {
 				vec2 overlay_uv = vec2(lx, ly) / logo_size;
 				vec4 overlay_color = draw_logo ? texture(logo, overlay_uv) : texture(number_tex, overlay_uv);
 				me.rgb = mix(me.rgb, overlay_color.rgb, overlay_color.a);

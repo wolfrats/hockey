@@ -664,14 +664,14 @@ func _physics_process(delta: float) -> void:
 	$Sprite.region_enabled = true
 	Globals.apply_logo_offset($Sprite.material, anim_name, frame, $Sprite.flip_h)
 	if abs(last_move.angle_to(linear_velocity)) > 3.1 and Globals.ticks > scrape_counter:
-		var s: Icesputter = preload("res://objects/environment/icesplutter.tscn").instantiate()
-		Globals.manager.add_child(s)
+		#var s: Icesputter = preload("res://objects/environment/icesplutter.tscn").instantiate()
+		#Globals.manager.add_child(s)
 		skate_dir = linear_velocity
 		scrape_counter = Globals.ticks + 20
-		if linear_velocity.x > 0:
-			var m: ParticleProcessMaterial = s.process_material
-			m.direction.x = -m.direction.x
-		s.global_position = (global_position + Vector2.DOWN * 16)
+		#if linear_velocity.x > 0:
+			#var m: ParticleProcessMaterial = s.process_material
+			#m.direction.x = -m.direction.x
+		#s.global_position = (global_position + Vector2.DOWN * 16)
 	skate_dir = skate_dir.lerp(self.linear_velocity, 0.03)
 
 func impulse(dx: float, dy: float) -> void:

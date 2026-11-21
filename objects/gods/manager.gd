@@ -423,6 +423,8 @@ func _physics_process(_delta: float) -> void:
 						entry["draw_number"] = mat.get_shader_parameter("draw_number")
 						entry["logo_pos"] = mat.get_shader_parameter("logo_pos")
 						entry["logo_offset_x"] = mat.get_shader_parameter("logo_offset_x")
+						entry["overlay_rotation"] = mat.get_shader_parameter("overlay_rotation")
+						entry["overlay_flip_x"] = mat.get_shader_parameter("overlay_flip_x")
 				frame_data[s.get_instance_id()] = entry
 
 		# Pucks
@@ -471,6 +473,8 @@ func _physics_process(_delta: float) -> void:
 									mat.set("shader_parameter/draw_number", data.get("draw_number", false))
 									mat.set("shader_parameter/logo_pos", data.get("logo_pos", Vector2.ZERO))
 									mat.set("shader_parameter/logo_offset_x", data.get("logo_offset_x", 0.0))
+									mat.set("shader_parameter/overlay_rotation", data.get("overlay_rotation", 0.0))
+									mat.set("shader_parameter/overlay_flip_x", data.get("overlay_flip_x", false))
 					elif data["type"] == "puck":
 						if node.posessor:
 							node.posessor.puck = null

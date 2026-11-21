@@ -182,6 +182,12 @@ var texture_number_offsets = {
 		"y": 109 - 4,
 		"offsetx": 0,
 	}],
+	"Die 1": [{
+		"x": 92,
+		"y": 95,
+		"offsetx": 0,
+		"rotation": -PI / 4.0,
+	}],
 }
 
 func _init() -> void:
@@ -204,12 +210,16 @@ func _init() -> void:
 	home_shader_material.set("shader_parameter/pants", skate_color);
 	home_shader_material.set("shader_parameter/draw_logo", false);
 	home_shader_material.set("shader_parameter/draw_number", false);
+	home_shader_material.set("shader_parameter/overlay_rotation", 0.0);
+	home_shader_material.set("shader_parameter/overlay_flip_x", false);
 	away_shader_material.shader = preload("res://shaders/skater.gdshader")
 	away_shader_material.set("shader_parameter/helmet", helmet_color);
 	away_shader_material.set("shader_parameter/shirt", shirt_color);
 	away_shader_material.set("shader_parameter/pants", skate_color);
 	away_shader_material.set("shader_parameter/draw_logo", false);
 	away_shader_material.set("shader_parameter/draw_number", false);
+	away_shader_material.set("shader_parameter/overlay_rotation", 0.0);
+	away_shader_material.set("shader_parameter/overlay_flip_x", false);
 func skater_texture(size, action) -> Texture2D:
 	return skater_textures[size + "/" + action]#.duplicate()
 
@@ -388,16 +398,24 @@ func apply_logo_offset(material: ShaderMaterial, anim_name: String, frame: int, 
 		material.set("shader_parameter/draw_number", false)
 		material.set("shader_parameter/logo_pos", Vector2(offset["x"] - (8 if not flipped else 16), offset["y"] - 8))
 		material.set("shader_parameter/logo_offset_x", float(offset.get("offsetx", 0)) if not flipped else 0.0)
+		material.set("shader_parameter/overlay_rotation", float(offset.get("rotation", 0.0)))
+		material.set("shader_parameter/overlay_flip_x", false)
 	elif texture_number_offsets.has(anim_name) and not texture_number_offsets[anim_name].is_empty():
 		var frames = texture_number_offsets[anim_name]
 		var offset = frames[frame % frames.size()]
+		var offset_x: float = float(offset.get("offsetx", 0))
+		var pos_x_shift: float = 16.0 if (flipped and offset_x != 0.0) else 8.0
 		material.set("shader_parameter/draw_logo", false)
 		material.set("shader_parameter/draw_number", true)
-		material.set("shader_parameter/logo_pos", Vector2(offset["x"] - (8 if not flipped else 16), offset["y"] - 8))
-		material.set("shader_parameter/logo_offset_x", float(offset.get("offsetx", 0)) if not flipped else 0.0)
+		material.set("shader_parameter/logo_pos", Vector2(offset["x"] - pos_x_shift, offset["y"] - 8))
+		material.set("shader_parameter/logo_offset_x", offset_x if not flipped else 0.0)
+		material.set("shader_parameter/overlay_rotation", float(offset.get("rotation", 0.0)))
+		material.set("shader_parameter/overlay_flip_x", flipped)
 	else:
 		material.set("shader_parameter/draw_logo", false)
 		material.set("shader_parameter/draw_number", false)
+		material.set("shader_parameter/overlay_rotation", 0.0)
+		material.set("shader_parameter/overlay_flip_x", false)
 
 
 func _physics_process(_delta: float) -> void:
