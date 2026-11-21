@@ -72,7 +72,8 @@ const TEAMS = [
 		"conference": "eastern",
 		"division": "city",
 		"logo": 1,
-		"logo_style": 2
+		"logo_style": 2,
+		"home_ice": "Wacko-via Center",
 	},
 	{
 		"name": "Thunderbolts",
@@ -114,7 +115,8 @@ const TEAMS = [
 		"conference": "eastern",
 		"division": "city",
 		"logo": 2,
-		"logo_style": 1
+		"logo_style": 1,
+		"home_ice": "Point Per Game Arena",
 	},
 	{
 		"name": "Candy Canes",
@@ -345,7 +347,8 @@ const TEAMS = [
 		"conference": "eastern",
 		"division": "city",
 		"logo": 10,
-		"logo_style": 1
+		"logo_style": 1,
+		"home_ice": "Judgement Center",
 	},
 	{
 		"name": "Hot Wings",
@@ -576,7 +579,8 @@ const TEAMS = [
 		"conference": "western",
 		"division": "middle",
 		"logo": 25,
-		"logo_style": 1
+		"logo_style": 1,
+		"home_ice": "Sigma Center",
 	},
 	{
 		"name": "Silver Squires",
@@ -597,7 +601,8 @@ const TEAMS = [
 		"conference": "western",
 		"division": "ocean",
 		"logo": 26,
-		"logo_style": 1
+		"logo_style": 1,
+		"home_ice": "Phone Arena",
 	},
 	{
 		"name": "Apache Choppers",
