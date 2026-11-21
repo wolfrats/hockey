@@ -12,9 +12,10 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 			Globals.shot_stats[body.last_possessor] += 1
 			body.shot_on_goal_counted = true
 
-		Globals.manager.goal_scored(get_parent().name, body.last_possessor, body.assist_possessor)
+		var goal_name = get_parent().name
+		Globals.manager.goal_scored(goal_name, body.last_possessor, body.assist_possessor)
 		if "anim_manager" in Globals.manager and Globals.manager.anim_manager != null:
-			Globals.manager.anim_manager.on_goal_scored()
+			Globals.manager.anim_manager.on_goal_scored(goal_name == "AwayGoal")
 		else:
 			var pucks = get_tree().get_nodes_in_group("pucks")
 			for p in pucks:

@@ -27,6 +27,7 @@ var lights: Node
 var current_phase: Phase = Phase.PRE_GAME_SKATE
 var phase_timer: float = 0.0
 var manager: Node = null
+var scoring_team_home: bool = false
 
 func _ready() -> void:
 	manager = get_parent()
@@ -156,6 +157,11 @@ func set_phase(new_phase: Phase) -> void:
 
 	var skaters = get_tree().get_nodes_in_group("skaters")
 	var pucks = get_tree().get_nodes_in_group("pucks")
+
+	if new_phase != Phase.POST_GOAL_SKATE and new_phase != Phase.POST_GOAL_LERP:
+		for s in skaters:
+			if "celebrating" in s:
+				s.celebrating = false
 
 	match current_phase:
 		Phase.PRE_GAME_SKATE:
@@ -317,6 +323,14 @@ func set_phase(new_phase: Phase) -> void:
 																				s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "skating_around"
+					if "celebrating" in s:
+						s.celebrating = (s.home_team == scoring_team_home)
+					if "charging" in s:
+						s.charging = false
+					if "sprinting" in s:
+						s.sprinting = false
+					if s.has_method("release_grab"):
+						s.release_grab()
 
 		Phase.POST_GOAL_LERP:
 			phase_timer = 1.5
@@ -328,6 +342,8 @@ func set_phase(new_phase: Phase) -> void:
 																				s.anim_state == "return_from_penalty":
 						continue
 					s.anim_state = "lerping"
+					if "celebrating" in s:
+						s.celebrating = (s.home_team == scoring_team_home)
 			for p in pucks:
 				p.visible = false
 				p.freeze = true
@@ -459,8 +475,9 @@ func set_phase(new_phase: Phase) -> void:
 						#s.initial_position = s.get_meta("base_initial_position")
 
 
-func on_goal_scored() -> void:
+func on_goal_scored(home_team_scored: bool = true) -> void:
 	if current_phase == Phase.PLAYING:
+		scoring_team_home = home_team_scored
 		set_phase(Phase.POST_GOAL_SKATE)
 
 func on_period_end() -> void:

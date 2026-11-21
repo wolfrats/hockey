@@ -26,6 +26,7 @@ var initial_position: Vector2
 var base_initial_position: Vector2
 var needs_reset: bool = false
 var anim_state: String = ""
+var celebrating: bool = false
 var health: float
 var spring: DampedSpringJoint2D
 var penalty_time: float = 0.0
@@ -105,6 +106,7 @@ func home() -> void:
 	penalty_time = 0.0
 	holding = 0
 	sprinting = false
+	celebrating = false
 	knocked_over = 0
 	was_knocked_over = false
 	if not spring.node_b.is_empty():
@@ -441,6 +443,10 @@ func _physics_process(delta: float) -> void:
 		if swapping > 120:
 			swapping = 0
 			anim_state = ""
+	elif anim_state == "lerping":
+		var diff = initial_position - global_position
+		if diff.length() > 5.0:
+			facing_dir = diff.normalized()
 	elif anim_state == "face_off":
 		# Only players near center can take the face-off
 		var faceoff_pos = Vector2(1005.5, 509)
@@ -538,6 +544,18 @@ func _physics_process(delta: float) -> void:
 			$Sprite.position = Vector2(randf_range(-2.0, 2.0), randf_range(-2.0, 2.0))
 		else:
 			$Sprite.position = Vector2.ZERO
+	elif celebrating and not is_in_penalty():
+		z_index = 0
+		$Sprite.position = Vector2.ZERO
+		started_charge = 0
+		anim_name = "Celly 1"
+		if facing_dir.x != 0:
+			$Sprite.flip_h = (facing_dir.x > 0)
+		var is_moving = speed > 5 or (anim_state == "lerping" and global_position.distance_to(initial_position) > 5.0)
+		if is_moving:
+			frame = (int(Globals.ticks / 10.0) % 6)
+		else:
+			frame = 0
 	elif charging:
 		z_index = 0
 		if faceoff_shake > 0:
