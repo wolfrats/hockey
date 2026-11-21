@@ -77,6 +77,9 @@ func _ready() -> void:
 	if stats == Stats.ClassTypes.LIGHT:
 		$Sprite.scale.x = 0.9
 		$Sprite.scale.y = 1.1
+	if stats == Stats.ClassTypes.DMAN:
+		$Sprite.scale.x = 0.9
+		$Sprite.scale.y = 1.2
 	if stats == Stats.ClassTypes.HEAVY:
 		$Sprite.scale.x = 1.2
 		#$Sprite.scale.y = 1.1

@@ -4,7 +4,8 @@ var Classes = []
 enum ClassTypes {
 	LIGHT,
 	MEDIUM,
-	HEAVY
+	HEAVY,
+	DMAN
 }
 
 class StatBlock extends Node:
@@ -17,7 +18,7 @@ class StatBlock extends Node:
 	var check_damage: float
 	var max_health: float
 	var max_block_speed: float # max opposing shot speed the skater can intercept/block
-	var size: String
+	var size: String           # what sprite-sheet to use
 	
 func _init() -> void:
 	for X in ClassTypes.values():
@@ -43,6 +44,17 @@ func _init() -> void:
 	Classes[ClassTypes.MEDIUM].max_health = 100.0
 	Classes[ClassTypes.MEDIUM].max_block_speed = 750.0
 	Classes[ClassTypes.MEDIUM].size = "medium"
+	
+	Classes[ClassTypes.DMAN].weight = 1.5
+	Classes[ClassTypes.DMAN].speed = 8.5
+	Classes[ClassTypes.DMAN].sprite_index = 0
+	Classes[ClassTypes.DMAN].shot_power = 0.9
+	Classes[ClassTypes.DMAN].snap_power = 0.2
+	Classes[ClassTypes.DMAN].shot_variance = deg_to_rad(40)
+	Classes[ClassTypes.DMAN].check_damage = 40.0
+	Classes[ClassTypes.DMAN].max_health = 100.0
+	Classes[ClassTypes.DMAN].max_block_speed = 1000.0
+	Classes[ClassTypes.DMAN].size = "medium"
 	
 	Classes[ClassTypes.HEAVY].weight = 2
 	Classes[ClassTypes.HEAVY].speed = 7
@@ -762,7 +774,7 @@ const TEAMS = [
 			ClassTypes.LIGHT,
 			ClassTypes.MEDIUM,
 			ClassTypes.HEAVY,
-			ClassTypes.HEAVY
+			ClassTypes.DMAN
 		],
 		"head_color": Color(84.0/255.0, 59.0/255.0, 0),
 		"body_color": Color(1, 0.88235294117, 0),
