@@ -382,6 +382,7 @@ func stop_replay() -> void:
 	for s in get_tree().get_nodes_in_group("skaters"):
 		if s is Skater:
 			s.replay_grab_target = null
+			s.apply_active_appearance()
 	if replay_label:
 		replay_label.queue_free()
 		replay_label = null
@@ -425,6 +426,10 @@ func _physics_process(_delta: float) -> void:
 						entry["logo_offset_x"] = mat.get_shader_parameter("logo_offset_x")
 						entry["overlay_rotation"] = mat.get_shader_parameter("overlay_rotation")
 						entry["overlay_flip_x"] = mat.get_shader_parameter("overlay_flip_x")
+						entry["replace_skin"] = mat.get_shader_parameter("replace_skin")
+						entry["replace_nose"] = mat.get_shader_parameter("replace_nose")
+						entry["replace_eye"] = mat.get_shader_parameter("replace_eye")
+						entry["number_tex"] = mat.get_shader_parameter("number_tex")
 				frame_data[s.get_instance_id()] = entry
 
 		# Pucks
@@ -475,6 +480,14 @@ func _physics_process(_delta: float) -> void:
 									mat.set("shader_parameter/logo_offset_x", data.get("logo_offset_x", 0.0))
 									mat.set("shader_parameter/overlay_rotation", data.get("overlay_rotation", 0.0))
 									mat.set("shader_parameter/overlay_flip_x", data.get("overlay_flip_x", false))
+									if data.has("replace_skin"):
+										mat.set("shader_parameter/replace_skin", data["replace_skin"])
+									if data.has("replace_nose"):
+										mat.set("shader_parameter/replace_nose", data["replace_nose"])
+									if data.has("replace_eye"):
+										mat.set("shader_parameter/replace_eye", data["replace_eye"])
+									if data.has("number_tex"):
+										mat.set("shader_parameter/number_tex", data["number_tex"])
 					elif data["type"] == "puck":
 						if node.posessor:
 							node.posessor.puck = null

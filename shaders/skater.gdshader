@@ -11,12 +11,14 @@ uniform vec4 shirt: source_color;
 uniform vec4 pants: source_color;
 uniform vec4 skin;
 uniform vec4 nose;
+uniform vec4 eye;
 uniform vec4 replace_helmet: source_color;
 uniform vec4 replace_shirt: source_color;
 uniform vec4 replace_pants: source_color;
 uniform vec4 replace_sleeve: source_color;
 uniform vec4 replace_skin;
 uniform vec4 replace_nose;
+uniform vec4 replace_eye;
 uniform sampler2D logo: filter_nearest, repeat_disable, hint_default_transparent;
 uniform bool draw_logo = false;
 uniform sampler2D number_tex: filter_nearest, repeat_disable, hint_default_transparent;
@@ -35,9 +37,12 @@ const float frame_width = 192.0;
 
 
 vec4 swap_color(vec4 color){
-	const int count = 7;
-	vec4 original_colors[count] = vec4[count] (helmet, shirt, pants, skin, nose, sleeves, neckline);
-	vec4 replace_colors[count] = vec4[count] (replace_helmet, replace_shirt, replace_shirt, replace_skin, replace_nose, replace_sleeve, replace_sleeve);
+	if (color.a <= 0.0) {
+		return color;
+	}
+	const int count = 8;
+	vec4 original_colors[count] = vec4[count] (helmet, shirt, pants, skin, nose, eye, sleeves, neckline);
+	vec4 replace_colors[count] = vec4[count] (replace_helmet, replace_shirt, replace_shirt, replace_skin, replace_nose, replace_eye, replace_sleeve, replace_sleeve);
 	for (int i = 0; i < count; i ++) {
 		if (distance(color, original_colors[i]) <= precision) {
 			return replace_colors[i];

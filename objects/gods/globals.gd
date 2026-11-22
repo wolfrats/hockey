@@ -51,6 +51,8 @@ var menu_opened: bool = false
 var manager: Manager = null
 
 var save_path = "user://settings.cfg"
+var rosters_path = "user://rosters.json"
+var team_rosters: Dictionary = {}
 var use_onscreen_controls: bool = DisplayServer.is_touchscreen_available()
 
 var texture_logo_offsets = {
@@ -192,6 +194,7 @@ var texture_number_offsets = {
 
 func _init() -> void:
 	load_settings()
+	load_or_generate_rosters()
 	var sprites = [
 		"Skate Left", "Skate Down", "Skate Up", "Glide Left", "Check Left", "Check Down", "Check Up",
 		"Grab Left", "Grab Down", "Grab Up", "Pummel Down", "Pummel Up", "Shoot Left", "Die 1", "Celly 1"
@@ -208,6 +211,12 @@ func _init() -> void:
 	home_shader_material.set("shader_parameter/helmet", helmet_color);
 	home_shader_material.set("shader_parameter/shirt", shirt_color);
 	home_shader_material.set("shader_parameter/pants", skate_color);
+	home_shader_material.set("shader_parameter/skin", color_to_vec4(skin_tone));
+	home_shader_material.set("shader_parameter/nose", color_to_vec4(nose_color));
+	home_shader_material.set("shader_parameter/eye", color_to_vec4(eye_color));
+	home_shader_material.set("shader_parameter/replace_skin", color_to_vec4(skin_tone));
+	home_shader_material.set("shader_parameter/replace_nose", color_to_vec4(nose_color));
+	home_shader_material.set("shader_parameter/replace_eye", color_to_vec4(eye_color));
 	home_shader_material.set("shader_parameter/draw_logo", false);
 	home_shader_material.set("shader_parameter/draw_number", false);
 	home_shader_material.set("shader_parameter/overlay_rotation", 0.0);
@@ -216,6 +225,12 @@ func _init() -> void:
 	away_shader_material.set("shader_parameter/helmet", helmet_color);
 	away_shader_material.set("shader_parameter/shirt", shirt_color);
 	away_shader_material.set("shader_parameter/pants", skate_color);
+	away_shader_material.set("shader_parameter/skin", color_to_vec4(skin_tone));
+	away_shader_material.set("shader_parameter/nose", color_to_vec4(nose_color));
+	away_shader_material.set("shader_parameter/eye", color_to_vec4(eye_color));
+	away_shader_material.set("shader_parameter/replace_skin", color_to_vec4(skin_tone));
+	away_shader_material.set("shader_parameter/replace_nose", color_to_vec4(nose_color));
+	away_shader_material.set("shader_parameter/replace_eye", color_to_vec4(eye_color));
 	away_shader_material.set("shader_parameter/draw_logo", false);
 	away_shader_material.set("shader_parameter/draw_number", false);
 	away_shader_material.set("shader_parameter/overlay_rotation", 0.0);
@@ -499,6 +514,189 @@ func save_settings() -> void:
 	config.set_value("Settings", "away_team_index", away_team_index)
 	config.save(save_path)
 
+
+func _pick_unused_number(used_numbers: Dictionary) -> int:
+	var available: Array[int] = []
+	for n in range(1, 99):
+		if not used_numbers.has(n):
+			available.append(n)
+	var chosen: int = available[randi() % available.size()] if not available.is_empty() else randi_range(1, 98)
+	used_numbers[chosen] = true
+	return chosen
+
+
+func _generate_player_profile(used_numbers: Dictionary) -> Dictionary:
+	var st: Array[Color] = random_skin_tone()
+	var eye: Color = random_eye_color()
+	var num: int = _pick_unused_number(used_numbers)
+	return {
+		"skin": st[0].to_html(false),
+		"nose": st[1].to_html(false),
+		"eye": eye.to_html(false),
+		"number": num,
+	}
+
+
+func _is_valid_player_profile(profile: Variant, used_numbers: Dictionary) -> bool:
+	if not (profile is Dictionary):
+		return false
+	for key in ["skin", "nose", "eye"]:
+		if not profile.has(key) or not (profile[key] is String) or not Color.html_is_valid(profile[key]):
+			return false
+	if not profile.has("number"):
+		return false
+	var raw_num = profile["number"]
+	if not (raw_num is int or raw_num is float):
+		return false
+	var num: int = int(raw_num)
+	if num < 1 or num > 98 or used_numbers.has(num):
+		return false
+	return true
+
+
+func _generate_team_roster(skater_count: int) -> Dictionary:
+	var used_numbers: Dictionary = {}
+	var goalie: Dictionary = _generate_player_profile(used_numbers)
+	var skaters: Array = []
+	for _i in range(skater_count):
+		skaters.append([
+			_generate_player_profile(used_numbers),
+			_generate_player_profile(used_numbers),
+		])
+	return {
+		"goalie": goalie,
+		"skaters": skaters,
+	}
+
+
+func _ensure_team_roster(team_name: String, skater_count: int) -> bool:
+	if not team_rosters.has(team_name) or not (team_rosters[team_name] is Dictionary):
+		team_rosters[team_name] = _generate_team_roster(skater_count)
+		return true
+
+	var dirty: bool = false
+	var roster: Dictionary = team_rosters[team_name]
+	var used_numbers: Dictionary = {}
+
+	# Collect valid existing goalie & skater numbers first so generated replacements don't collide
+	var goalie_valid: bool = false
+	if roster.has("goalie") and _is_valid_player_profile(roster["goalie"], used_numbers):
+		roster["goalie"]["number"] = int(roster["goalie"]["number"])
+		used_numbers[roster["goalie"]["number"]] = true
+		goalie_valid = true
+
+	var existing_skaters: Array = roster["skaters"] if (roster.has("skaters") and roster["skaters"] is Array) else []
+	var valid_slots: Array = []
+	for i in range(skater_count):
+		var slot_arr: Array = existing_skaters[i] if (i < existing_skaters.size() and existing_skaters[i] is Array) else []
+		var pair_valid: Array = [false, false]
+		for v in range(2):
+			if v < slot_arr.size() and _is_valid_player_profile(slot_arr[v], used_numbers):
+				slot_arr[v]["number"] = int(slot_arr[v]["number"])
+				used_numbers[slot_arr[v]["number"]] = true
+				pair_valid[v] = true
+		valid_slots.append(pair_valid)
+
+	if not goalie_valid:
+		roster["goalie"] = _generate_player_profile(used_numbers)
+		dirty = true
+
+	var normalized_skaters: Array = []
+	for i in range(skater_count):
+		var slot_arr: Array = existing_skaters[i] if (i < existing_skaters.size() and existing_skaters[i] is Array) else []
+		if slot_arr.size() != 2:
+			dirty = true
+		var pair: Array = []
+		for v in range(2):
+			if valid_slots[i][v]:
+				pair.append(slot_arr[v])
+			else:
+				pair.append(_generate_player_profile(used_numbers))
+				dirty = true
+		normalized_skaters.append(pair)
+	if not roster.has("skaters") or not (roster["skaters"] is Array) or roster["skaters"].size() != skater_count:
+		dirty = true
+	roster["skaters"] = normalized_skaters
+	team_rosters[team_name] = roster
+	return dirty
+
+
+func load_or_generate_rosters() -> void:
+	team_rosters = {}
+	var dirty: bool = false
+
+	if FileAccess.file_exists(rosters_path):
+		var file := FileAccess.open(rosters_path, FileAccess.READ)
+		if file != null:
+			var json := JSON.new()
+			var err := json.parse(file.get_as_text())
+			if err == OK and json.data is Dictionary:
+				team_rosters = json.data
+			else:
+				dirty = true
+		else:
+			dirty = true
+	else:
+		dirty = true
+
+	for team_data in StatBook.TEAMS:
+		var team_name: String = team_data["name"]
+		var skater_count: int = team_data["composition"].size()
+		if _ensure_team_roster(team_name, skater_count):
+			dirty = true
+
+	if dirty:
+		save_rosters()
+
+
+func save_rosters() -> void:
+	var file := FileAccess.open(rosters_path, FileAccess.WRITE)
+	if file != null:
+		file.store_string(JSON.stringify(team_rosters, "\t"))
+
+
+func get_team_roster(team_index: int) -> Dictionary:
+	if team_index < 0 or team_index >= StatBook.TEAMS.size():
+		return {}
+	var team_data: Dictionary = StatBook.TEAMS[team_index]
+	var team_name: String = team_data["name"]
+	var skater_count: int = team_data["composition"].size()
+	if _ensure_team_roster(team_name, skater_count):
+		save_rosters()
+	return team_rosters[team_name]
+
+
+func get_goalie_profile(team_index: int) -> Dictionary:
+	var roster: Dictionary = get_team_roster(team_index)
+	return roster.get("goalie", {})
+
+
+func get_skater_variants(team_index: int, skater_index: int) -> Array:
+	var roster: Dictionary = get_team_roster(team_index)
+	var skaters: Array = roster.get("skaters", [])
+	if skater_index >= 0 and skater_index < skaters.size():
+		return skaters[skater_index]
+	return []
+
+
+func apply_player_profile(material: ShaderMaterial, profile: Dictionary) -> int:
+	if material == null or profile.is_empty():
+		return 0
+	var skin_col: Color = Color.from_string(str(profile.get("skin", "")), skin_tone)
+	var nose_col: Color = Color.from_string(str(profile.get("nose", "")), nose_color)
+	var eye_col: Color = Color.from_string(str(profile.get("eye", "")), eye_color)
+	var num: int = clampi(int(profile.get("number", 1)), 1, 98)
+	material.set("shader_parameter/skin", color_to_vec4(skin_tone))
+	material.set("shader_parameter/nose", color_to_vec4(nose_color))
+	material.set("shader_parameter/eye", color_to_vec4(eye_color))
+	material.set("shader_parameter/replace_skin", color_to_vec4(skin_col))
+	material.set("shader_parameter/replace_nose", color_to_vec4(nose_col))
+	material.set("shader_parameter/replace_eye", color_to_vec4(eye_col))
+	var number_tex: ImageTexture = get_number_texture(num)
+	if number_tex:
+		material.set("shader_parameter/number_tex", number_tex)
+	return num
+
 func random_hair_color() -> Color: 	
 	var h: float = 0.0 
 	var s: float = 0.0
@@ -551,7 +749,7 @@ func generate_random_eye_color() -> Color:
 
 func random_skin_tone() -> Array[Color]:
 	var s = (pow(randf()*.99, 7))
-	return [Globals.skin_tone.darkened(s), Globals.nose_color.darkened(s)]
+	return [skin_tone.darkened(s), nose_color.darkened(s)]
 
 var skin_bucket = []
 func generate_random_skin_tone() -> Array[Color]:

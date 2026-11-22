@@ -5,6 +5,7 @@ const OFFSET: int = 32
 @export var ghost: Ghost
 @export var home_team: bool
 @export var stats: Stats.ClassTypes
+@export var jersey_number: int = 0
 @export var max_y: float = 650
 @export var min_y: float = 400
 var statbook: Stats.StatBlock
@@ -89,7 +90,7 @@ func _ready() -> void:
 	prev_position = global_position
 	$Sprite.texture = $Sprite.texture.duplicate()
 	#$Sprite.texture.atlas = $Sprite.texture.atlas.duplicate()
-	var st = Globals.random_skin_tone()
+	var team_index: int = Globals.home_team_index if home_team else Globals.away_team_index
 	if home_team:
 		$Sprite.texture = Globals.home_goalie_textures["Stand"]
 		$Sprite.material = Globals.home_shader_material.duplicate()
@@ -97,10 +98,8 @@ func _ready() -> void:
 		$Sprite.texture = Globals.away_goalie_textures["Stand"]
 		$Sprite.material = Globals.away_shader_material.duplicate()
 	$Sprite.flip_h = home_team
-	$Sprite.material.set("shader_parameter/original_3", Globals.color_to_vec4(Globals.skin_tone))
-	$Sprite.material.set("shader_parameter/original_4", Globals.color_to_vec4(Globals.nose_color))
-	$Sprite.material.set("shader_parameter/replace_3", Globals.color_to_vec4(st[0]))
-	$Sprite.material.set("shader_parameter/replace_4", Globals.color_to_vec4(st[1]))
+	var profile: Dictionary = Globals.get_goalie_profile(team_index)
+	jersey_number = Globals.apply_player_profile($Sprite.material, profile)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

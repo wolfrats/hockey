@@ -42,11 +42,11 @@ func _ready() -> void:
 		sprite.region_rect = Rect2(0, 0, 192, 192)
 
 		var mat = Globals.home_shader_material.duplicate() if home else Globals.away_shader_material.duplicate()
-		var st = Globals.random_skin_tone()
-		mat.set("shader_parameter/skin", Globals.color_to_vec4(Globals.skin_tone))
-		mat.set("shader_parameter/nose", Globals.color_to_vec4(Globals.nose_color))
-		mat.set("shader_parameter/replace_skin", Globals.color_to_vec4(st[0]))
-		mat.set("shader_parameter/replace_nose", Globals.color_to_vec4(st[1]))
+		var variants: Array = Globals.get_skater_variants(team_index, i)
+		if variants.size() >= 2:
+			Globals.apply_player_profile(mat, variants[1])
+		elif variants.size() == 1:
+			Globals.apply_player_profile(mat, variants[0])
 		Globals.apply_logo_offset(mat, "Skate Down", 0, false)
 		sprite.material = mat
 
@@ -67,6 +67,14 @@ func _process(_delta: float) -> void:
 	pass
 
 
+func set_bench_skater_profile(slot_index: int, profile: Dictionary) -> void:
+	if slot_index < 0 or slot_index >= bench_sprites.size():
+		return
+	var sprite: Sprite2D = bench_sprites[slot_index]
+	if sprite != null and sprite.material is ShaderMaterial:
+		Globals.apply_player_profile(sprite.material, profile)
+
+
 func _on_bench_body_entered(body: Node2D) -> void:
 	if not body is Skater and not body is Goalie:
 		return
@@ -78,7 +86,6 @@ func _on_bench_body_entered(body: Node2D) -> void:
 		return
 
 	var skater: Skater = body
-	if skater.home_team == home and skater.anim_state != "swapping":
-		skater.anim_state = "swapping"
-		skater.health = skater.statbook.max_health
+	if skater.home_team == home and skater.anim_state == "":
+		skater.start_bench_swap(self)
 		

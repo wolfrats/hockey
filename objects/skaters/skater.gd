@@ -40,6 +40,11 @@ var skater_size: String = "medium"
 var current_anim_name: String = "Skate Left"
 var replay_grab_target: Skater = null
 var grab_fabric: Node2D = null
+var skater_slot_index: int = -1
+var skater_variants: Array = []
+var active_variant_index: int = 0
+var swapped_this_shift: bool = false
+var active_bench: Node = null
 
 enum LookDir {
 	SIDE,
@@ -53,8 +58,10 @@ func _ready() -> void:
 	base_initial_position = initial_position
 	add_to_group("skaters")
 
-	var team_data = StatBook.TEAMS[Globals.home_team_index] if home_team else StatBook.TEAMS[Globals.away_team_index]
+	var team_index: int = Globals.home_team_index if home_team else Globals.away_team_index
+	var team_data = StatBook.TEAMS[team_index]
 	var index = get_index()
+	skater_slot_index = index
 	if index >= 0 and index < team_data["composition"].size():
 		stats = team_data["composition"][index]
 	statbook = StatBook.Classes[stats]
@@ -64,7 +71,6 @@ func _ready() -> void:
 	spring = $Spring #DampedSpringJoint2D.new()
 	#add_child(spring)
 	spring.node_a = get_path()
-	var st = Globals.random_skin_tone()
 	# The texture itself will be updated dynamically in _physics_process based on animation state
 	if home_team:
 		facing_dir = Vector2(1, 0)
@@ -72,15 +78,14 @@ func _ready() -> void:
 	else:
 		facing_dir = Vector2(-1, 0)
 		$Sprite.material = Globals.away_shader_material.duplicate()
-	$Sprite.material.set("shader_parameter/skin", Globals.color_to_vec4(Globals.skin_tone))
-	$Sprite.material.set("shader_parameter/nose", Globals.color_to_vec4(Globals.nose_color))
-	$Sprite.material.set("shader_parameter/replace_skin", Globals.color_to_vec4(st[0]))
-	$Sprite.material.set("shader_parameter/replace_nose", Globals.color_to_vec4(st[1]))
-	if jersey_number < 1 or jersey_number > 98:
-		jersey_number = _pick_unique_jersey_number()
-	var number_tex = Globals.get_number_texture(jersey_number)
-	if number_tex:
-		$Sprite.material.set("shader_parameter/number_tex", number_tex)
+
+	skater_variants = Globals.get_skater_variants(team_index, index)
+	active_variant_index = 0
+	if skater_variants.is_empty():
+		var fallback_profile: Dictionary = Globals.get_goalie_profile(team_index)
+		if not fallback_profile.is_empty():
+			skater_variants = [fallback_profile]
+	apply_active_appearance()
 	if stats == Stats.ClassTypes.LIGHT:
 		$Sprite.scale.x = 0.9
 		$Sprite.scale.y = 1.1
@@ -99,19 +104,29 @@ func _ready() -> void:
 	add_child(grab_fabric)
 
 
-func _pick_unique_jersey_number() -> int:
-	var used: Dictionary = {}
-	for s in get_tree().get_nodes_in_group("skaters"):
-		if s != self and s is Skater and s.home_team == home_team:
-			if s.jersey_number >= 1 and s.jersey_number <= 98:
-				used[s.jersey_number] = true
-	var available: Array[int] = []
-	for n in range(1, 99):
-		if not used.has(n):
-			available.append(n)
-	if available.is_empty():
-		return randi_range(1, 98)
-	return available[randi() % available.size()]
+func apply_active_appearance() -> void:
+	if skater_variants.is_empty():
+		return
+	var profile: Dictionary = skater_variants[active_variant_index % skater_variants.size()]
+	jersey_number = Globals.apply_player_profile($Sprite.material, profile)
+
+
+func start_bench_swap(bench: Node = null) -> void:
+	anim_state = "swapping"
+	swapping = 0
+	swapped_this_shift = false
+	active_bench = bench
+	health = statbook.max_health
+
+
+func toggle_skater_variant() -> void:
+	if skater_variants.size() < 2:
+		return
+	active_variant_index = 1 - active_variant_index
+	apply_active_appearance()
+	if active_bench != null and is_instance_valid(active_bench) and active_bench.has_method("set_bench_skater_profile"):
+		var bench_variant_index: int = 1 - active_variant_index
+		active_bench.set_bench_skater_profile(skater_slot_index, skater_variants[bench_variant_index])
 		
 
 func get_player_name() -> String:
@@ -459,10 +474,15 @@ func _physics_process(delta: float) -> void:
 			$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta)
 			impulse(0, -0.1)
 		else:
+			if not swapped_this_shift:
+				swapped_this_shift = true
+				toggle_skater_variant()
 			$Sprite.modulate.a = min(1.0, $Sprite.modulate.a + delta)
 			impulse(0, 0.1)
 		if swapping > 120:
 			swapping = 0
+			swapped_this_shift = false
+			active_bench = null
 			anim_state = ""
 	elif anim_state == "lerping":
 		var diff = initial_position - global_position
