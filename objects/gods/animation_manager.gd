@@ -16,6 +16,7 @@ enum Phase {
 	FACE_OFF,
 	REPLAY,
 	FIGHT,
+	INTERMISSION_MITES,
 	SHOOTOUT_SETUP,
 	SHOOTOUT_ACTIVE,
 	SHOOTOUT_RESULT
@@ -33,6 +34,19 @@ func _ready() -> void:
 	lights = get_tree().root.get_node_or_null("Rink/Lights")
 
 func _unhandled_input(event: InputEvent) -> void:
+	if current_phase == Phase.INTERMISSION_MITES:
+		if phase_timer > 0.0:
+			return
+		var press_space: bool = (event is InputEventKey and event.pressed and not event.is_echo() and (event.keycode == KEY_SPACE or event.physical_keycode == KEY_SPACE)) \
+			or event.is_action_pressed("shoot")
+		var press_joy: bool = (event is InputEventJoypadButton and event.pressed and not event.is_echo() and (event.button_index == JOY_BUTTON_A or event.button_index == JOY_BUTTON_X))
+		if press_space or press_joy:
+			if manager and manager.has_method("stop_mites_intermission"):
+				manager.stop_mites_intermission()
+			get_viewport().set_input_as_handled()
+			set_phase(Phase.PRE_PERIOD_LERP)
+		return
+
 	if current_phase != Phase.REPLAY:
 		return
 	if not manager:
@@ -149,8 +163,12 @@ func _process(delta: float) -> void:
 							manager.start_shootout()
 						else:
 							manager.finish_match()
+				elif manager.current_period == 1:
+					set_phase(Phase.INTERMISSION_MITES)
 				else:
 					set_phase(Phase.PRE_PERIOD_SKATE)
+		Phase.INTERMISSION_MITES:
+			pass
 		Phase.PRE_PERIOD_SKATE:
 			var start = false
 			if Input.is_action_just_pressed("ui_accept") or Input.is_action_just_pressed("pass") \
@@ -415,6 +433,7 @@ func set_phase(new_phase: Phase) -> void:
 				if "anim_state" in s:
 					if s.is_out_of_play():
 						continue
+					s.visible = true
 					s.anim_state = "lerping"
 
 		Phase.PRE_PENALTY_SKATE:
@@ -445,6 +464,11 @@ func set_phase(new_phase: Phase) -> void:
 
 		Phase.FIGHT:
 			phase_timer = 0.0
+
+		Phase.INTERMISSION_MITES:
+			phase_timer = 0.5
+			if manager and manager.has_method("start_mites_intermission"):
+				manager.start_mites_intermission()
 
 		Phase.SHOOTOUT_SETUP:
 			phase_timer = 1.6

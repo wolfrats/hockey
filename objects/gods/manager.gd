@@ -5,6 +5,7 @@ signal shot(team: bool, position: Vector2, vector: Vector2)
 const FAN_SCENE = preload("res://objects/environment/fan.tscn")
 const PAUSE_MENU_SCRIPT = preload("res://objects/gods/pause_menu.gd")
 const FIGHT_CONTROLLER_SCRIPT = preload("res://objects/gods/fight_controller.gd")
+const MITES_CONTROLLER_SCRIPT = preload("res://objects/gods/mites_controller.gd")
 
 @export var is_practice: bool = false
 var home_score: int = 0
@@ -22,6 +23,7 @@ var anim_manager: AnimationManager
 var main_camera: Camera2D
 var pause_menu: PauseMenu = null
 var fight_controller: FightController = null
+var mites_controller: MitesController = null
 
 # Power play / status / broadcast banner UI
 var pp_panel: PanelContainer = null
@@ -99,6 +101,8 @@ func _ready() -> void:
 		add_child(anim_manager)
 		fight_controller = FIGHT_CONTROLLER_SCRIPT.new()
 		add_child(fight_controller)
+		mites_controller = MITES_CONTROLLER_SCRIPT.new()
+		add_child(mites_controller)
 		time_remaining = Globals.period_length
 		setup_ui()
 		Globals.clear_match_stats()
@@ -775,10 +779,47 @@ func _update_shootout_ui() -> void:
 
 
 func finish_match() -> void:
+	stop_mites_intermission()
 	cancel_delayed_penalty()
 	Globals.match_home_score = home_score
 	Globals.match_away_score = away_score
 	get_tree().change_scene_to_file("res://menu/score_recap.tscn")
+
+
+func start_mites_intermission() -> void:
+	if mites_controller == null:
+		return
+	# Hide regular skaters, goalies, referee, and outer nets during Mites on Ice
+	for s in get_tree().get_nodes_in_group("skaters"):
+		if s is Skater and not s.is_in_penalty():
+			s.visible = false
+	for child in get_children():
+		if child is Goalie:
+			child.visible = false
+	for ref in get_tree().get_nodes_in_group("referees"):
+		ref.visible = false
+	for net_name in ["Node", "Node2"]:
+		var net := get_node_or_null(net_name)
+		if net != null:
+			net.visible = false
+	mites_controller.start_mites(self)
+
+
+func stop_mites_intermission() -> void:
+	if mites_controller != null:
+		mites_controller.stop_mites()
+	for s in get_tree().get_nodes_in_group("skaters"):
+		if s is Skater and not s.ot_benched:
+			s.visible = true
+	for child in get_children():
+		if child is Goalie and not child.pulled:
+			child.visible = true
+	for ref in get_tree().get_nodes_in_group("referees"):
+		ref.visible = true
+	for net_name in ["Node", "Node2"]:
+		var net := get_node_or_null(net_name)
+		if net != null:
+			net.visible = true
 
 
 func _process(delta: float) -> void:
@@ -809,6 +850,14 @@ func _process(delta: float) -> void:
 		if fight_controller != null and fight_controller.active:
 			target_pos = fight_controller.center_pos
 			target_zoom = Vector2(1.25, 1.25)
+		elif anim_manager != null and (
+			anim_manager.current_phase == AnimationManager.Phase.POST_PERIOD_SKATE_OUT
+			or anim_manager.current_phase == AnimationManager.Phase.POST_PERIOD_WAIT
+			or anim_manager.current_phase == AnimationManager.Phase.INTERMISSION_MITES
+			or anim_manager.current_phase == AnimationManager.Phase.PRE_PERIOD_SKATE
+			or anim_manager.current_phase == AnimationManager.Phase.PRE_PERIOD_LERP
+		):
+			target_pos = Vector2(1005.5, 509.0)
 		elif shootout_active and shootout_shooter != null and is_instance_valid(shootout_shooter):
 			var goal_x: float = 1710.0 if shootout_turn_home else 301.0
 			target_pos = shootout_shooter.global_position.lerp(Vector2(goal_x, 509.0), 0.3)
@@ -1342,6 +1391,9 @@ func update_ui() -> void:
 	if shootout_active:
 		period_label.text = "SHOOTOUT"
 		timer_label.text = "0:%02d" % maxi(0, int(ceil(shootout_shot_clock)))
+	elif anim_manager != null and anim_manager.current_phase == AnimationManager.Phase.INTERMISSION_MITES:
+		period_label.text = "1st Intermission"
+		timer_label.text = "MITES"
 	elif current_period == 4:
 		period_label.text = "OT (3v3)" if ot_is_3v3 else "OT"
 		var mins = int(time_remaining / 60)

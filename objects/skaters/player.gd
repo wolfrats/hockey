@@ -91,10 +91,14 @@ func _physics_process(_delta: float) -> void:
 		var phase = Globals.manager.anim_manager.current_phase
 		if phase == AnimationManager.Phase.POST_PERIOD_SKATE_OUT \
 				or phase == AnimationManager.Phase.POST_PERIOD_WAIT \
+				or phase == AnimationManager.Phase.INTERMISSION_MITES \
+				or phase == AnimationManager.Phase.PRE_PERIOD_SKATE \
+				or phase == AnimationManager.Phase.PRE_PERIOD_LERP \
 				or phase == AnimationManager.Phase.SHOOTOUT_SETUP \
 				or phase == AnimationManager.Phase.SHOOTOUT_RESULT:
 			hide_indicator = true
 		if phase == AnimationManager.Phase.FIGHT \
+				or phase == AnimationManager.Phase.INTERMISSION_MITES \
 				or phase == AnimationManager.Phase.SHOOTOUT_SETUP \
 				or phase == AnimationManager.Phase.SHOOTOUT_ACTIVE \
 				or phase == AnimationManager.Phase.SHOOTOUT_RESULT:

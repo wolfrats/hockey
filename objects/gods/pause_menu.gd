@@ -171,7 +171,8 @@ func open_menu() -> void:
 	volume_label.text = "SFX Volume: %d%%" % int(round(Globals.sfx_volume * 100.0))
 	onscreen_check.set_pressed_no_signal(Globals.use_onscreen_controls)
 
-	var show_coach: bool = manager != null and not manager.is_practice and not manager.is_shootout_active()
+	var in_mites: bool = manager != null and manager.anim_manager != null and manager.anim_manager.current_phase == AnimationManager.Phase.INTERMISSION_MITES
+	var show_coach: bool = manager != null and not manager.is_practice and not manager.is_shootout_active() and not in_mites
 	goalie_btn.visible = show_coach
 	line_change_btn.visible = show_coach
 	if show_coach:
