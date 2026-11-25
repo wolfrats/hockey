@@ -93,23 +93,7 @@ func _on_setup_pressed() -> void:
 	get_tree().change_scene_to_file("res://menu/player_setup.tscn")
 
 func _on_joystick_toggled(toggled_on: bool) -> void:
-	if Globals.get_node_or_null("Holder") == null && toggled_on:
-		Joy.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 150)
-		Holder.name = "Holder"
-		Globals.add_child(Holder)
-		BackHolder.name = "BackHolder"
-		Globals.add_child(BackHolder)
-		Joy.name = "Joy"
-		Globals.add_child(Joy)
-	elif not toggled_on:
-		if Globals.has_node("Holder"):
-			Globals.remove_child(Globals.get_node("Holder"))
-		if Globals.has_node("BackHolder"):
-			Globals.remove_child(Globals.get_node("BackHolder"))
-		if Globals.has_node("Joy"):
-			Globals.remove_child(Globals.get_node("Joy"))
-	Globals.use_onscreen_controls = toggled_on
-	Globals.save_settings()
+	Globals.set_onscreen_controls_visible(toggled_on)
 
 func _on_season_pressed() -> void:
 	Season.load_season()

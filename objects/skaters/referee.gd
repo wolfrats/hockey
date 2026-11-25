@@ -11,6 +11,8 @@ var target_pos: Vector2 = Vector2.ZERO
 var health: float = 100.0
 var knocked_over: int = 0
 var damage_tween: Tween
+var delayed_penalty_active: bool = false
+var delayed_signal_label: Label = null
 
 # Cone of sight parameters
 var cone_angle: float = PI / 3.0 # 60 degrees
@@ -18,6 +20,19 @@ var cone_radius: float = 300.0
 
 @onready var sprite = $Sprite
 @onready var sight_polygon = $SightCone
+
+func set_delayed_penalty_signal(active: bool) -> void:
+	delayed_penalty_active = active
+	if delayed_signal_label:
+		delayed_signal_label.visible = active
+	if sight_polygon:
+		sight_polygon.color = Color(1.0, 0.35, 0.0, 0.35) if active else Color(1.0, 1.0, 0.0, 0.2)
+
+func set_shootout_hidden(hidden: bool) -> void:
+	visible = not hidden
+	if has_node("CollisionShape2D"):
+		$CollisionShape2D.set_deferred("disabled", hidden)
+	set_deferred("freeze", hidden)
 
 func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
 	if knocked_over > Globals.ticks:
@@ -37,6 +52,16 @@ func _ready() -> void:
 	add_to_group("referees")
 	mass = 100
 	# The referee uses the same textures, just black/white
+	delayed_signal_label = Label.new()
+	delayed_signal_label.text = "! PENALTY !"
+	delayed_signal_label.position = Vector2(-52, -76)
+	delayed_signal_label.visible = false
+	delayed_signal_label.label_settings = LabelSettings.new()
+	delayed_signal_label.label_settings.font_size = 20
+	delayed_signal_label.label_settings.font_color = Color(1.0, 0.85, 0.1)
+	delayed_signal_label.label_settings.outline_size = 5
+	delayed_signal_label.label_settings.outline_color = Color.BLACK
+	add_child(delayed_signal_label)
 	_update_cone_visuals()
 
 func home() -> void:

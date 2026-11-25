@@ -38,17 +38,43 @@ var penalty_stats: Dictionary = {}
 var check_stats: Dictionary = {}
 var hit_stats: Dictionary = {}
 var down_stats: Dictionary = {}
+var skater_match_stats: Dictionary = {}
 var match_home_score: int = 0
 var match_away_score: int = 0
+var match_ended_in: String = ""
+var match_shootout_home: int = 0
+var match_shootout_away: int = 0
 
 var home_team_index: int = 0
 var away_team_index: int = 1
 var allow_goalie_control: bool = false
 var home_ai_difficulty: int = 0
 var away_ai_difficulty: int = 0
+var ot_mode: int = 2 # 0 = Ties Allowed, 1 = 3v3 Sudden Death OT, 2 = 3v3 OT + Shootout
+var sfx_volume: float = 1.0
 var sounds: Dictionary[String, AudioStreamPlayer2D] = {}
 var menu_opened: bool = false
 var manager: Manager = null
+
+const FIRST_NAMES: Array[String] = [
+	"Gordie", "Bobby", "Wayne", "Mario", "Jaromir", "Teemu", "Pavel", "Sergei",
+	"Mats", "Saku", "Henrik", "Daniel", "Patrick", "Martin", "Dominik", "Brett",
+	"Cam", "Ray", "Paul", "Steve", "Joe", "Peter", "Mike", "Chris",
+	"Scott", "Nick", "Phil", "Alex", "Sid", "Connor", "Auston", "Nathan",
+	"Leon", "Cale", "Quinn", "Jack", "Tage", "Mitch", "Brad", "Patrice",
+	"Anze", "Drew", "Brent", "Shea", "Zdeno", "Tuukka", "Carey", "Marc",
+	"Claude", "Danny", "Bernie", "Rocco", "Biff", "Moose", "Spud", "Rusty"
+]
+
+const LAST_NAMES: Array[String] = [
+	"Howe", "Orr", "Gretz", "Lemieux", "Jagr", "Selanne", "Datsyuk", "Fedorov",
+	"Sundin", "Koivu", "Zetterberg", "Sedin", "Roy", "Brodeur", "Hasek", "Hull",
+	"Neely", "Bourque", "Kariya", "Yzerman", "Sakic", "Forsberg", "Modano", "Pronger",
+	"Niedermayer", "Lidstrom", "Kessel", "Ovechkin", "Crosby", "McDavid", "Matthews", "MacKinnon",
+	"Draisaitl", "Makar", "Hughes", "Eichel", "Thompson", "Marner", "Marchand", "Bergeron",
+	"Kopitar", "Doughty", "Burns", "Weber", "Chara", "Rask", "Price", "Fleury",
+	"Giroux", "Briere", "Parent", "Brawler", "Knuckles", "Slapshot", "Zamboni", "Biscuit"
+]
 
 var save_path = "user://settings.cfg"
 var rosters_path = "user://rosters.json"
@@ -438,7 +464,24 @@ func _physics_process(_delta: float) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
-		get_tree().change_scene_to_file("res://menu/main_menu.tscn")
+		if manager != null and is_instance_valid(manager):
+			if manager.has_method("toggle_pause"):
+				manager.toggle_pause()
+				get_viewport().set_input_as_handled()
+			return
+		var current_scene := get_tree().current_scene
+		if current_scene != null and current_scene.scene_file_path != "res://menu/main_menu.tscn":
+			get_tree().change_scene_to_file("res://menu/main_menu.tscn")
+	elif event is InputEventJoypadButton and event.pressed and not event.is_echo() and event.button_index == JOY_BUTTON_START:
+		if manager != null and is_instance_valid(manager):
+			var can_pause: bool = manager.is_practice
+			if not can_pause and manager.anim_manager != null:
+				var ph: int = manager.anim_manager.current_phase
+				if ph == AnimationManager.Phase.PLAYING or ph == AnimationManager.Phase.FACE_OFF or ph == AnimationManager.Phase.FIGHT or ph == AnimationManager.Phase.SHOOTOUT_ACTIVE:
+					can_pause = true
+			if can_pause and manager.has_method("toggle_pause"):
+				manager.toggle_pause()
+				get_viewport().set_input_as_handled()
 
 func get_closest_node(from_position: Vector2, group_name: String) -> Node2D:
 	var nodes = get_tree().get_nodes_in_group(group_name)
@@ -492,10 +535,120 @@ func swap_color_in_texture(tex: Texture2D, from_col: Color, to_col: Color) -> Im
 	return ImageTexture.create_from_image(img)
 
 func play_sound_at(sound: String, place: Vector2, twang: bool = true) -> void:
+	if not sounds.has(sound):
+		return
+	if sfx_volume <= 0.001:
+		return
 	sounds[sound].global_position = place
+	sounds[sound].volume_db = linear_to_db(clampf(sfx_volume, 0.001, 1.0))
 	if twang:
 		sounds[sound].pitch_scale = randf_range(0.9, 1.1)
+	else:
+		sounds[sound].pitch_scale = 1.0
 	sounds[sound].play()
+
+func clear_match_stats() -> void:
+	scorer_stats.clear()
+	assist_stats.clear()
+	shot_stats.clear()
+	faceoff_won_stats.clear()
+	penalty_stats.clear()
+	check_stats.clear()
+	hit_stats.clear()
+	down_stats.clear()
+	skater_match_stats.clear()
+	match_home_score = 0
+	match_away_score = 0
+	match_ended_in = ""
+	match_shootout_home = 0
+	match_shootout_away = 0
+
+func get_skater_stat_key(team_index: int, number: int) -> String:
+	return "%d:%d" % [team_index, number]
+
+func record_skater_stat(team_index: int, home_team: bool, number: int, skater_name: String, stat_key: String, amount: int = 1) -> void:
+	if team_index < 0 or number <= 0:
+		return
+	var key: String = get_skater_stat_key(team_index, number)
+	if not skater_match_stats.has(key):
+		skater_match_stats[key] = {
+			"team_index": team_index,
+			"home_team": home_team,
+			"number": number,
+			"name": skater_name if skater_name != "" else ("Skater #%d" % number),
+			"goals": 0,
+			"assists": 0,
+			"shots": 0,
+			"hits": 0,
+			"downs": 0,
+			"penalties": 0,
+			"fights_won": 0,
+		}
+	var entry: Dictionary = skater_match_stats[key]
+	if skater_name != "":
+		entry["name"] = skater_name
+	entry[stat_key] = int(entry.get(stat_key, 0)) + amount
+
+func _ensure_onscreen_controls_built() -> void:
+	if get_node_or_null("Holder") != null:
+		return
+	var joy := VirtualJoystick.new()
+	joy.name = "Joy"
+	joy.action_left = &"skate_left"
+	joy.action_right = &"skate_right"
+	joy.action_up = &"skate_up"
+	joy.action_down = &"skate_down"
+	joy.joystick_mode = VirtualJoystick.JOYSTICK_DYNAMIC
+	joy.visibility_mode = VirtualJoystick.VISIBILITY_ALWAYS
+	joy.joystick_size = 150.0
+	joy.tip_size = 60.0
+	joy.deadzone_ratio = 0.2
+	joy.custom_minimum_size = Vector2(100, 100)
+	joy.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_LEFT, Control.PRESET_MODE_MINSIZE, 150)
+
+	var holder := Control.new()
+	holder.name = "Holder"
+	holder.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_RIGHT, Control.PRESET_MODE_MINSIZE, 50)
+
+	var btn_specs := [
+		[&"swap", "res://sprites/swap-button.svg", Vector2(-100, -300)],
+		[&"shoot", "res://sprites/shoot-button.svg", Vector2(-100, -100)],
+		[&"check", "res://sprites/slash-button.svg", Vector2(-175, -200)],
+		[&"pass", "res://sprites/pass-button.svg", Vector2(-25, -200)],
+		[&"grab", "res://sprites/grab-button.svg", Vector2(-25, -300)],
+		[&"sprint", "res://sprites/red-button.svg", Vector2(-175, -300)],
+	]
+	for spec in btn_specs:
+		var btn := TouchScreenButton.new()
+		btn.action = spec[0]
+		btn.texture_normal = load(spec[1])
+		btn.position = spec[2]
+		btn.scale = Vector2.ONE * (128.0 / 320.0)
+		holder.add_child(btn)
+
+	var back_holder := Control.new()
+	back_holder.name = "BackHolder"
+	back_holder.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT, Control.PRESET_MODE_MINSIZE, 50)
+	var back_btn := TouchScreenButton.new()
+	back_btn.action = &"ui_cancel"
+	back_btn.texture_normal = load("res://sprites/red-button.svg")
+	back_btn.position = Vector2(20, 20)
+	back_btn.scale = Vector2.ONE * (128.0 / 320.0)
+	back_holder.add_child(back_btn)
+
+	add_child(holder)
+	add_child(back_holder)
+	add_child(joy)
+
+func set_onscreen_controls_visible(enabled: bool) -> void:
+	use_onscreen_controls = enabled
+	if enabled:
+		_ensure_onscreen_controls_built()
+	for node_name in ["Holder", "BackHolder", "Joy"]:
+		var n := get_node_or_null(node_name)
+		if n != null and n is CanvasItem:
+			n.visible = enabled
+	save_settings()
 
 func load_settings() -> void:
 	var config = ConfigFile.new()
@@ -506,12 +659,16 @@ func load_settings() -> void:
 		)
 		home_team_index = config.get_value("Settings", "home_team_index", 0)
 		away_team_index = config.get_value("Settings", "away_team_index", 1)
+		sfx_volume = clampf(float(config.get_value("Settings", "sfx_volume", 1.0)), 0.0, 1.0)
+		ot_mode = clampi(int(config.get_value("Settings", "ot_mode", 2)), 0, 2)
 
 func save_settings() -> void:
 	var config = ConfigFile.new()
 	config.set_value("Settings", "use_onscreen_controls", use_onscreen_controls)
 	config.set_value("Settings", "home_team_index", home_team_index)
 	config.set_value("Settings", "away_team_index", away_team_index)
+	config.set_value("Settings", "sfx_volume", sfx_volume)
+	config.set_value("Settings", "ot_mode", ot_mode)
 	config.save(save_path)
 
 
@@ -525,15 +682,28 @@ func _pick_unused_number(used_numbers: Dictionary) -> int:
 	return chosen
 
 
-func _generate_player_profile(used_numbers: Dictionary) -> Dictionary:
+func _pick_unused_name(used_names: Dictionary) -> String:
+	for _attempt in range(30):
+		var candidate: String = FIRST_NAMES[randi() % FIRST_NAMES.size()] + " " + LAST_NAMES[randi() % LAST_NAMES.size()]
+		if not used_names.has(candidate):
+			used_names[candidate] = true
+			return candidate
+	var fallback: String = FIRST_NAMES[randi() % FIRST_NAMES.size()] + " " + LAST_NAMES[randi() % LAST_NAMES.size()]
+	used_names[fallback] = true
+	return fallback
+
+
+func _generate_player_profile(used_numbers: Dictionary, used_names: Dictionary = {}) -> Dictionary:
 	var st: Array[Color] = random_skin_tone()
 	var eye: Color = random_eye_color()
 	var num: int = _pick_unused_number(used_numbers)
+	var pname: String = _pick_unused_name(used_names)
 	return {
 		"skin": st[0].to_html(false),
 		"nose": st[1].to_html(false),
 		"eye": eye.to_html(false),
 		"number": num,
+		"name": pname,
 	}
 
 
@@ -556,12 +726,13 @@ func _is_valid_player_profile(profile: Variant, used_numbers: Dictionary) -> boo
 
 func _generate_team_roster(skater_count: int) -> Dictionary:
 	var used_numbers: Dictionary = {}
-	var goalie: Dictionary = _generate_player_profile(used_numbers)
+	var used_names: Dictionary = {}
+	var goalie: Dictionary = _generate_player_profile(used_numbers, used_names)
 	var skaters: Array = []
 	for _i in range(skater_count):
 		skaters.append([
-			_generate_player_profile(used_numbers),
-			_generate_player_profile(used_numbers),
+			_generate_player_profile(used_numbers, used_names),
+			_generate_player_profile(used_numbers, used_names),
 		])
 	return {
 		"goalie": goalie,
@@ -577,12 +748,19 @@ func _ensure_team_roster(team_name: String, skater_count: int) -> bool:
 	var dirty: bool = false
 	var roster: Dictionary = team_rosters[team_name]
 	var used_numbers: Dictionary = {}
+	var used_names: Dictionary = {}
 
 	# Collect valid existing goalie & skater numbers first so generated replacements don't collide
 	var goalie_valid: bool = false
 	if roster.has("goalie") and _is_valid_player_profile(roster["goalie"], used_numbers):
 		roster["goalie"]["number"] = int(roster["goalie"]["number"])
 		used_numbers[roster["goalie"]["number"]] = true
+		var gname: String = str(roster["goalie"].get("name", "")).strip_edges()
+		if gname == "":
+			roster["goalie"]["name"] = _pick_unused_name(used_names)
+			dirty = true
+		else:
+			used_names[gname] = true
 		goalie_valid = true
 
 	var existing_skaters: Array = roster["skaters"] if (roster.has("skaters") and roster["skaters"] is Array) else []
@@ -594,11 +772,17 @@ func _ensure_team_roster(team_name: String, skater_count: int) -> bool:
 			if v < slot_arr.size() and _is_valid_player_profile(slot_arr[v], used_numbers):
 				slot_arr[v]["number"] = int(slot_arr[v]["number"])
 				used_numbers[slot_arr[v]["number"]] = true
+				var sname: String = str(slot_arr[v].get("name", "")).strip_edges()
+				if sname == "":
+					slot_arr[v]["name"] = _pick_unused_name(used_names)
+					dirty = true
+				else:
+					used_names[sname] = true
 				pair_valid[v] = true
 		valid_slots.append(pair_valid)
 
 	if not goalie_valid:
-		roster["goalie"] = _generate_player_profile(used_numbers)
+		roster["goalie"] = _generate_player_profile(used_numbers, used_names)
 		dirty = true
 
 	var normalized_skaters: Array = []
@@ -611,7 +795,7 @@ func _ensure_team_roster(team_name: String, skater_count: int) -> bool:
 			if valid_slots[i][v]:
 				pair.append(slot_arr[v])
 			else:
-				pair.append(_generate_player_profile(used_numbers))
+				pair.append(_generate_player_profile(used_numbers, used_names))
 				dirty = true
 		normalized_skaters.append(pair)
 	if not roster.has("skaters") or not (roster["skaters"] is Array) or roster["skaters"].size() != skater_count:
@@ -619,6 +803,26 @@ func _ensure_team_roster(team_name: String, skater_count: int) -> bool:
 	roster["skaters"] = normalized_skaters
 	team_rosters[team_name] = roster
 	return dirty
+
+
+func set_roster_player_name(team_index: int, is_goalie: bool, skater_index: int, variant_index: int, new_name: String) -> void:
+	var cleaned: String = new_name.strip_edges()
+	if cleaned == "":
+		return
+	var roster: Dictionary = get_team_roster(team_index)
+	if roster.is_empty():
+		return
+	if is_goalie:
+		if roster.has("goalie") and roster["goalie"] is Dictionary:
+			roster["goalie"]["name"] = cleaned
+			save_rosters()
+	else:
+		var skaters: Array = roster.get("skaters", [])
+		if skater_index >= 0 and skater_index < skaters.size():
+			var pair: Array = skaters[skater_index]
+			if variant_index >= 0 and variant_index < pair.size() and pair[variant_index] is Dictionary:
+				pair[variant_index]["name"] = cleaned
+				save_rosters()
 
 
 func load_or_generate_rosters() -> void:

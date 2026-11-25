@@ -6,6 +6,7 @@ var ai: Ghost
 @export var home_team: bool
 @export var stats: Stats.ClassTypes
 @export var jersey_number: int = 0
+@export var skater_name: String = ""
 var statbook: Stats.StatBlock
 var rammed: bool = false
 var charging: bool = false
@@ -31,7 +32,14 @@ var celebrating: bool = false
 var health: float
 var spring: DampedSpringJoint2D
 var penalty_time: float = 0.0
+var is_major_penalty: bool = false
 var needs_penalty_reset: bool = false
+var ot_benched: bool = false
+var morale_boost_timer: float = 0.0
+var fight_heat: Dictionary = {}
+var fight_spectate_target: Vector2 = Vector2.ZERO
+var fight_anim_override: String = ""
+var fight_flip_override: int = 0
 const PENALTY_STATES = ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]
 const GRAB_FABRIC_SCRIPT = preload("res://objects/skaters/grab_fabric.gd")
 
@@ -109,6 +117,57 @@ func apply_active_appearance() -> void:
 		return
 	var profile: Dictionary = skater_variants[active_variant_index % skater_variants.size()]
 	jersey_number = Globals.apply_player_profile($Sprite.material, profile)
+	skater_name = str(profile.get("name", "Skater #%d" % jersey_number))
+
+func get_team_index() -> int:
+	return Globals.home_team_index if home_team else Globals.away_team_index
+
+func get_skater_display() -> String:
+	var n: String = skater_name if skater_name != "" else ("Skater #%d" % jersey_number)
+	return "#%d %s" % [jersey_number, n]
+
+func is_out_of_play() -> bool:
+	return is_in_penalty() or ot_benched
+
+func set_ot_benched(benched: bool) -> void:
+	ot_benched = benched
+	visible = not benched
+	if has_node("CollisionShape2D"):
+		$CollisionShape2D.set_deferred("disabled", benched)
+	set_deferred("freeze", benched)
+	if benched:
+		release_grab()
+		charging = false
+		sprinting = false
+		if puck:
+			puck.shoot(name, Vector2.ZERO)
+			puck = null
+		linear_velocity = Vector2.ZERO
+	else:
+		$Sprite.modulate = Color.WHITE
+
+func release_from_penalty_early() -> void:
+	if not is_in_penalty() or is_major_penalty:
+		return
+	penalty_time = 0.0
+	is_major_penalty = false
+	if anim_state == "entering_penalty" or anim_state == "in_penalty":
+		anim_state = "leaving_penalty"
+
+func grant_morale_boost(duration: float = 15.0) -> void:
+	morale_boost_timer = maxf(morale_boost_timer, duration)
+	if statbook != null:
+		health = statbook.max_health
+
+func add_fight_heat(opponent: Skater, amount: float) -> float:
+	if opponent == null or opponent == self or opponent.home_team == home_team:
+		return 0.0
+	var opp_id: int = opponent.get_instance_id()
+	var my_id: int = get_instance_id()
+	var next_val: float = float(fight_heat.get(opp_id, 0.0)) + amount
+	fight_heat[opp_id] = next_val
+	opponent.fight_heat[my_id] = float(opponent.fight_heat.get(my_id, 0.0)) + amount
+	return maxf(next_val, float(opponent.fight_heat[my_id]))
 
 
 func start_bench_swap(bench: Node = null) -> void:
@@ -140,22 +199,29 @@ func home() -> void:
 	self.puck = null
 	health = statbook.max_health
 	penalty_time = 0.0
+	is_major_penalty = false
 	holding = 0
 	sprinting = false
 	celebrating = false
+	fight_anim_override = ""
+	fight_flip_override = 0
 	knocked_over = 0
 	was_knocked_over = false
 	if not spring.node_b.is_empty():
 		spring.node_b = NodePath("")
 
-func penalty(duration: float) -> void:
+func penalty(duration: float, major: bool = false) -> void:
 	var current_name = get_player_name()
 	if not Globals.penalty_stats.has(current_name):
 		Globals.penalty_stats[current_name] = 0
 	Globals.penalty_stats[current_name] += 1
+	Globals.record_skater_stat(get_team_index(), home_team, jersey_number, skater_name, "penalties", 1)
 
 	penalty_time = duration
+	is_major_penalty = major
 	anim_state = "entering_penalty"
+	fight_anim_override = ""
+	fight_flip_override = 0
 	checking = 0
 	charging = false
 	sprinting = false
@@ -172,7 +238,7 @@ func is_in_penalty() -> bool:
 	return anim_state in PENALTY_STATES
 
 func do_check() -> void:
-	if is_in_penalty():
+	if is_out_of_play() or anim_state == "fighting" or anim_state == "fight_spectate":
 		return
 	if checking <= Globals.ticks and knocked_over <= Globals.ticks:
 		checking = Globals.ticks + 20
@@ -189,7 +255,7 @@ func do_check() -> void:
 		var referees = get_tree().get_nodes_in_group("referees")
 		var checkable_targets = skaters + referees
 		for s in checkable_targets:
-			if s is Skater and s.is_in_penalty():
+			if s is Skater and s.is_out_of_play():
 				continue
 			var is_opponent = true
 			if "home_team" in s:
@@ -213,12 +279,14 @@ func do_check() -> void:
 		apply_impulse(lunge_dir * statbook.speed * 10.0)
 
 		var hit_target = false
+		var fight_started = false
 		for s in checkable_targets:
-			if s is Skater and s.is_in_penalty():
+			if s is Skater and s.is_out_of_play():
 				continue
 			if s != self and global_position.distance_to(s.global_position) < 80:
+				var was_grabbing_target: bool = (spring != null and spring.node_b == s.get_path())
 				var dmg = statbook.check_damage * randf_range(0.8, 1.2)
-				if spring and spring.node_b == s.get_path():
+				if was_grabbing_target:
 					dmg *= 1.5
 				var target_downed_before = ("knocked_over" in s and s.knocked_over > Globals.ticks)
 				if s.has_method("take_damage"):
@@ -229,11 +297,13 @@ func do_check() -> void:
 				if not Globals.hit_stats.has(current_name):
 					Globals.hit_stats[current_name] = 0
 				Globals.hit_stats[current_name] += 1
+				Globals.record_skater_stat(get_team_index(), home_team, jersey_number, skater_name, "hits", 1)
 
 				if not target_downed_before and "knocked_over" in s and s.knocked_over > Globals.ticks:
 					if not Globals.down_stats.has(current_name):
 						Globals.down_stats[current_name] = 0
 					Globals.down_stats[current_name] += 1
+					Globals.record_skater_stat(get_team_index(), home_team, jersey_number, skater_name, "downs", 1)
 
 				# Knockback target
 				var knockback_dir = (s.global_position - global_position).normalized()
@@ -241,6 +311,16 @@ func do_check() -> void:
 				if s is RigidBody2D:
 					s.apply_impulse(knockback_dir * dmg * 1.0 * mass_ratio)
 				hit_target = true
+
+				# Accumulate fight rivalry heat with opposing skaters
+				if s is Skater and s.home_team != home_team and not fight_started and s.knocked_over <= Globals.ticks:
+					var heat_gain: float = 35.0 if was_grabbing_target else 22.0
+					if stats == Stats.ClassTypes.HEAVY or s.stats == Stats.ClassTypes.HEAVY:
+						heat_gain += 10.0
+					var total_heat: float = add_fight_heat(s, heat_gain)
+					if Globals.manager != null and Globals.manager.has_method("try_start_fight"):
+						if Globals.manager.try_start_fight(self, s, total_heat, was_grabbing_target):
+							fight_started = true
 
 		if hit_target:
 			Globals.play_sound_at("Check", global_position)
@@ -252,15 +332,16 @@ func do_check() -> void:
 				shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
 		else:
 			Globals.play_sound_at("CheckMiss", global_position)
+		if fight_started:
+			return
 		for ref in referees:
 			if ref.has_method("is_in_cone") and ref.is_in_cone(global_position):
-				if randf() < 0.3: # 30% chance to be sent to penalty box
-					penalty(30.0)
-					if Globals.manager and "anim_manager" in Globals.manager and Globals.manager.anim_manager:
-						Globals.manager.anim_manager.set_phase(AnimationManager.Phase.PRE_PENALTY_SKATE)
-						if ref:
-							ref.anim_state = "skate_to"
-							ref.target_pos = Vector2(1005.5, 509)
+				if randf() < 0.3: # 30% chance to trigger a penalty
+					if Globals.manager != null and Globals.manager.has_method("call_penalty_on_skater"):
+						Globals.manager.call_penalty_on_skater(self, ref, 30.0)
+					else:
+						penalty(30.0)
+					break
 
 
 func release_grab() -> void:
@@ -346,7 +427,7 @@ func get_sprite_scale() -> Vector2:
 	return $Sprite.scale
 
 func do_grab(is_just_pressed: bool = true) -> void:
-	if is_in_penalty():
+	if is_out_of_play() or anim_state == "fighting" or anim_state == "fight_spectate":
 		return
 	holding = 1
 	if not spring.node_b.is_empty():
@@ -357,11 +438,13 @@ func do_grab(is_just_pressed: bool = true) -> void:
 	if knocked_over <= Globals.ticks:
 		var skaters = get_tree().get_nodes_in_group("skaters")
 		for s in skaters:
-			if s is Skater and s.is_in_penalty():
+			if s is Skater and s.is_out_of_play():
 				continue
 			if s != self and global_position.distance_to(s.global_position) < 80:
 				spring.node_b = s.get_path()
 				s.take_damage(0, Color.DIM_GRAY)
+				if s is Skater and s.home_team != home_team:
+					add_fight_heat(s, 14.0)
 				Globals.play_sound_at("Grab", global_position)
 				# Camera shake feedback
 				var camera = get_viewport().get_camera_2d()
@@ -400,6 +483,18 @@ func _physics_process(delta: float) -> void:
 		puck = null
 	if Globals.manager.is_replay:
 		return
+	if ot_benched:
+		return
+	if morale_boost_timer > 0.0:
+		morale_boost_timer = maxf(0.0, morale_boost_timer - delta)
+	if not fight_heat.is_empty():
+		var expired_heat: Array = []
+		for k in fight_heat:
+			fight_heat[k] = float(fight_heat[k]) - delta * 4.0
+			if float(fight_heat[k]) <= 0.0:
+				expired_heat.append(k)
+		for k in expired_heat:
+			fight_heat.erase(k)
 	if faceoff_shake > 0:
 		faceoff_shake -= delta
 	if faceoff_cooldown > 0:
@@ -411,8 +506,17 @@ func _physics_process(delta: float) -> void:
 	if is_actively_sprinting:
 		health = max(1.0, health - delta * 15.0 * statbook.weight * statbook.weight)
 	elif not sprinting and knocked_over <= Globals.ticks and health < statbook.max_health:
-		health = min(statbook.max_health, health + delta * 15.0) # Regenerate 15 hp per second
-	if anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
+		var regen_rate: float = 24.0 if morale_boost_timer > 0.0 else 15.0
+		health = min(statbook.max_health, health + delta * regen_rate)
+	if anim_state == "fighting":
+		linear_damp = 4.0
+	elif anim_state == "fight_spectate":
+		var diff_spec: Vector2 = fight_spectate_target - global_position
+		if diff_spec.length() > 20.0:
+			impulse(diff_spec.normalized().x * 0.6, diff_spec.normalized().y * 0.6)
+		else:
+			linear_velocity = linear_velocity.lerp(Vector2.ZERO, 0.2)
+	elif anim_state in ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]:
 		if anim_state == "entering_penalty":
 			linear_velocity = Vector2(0, 100)
 			$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta * 1.5)
@@ -669,6 +773,14 @@ func _physics_process(delta: float) -> void:
 		anim_name = "Skate Up"
 		$Sprite.flip_h = false
 		z_index = 1
+	elif fight_anim_override != "":
+		anim_name = fight_anim_override
+		frame = 0
+		if fight_anim_override == "Celly 1":
+			frame = (int(Globals.ticks / 10.0) % 6)
+		if fight_flip_override != 0:
+			$Sprite.flip_h = (fight_flip_override > 0)
+		z_index = 2 if fight_anim_override != "Die 1" else -1
 
 	current_anim_name = anim_name
 	
@@ -703,6 +815,8 @@ func impulse(dx: float, dy: float) -> void:
 	if last_move.length_squared() > 0:
 		facing_dir = last_move.normalized()
 	var speed_mult = 1.25 if (sprinting and health > 1.0 and anim_state == "") else 1.0
+	if morale_boost_timer > 0.0 and anim_state == "":
+		speed_mult *= 1.12
 	apply_impulse(last_move * statbook.speed * speed_mult)
 
 func passPuck(dir: Vector2, power: float) -> void:
@@ -742,6 +856,13 @@ func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 			shake_tween.tween_property(camera, "offset", Vector2.ZERO, 0.05)
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	if ot_benched:
+		state.linear_velocity = Vector2.ZERO
+		state.angular_velocity = 0
+		return
+	if anim_state == "fighting":
+		state.angular_velocity = 0
+		return
 	if (anim_state == "lerping" or anim_state == "face_off") and penalty_time <= 0:
 		var trans = state.get_transform()
 		trans.origin = trans.origin.lerp(initial_position, 0.05)
@@ -802,10 +923,14 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 					if not Globals.hit_stats.has(collider_name):
 						Globals.hit_stats[collider_name] = 0
 					Globals.hit_stats[collider_name] += 1
+					if collider is Skater:
+						Globals.record_skater_stat(collider.get_team_index(), collider.home_team, collider.jersey_number, collider.skater_name, "hits", 1)
 					if not target_downed_before and knocked_over > Globals.ticks:
 						if not Globals.down_stats.has(collider_name):
 							Globals.down_stats[collider_name] = 0
 						Globals.down_stats[collider_name] += 1
+						if collider is Skater:
+							Globals.record_skater_stat(collider.get_team_index(), collider.home_team, collider.jersey_number, collider.skater_name, "downs", 1)
 			else:
 				take_damage(10)
 				Globals.play_sound_at("Board", global_position)

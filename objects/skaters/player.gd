@@ -86,12 +86,19 @@ func get_axis_custom(axis_name: String) -> float:
 func _physics_process(_delta: float) -> void:
 	_update_buttons()
 	var hide_indicator = false
+	var allow_swap = true
 	if Globals.manager and Globals.manager.anim_manager:
 		var phase = Globals.manager.anim_manager.current_phase
-		if phase == AnimationManager.Phase.POST_PERIOD_SKATE_OUT:
+		if phase == AnimationManager.Phase.POST_PERIOD_SKATE_OUT \
+				or phase == AnimationManager.Phase.POST_PERIOD_WAIT \
+				or phase == AnimationManager.Phase.SHOOTOUT_SETUP \
+				or phase == AnimationManager.Phase.SHOOTOUT_RESULT:
 			hide_indicator = true
-		elif phase == AnimationManager.Phase.POST_PERIOD_WAIT:
-			hide_indicator = true
+		if phase == AnimationManager.Phase.FIGHT \
+				or phase == AnimationManager.Phase.SHOOTOUT_SETUP \
+				or phase == AnimationManager.Phase.SHOOTOUT_ACTIVE \
+				or phase == AnimationManager.Phase.SHOOTOUT_RESULT:
+			allow_swap = false
 	if hide_indicator:
 		visible = false
 	else:
@@ -105,7 +112,7 @@ func _physics_process(_delta: float) -> void:
 			health_ratio = clamp(skater.health / skater.statbook.max_health, 0.0, 1.0)
 		$CircleFill.material.set_shader_parameter("health", health_ratio)
 	_update_pointer()
-	if is_action_just_pressed_custom("swap"):
+	if allow_swap and is_action_just_pressed_custom("swap"):
 		var team_node = "Team1" if skater.home_team else "Team2"
 		var siblings = Globals.manager.get_node(team_node).get_children()
 		if Globals.allow_goalie_control:
@@ -122,6 +129,8 @@ func _physics_process(_delta: float) -> void:
 		for i in range(1, num_siblings):
 			var idx = (current_idx + i) % num_siblings
 			var newskater = siblings[idx]
+			if newskater is Skater and newskater.is_out_of_play():
+				continue
 			if ("ghost" in newskater) and newskater.ghost == null:
 				skater.release_grab()
 				if "sprinting" in skater:
@@ -141,7 +150,7 @@ func get_best_pass_target(cur_skater, input_dir: Vector2) -> Node2D:
 	input_dir = input_dir.normalized()
 
 	for node in nodes:
-		if node is Skater and node.home_team == cur_skater.home_team and node != cur_skater:
+		if node is Skater and node.home_team == cur_skater.home_team and node != cur_skater and not node.is_out_of_play():
 			var to_node = (node.global_position - cur_skater.global_position).normalized()
 			var angle = abs(input_dir.angle_to(to_node))
 			if angle < min_angle:
@@ -166,6 +175,8 @@ func get_pass_direction(shooter: Skater, teammate: Skater) -> Vector2:
 
 func handle(_delta: float, cur_skater) -> void:
 	self.skater = cur_skater
+	if cur_skater is Skater and (cur_skater.anim_state == "fighting" or cur_skater.anim_state == "fight_spectate"):
+		return
 	var dx = get_axis_custom("skate_x")
 	var dy = get_axis_custom("skate_y")
 

@@ -37,9 +37,9 @@ func is_delegated_chaser() -> bool:
 	var closest_teammate = null
 	var min_distance: float = INF
 	for node in nodes:
-		if node is Skater and node.home_team == skater.home_team and not node.is_in_penalty():
+		if node is Skater and node.home_team == skater.home_team and not node.is_out_of_play():
 			var idx = node.get_index()
-			if idx in [1, 2, 3]:
+			if idx in [1, 2, 3] or (Globals.manager != null and Globals.manager.is_overtime_3v3()):
 				var distance = node.global_position.distance_squared_to(puck.global_position)
 				if distance < min_distance:
 					min_distance = distance
@@ -52,7 +52,7 @@ func get_most_forward_teammate() -> Node2D:
 	var max_forward: float = -INF
 	var forward_dir = 1.0 if skater.home_team else -1.0
 	for node in nodes:
-		if node is Skater and node.home_team == skater.home_team and node != skater and not node.is_in_penalty():
+		if node is Skater and node.home_team == skater.home_team and node != skater and not node.is_out_of_play():
 			var forward_pos = node.global_position.x * forward_dir
 			if forward_pos > max_forward:
 				max_forward = forward_pos
@@ -63,7 +63,7 @@ func get_opponent_skater_to_ram() -> Skater:
 	var nodes = skater.get_tree().get_nodes_in_group("skaters")
 	var opponents: Array[Skater] = []
 	for node in nodes:
-		if node is Skater and node.home_team != skater.home_team and not node.is_in_penalty():
+		if node is Skater and node.home_team != skater.home_team and not node.is_out_of_play():
 			opponents.append(node)
 
 	if opponents.size() > 0:
@@ -100,6 +100,44 @@ func get_preferred_spot(attack: bool, index: int, attack_x: float, defend_x: flo
 
 func handle(_delta: float, curSkater) -> void:
 	self.skater = curSkater
+
+	# Dedicated Shootout AI: skate in on the goalie and rip a corner shot
+	if Globals.manager != null and Globals.manager.anim_manager != null \
+			and Globals.manager.anim_manager.current_phase == AnimationManager.Phase.SHOOTOUT_ACTIVE:
+		if curSkater != Globals.manager.shootout_shooter:
+			skater.impulse(0.0, 0.0)
+			return
+		var so_attack_x: float = 1710.0 if skater.home_team else 301.0
+		puck = Globals.get_closest_node(curSkater.global_position, "pucks") as Puck
+		var so_has_puck: bool = (puck != null and puck.posessor == curSkater)
+		if so_has_puck:
+			if is_charging:
+				power += charge * 1.4
+				curSkater.charging = true
+				if power >= target_power:
+					curSkater.shoot(shot_aim_dir, power, 0.35)
+					power = 0.0
+					is_charging = false
+					curSkater.charging = false
+			elif abs(curSkater.global_position.x - so_attack_x) < 340.0:
+				var target_y: float = 472.0 if randf() < 0.5 else 546.0
+				for child in Globals.manager.get_children():
+					if child is Goalie and child.home_team != curSkater.home_team:
+						target_y = 468.0 if child.global_position.y > 509.0 else 550.0
+						break
+				shot_aim_dir = Vector2(so_attack_x - curSkater.global_position.x, target_y - curSkater.global_position.y).normalized()
+				target_power = randf_range(0.7, 0.95)
+				is_charging = true
+				power = 0.0
+			else:
+				var deke_y: float = 509.0 + sin(float(Globals.ticks) * 0.08) * 90.0
+				var dir_in: Vector2 = (Vector2(so_attack_x, deke_y) - curSkater.global_position).normalized()
+				skater.impulse(dir_in.x, dir_in.y)
+		else:
+			is_charging = false
+			curSkater.charging = false
+			skater.impulse(0.0, 0.0)
+		return
 
 	if not team_strategies.has(skater.home_team):
 		team_strategies[skater.home_team] = 4
@@ -155,7 +193,7 @@ func handle(_delta: float, curSkater) -> void:
 		var all_skaters = curSkater.get_tree().get_nodes_in_group("skaters")
 		var min_dist = INF
 		for s in all_skaters:
-			if s is Skater and s.home_team != curSkater.home_team and not s.is_in_penalty():
+			if s is Skater and s.home_team != curSkater.home_team and not s.is_out_of_play():
 				var d = curSkater.global_position.distance_squared_to(s.global_position)
 				if d < min_dist:
 					min_dist = d
@@ -336,7 +374,7 @@ func handle(_delta: float, curSkater) -> void:
 
 			var all_skaters = curSkater.get_tree().get_nodes_in_group("skaters")
 			for s in all_skaters:
-				if s != curSkater and s.is_inside_tree() and not (s is Skater and s.is_in_penalty()):
+				if s != curSkater and s.is_inside_tree() and not (s is Skater and s.is_out_of_play()):
 					if target_pos.distance_to(s.global_position) > 40:
 						obstacles.append({"pos": s.global_position, "radius": 80.0})
 

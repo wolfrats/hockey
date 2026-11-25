@@ -7,6 +7,8 @@ var needs_reset: bool = false
 var block_all: int = 0
 var last_possessor: String = ""
 var assist_possessor: String = ""
+var last_possessor_info: Dictionary = {}
+var assist_possessor_info: Dictionary = {}
 var possessor_team: bool = false
 var shot_on_goal_counted: bool = false
 var replay_possessed: bool = false
@@ -47,6 +49,10 @@ func home() -> void:
 	self.posessor = null
 	self.freeze = false
 	shot_on_goal_counted = false
+	last_possessor = ""
+	assist_possessor = ""
+	last_possessor_info = {}
+	assist_possessor_info = {}
 	_reset_shot_tracking()
 	if has_node("Trail"):
 		$Trail.clear()
@@ -86,7 +92,7 @@ func _update_skater_collision_exceptions(puck_speed: float) -> void:
 			if not (node is Skater):
 				continue
 			var skater := node as Skater
-			if skater.is_in_penalty() or skater.statbook == null:
+			if skater.is_out_of_play() or skater.statbook == null:
 				continue
 			var skater_id: int = skater.get_instance_id()
 			if not _can_skater_intercept(skater, puck_speed) or overlapping_fast_skaters.has(skater_id):
@@ -126,7 +132,7 @@ func _check_fast_shot_pass_through(impact_speed: float) -> void:
 		var skater = excepted_skaters[skater_id]
 		if not is_instance_valid(skater) or not (skater is Skater):
 			continue
-		if skater.is_in_penalty() or skater.statbook == null:
+		if skater.is_out_of_play() or skater.statbook == null:
 			continue
 
 		var skater_circle := _get_body_collision_circle(skater)
@@ -229,7 +235,7 @@ func _physics_process(delta: float) -> void:
 		if not posessor and not freeze and not is_launching_shot:
 			var pickup_speed: float = maxf(current_speed, pending_shot_speed)
 			for body in get_colliding_bodies():
-				if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck:
+				if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck and not body.is_out_of_play():
 					var skater_id: int = body.get_instance_id()
 					if pass_through_cooldowns.has(skater_id) or not _can_skater_intercept(body, pickup_speed):
 						continue
@@ -258,7 +264,8 @@ func assign_possessor(body: Skater) -> void:
 
 	posessor = body
 	posessor.puck = self
-	if posessor.ghost == null:
+	var is_shootout_phase: bool = Globals.manager != null and Globals.manager.anim_manager != null and Globals.manager.anim_manager.current_phase == AnimationManager.Phase.SHOOTOUT_ACTIVE
+	if posessor.ghost == null and not is_shootout_phase:
 		var manager = posessor.get_parent().get_parent()
 		var ghosts_node = manager.get_node_or_null("Ghosts")
 		if ghosts_node:
@@ -282,13 +289,29 @@ func assign_possessor(body: Skater) -> void:
 	if posessor.ghost:
 		current_name = posessor.ghost.name
 
+	var current_info: Dictionary = {
+		"team_index": posessor.get_team_index(),
+		"home_team": posessor.home_team,
+		"number": posessor.jersey_number,
+		"name": posessor.skater_name,
+		"player_label": current_name,
+	}
+
 	if prev_possessor != posessor:
-		if posessor.home_team == possessor_team and current_name != last_possessor:
+		var same_team: bool = (posessor.home_team == possessor_team) and not last_possessor_info.is_empty()
+		var same_skater: bool = same_team and int(last_possessor_info.get("number", -1)) == posessor.jersey_number
+		if same_team and not same_skater:
 			assist_possessor = last_possessor
-		elif posessor.home_team != possessor_team:
+			assist_possessor_info = last_possessor_info.duplicate()
+		elif not same_team:
 			assist_possessor = ""
+			assist_possessor_info = {}
 		last_possessor = current_name
+		last_possessor_info = current_info
 		possessor_team = posessor.home_team
+
+	if Globals.manager != null and Globals.manager.has_method("on_puck_possessed"):
+		Globals.manager.on_puck_possessed(posessor)
 
 func do_shoot(vector):
 	freeze = false

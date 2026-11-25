@@ -6,6 +6,7 @@ const OFFSET: int = 32
 @export var home_team: bool
 @export var stats: Stats.ClassTypes
 @export var jersey_number: int = 0
+@export var skater_name: String = ""
 @export var max_y: float = 650
 @export var min_y: float = 400
 var statbook: Stats.StatBlock
@@ -100,6 +101,7 @@ func _ready() -> void:
 	$Sprite.flip_h = home_team
 	var profile: Dictionary = Globals.get_goalie_profile(team_index)
 	jersey_number = Globals.apply_player_profile($Sprite.material, profile)
+	skater_name = str(profile.get("name", "Goalie #%d" % jersey_number))
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -248,7 +250,19 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 				if not Globals.shot_stats.has(collider.last_possessor):
 					Globals.shot_stats[collider.last_possessor] = 0
 				Globals.shot_stats[collider.last_possessor] += 1
+				if not collider.last_possessor_info.is_empty():
+					var info: Dictionary = collider.last_possessor_info
+					Globals.record_skater_stat(
+						int(info.get("team_index", -1)),
+						bool(info.get("home_team", false)),
+						int(info.get("number", 0)),
+						str(info.get("name", "")),
+						"shots",
+						1
+					)
 				collider.shot_on_goal_counted = true
+			if Globals.manager != null and Globals.manager.has_method("on_shootout_goalie_touch"):
+				Globals.manager.on_shootout_goalie_touch(self)
 		elif collider is Skater:
 			#if impulse_strength > 10.0:
 			bump_timer = 0.5

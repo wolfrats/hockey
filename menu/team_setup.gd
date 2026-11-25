@@ -26,6 +26,14 @@ const TIME_MAP = 	[
 	["4 min", 240]	
 ]
 
+const OT_LABELS = [
+	"Overtime: Ties Allowed",
+	"Overtime: 3v3 Sudden Death",
+	"Overtime: 3v3 OT + Shootout"
+]
+
+var ot_btn: Button = null
+
 func _ready() -> void:
 	home_idx = Globals.home_team_index
 	away_idx = Globals.away_team_index
@@ -38,8 +46,22 @@ func _ready() -> void:
 	_on_home_difficulty_changed(home_difficulty.value)
 	_on_away_difficulty_changed(away_difficulty.value)
 
+	ot_btn = Button.new()
+	ot_btn.custom_minimum_size = Vector2(340, 42)
+	ot_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	ot_btn.text = OT_LABELS[clampi(Globals.ot_mode, 0, OT_LABELS.size() - 1)]
+	ot_btn.pressed.connect(_on_ot_mode_pressed)
+	$VBoxContainer.add_child(ot_btn)
+	$VBoxContainer.move_child(ot_btn, $VBoxContainer/Buttons.get_index())
+
 	$VBoxContainer/Buttons/Play.grab_focus()
 	update_ui()
+
+func _on_ot_mode_pressed() -> void:
+	Globals.ot_mode = (Globals.ot_mode + 1) % OT_LABELS.size()
+	if ot_btn:
+		ot_btn.text = OT_LABELS[Globals.ot_mode]
+	Globals.save_settings()
 
 func _on_home_difficulty_changed(value: float) -> void:
 	home_difficulty_label.text = "AI: Hard" if value == 1 else "AI: Extra Hard" if value > 1.5 else "AI: Easy"
