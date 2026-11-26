@@ -180,6 +180,8 @@ func get_pass_direction(shooter: Skater, teammate: Skater) -> Vector2:
 func handle(_delta: float, cur_skater) -> void:
 	self.skater = cur_skater
 	if cur_skater is Skater and (cur_skater.anim_state == "fighting" or cur_skater.anim_state == "fight_spectate"):
+		$Angle.visible = false
+		power = 0
 		return
 	var dx = get_axis_custom("skate_x")
 	var dy = get_axis_custom("skate_y")

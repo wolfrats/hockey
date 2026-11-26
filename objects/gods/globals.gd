@@ -223,7 +223,8 @@ func _init() -> void:
 	load_or_generate_rosters()
 	var sprites = [
 		"Skate Left", "Skate Down", "Skate Up", "Glide Left", "Check Left", "Check Down", "Check Up",
-		"Grab Left", "Grab Down", "Grab Up", "Pummel Down", "Pummel Up", "Shoot Left", "Die 1", "Celly 1"
+		"Grab Left", "Grab Down", "Grab Up", "Pummel Down", "Pummel Up", "Shoot Left", "Die 1", "Celly 1",
+		"Fight", "Fight Move", "Fight Jab", "Fight Cross", "Fight Uppercut"
 	]
 	for t in ["light", "medium", "heavy"]:
 		for s in sprites:
@@ -299,7 +300,8 @@ func update_team_textures() -> void:
 				fan_textures[p + s + gm] = load("res://sprites/fan/" + p + s + gm + ".png")
 	var sprites = [
 		"Skate Left", "Skate Down", "Skate Up", "Glide Left", "Check Left", "Check Down", "Check Up",
-		"Grab Left", "Grab Down", "Grab Up", "Pummel Down", "Pummel Up", "Shoot Left", "Die 1", "Celly 1"
+		"Grab Left", "Grab Down", "Grab Up", "Pummel Down", "Pummel Up", "Shoot Left", "Die 1", "Celly 1",
+		"Fight", "Fight Move", "Fight Jab", "Fight Cross", "Fight Uppercut"
 	]
 	for t in ["light", "medium", "heavy"]:
 		home_textures[t] = {}

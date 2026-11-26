@@ -129,7 +129,7 @@ func _build_ui() -> void:
 	vbox.add_child(controls_panel)
 
 	var controls_lbl := Label.new()
-	controls_lbl.text = "CONTROLS (Keyboard / Gamepad)\nMove: WASD / L-Stick  |  Shoot: Space / X  |  Pass: F / A\nCheck: E / B  |  Grab: Hold M / RB  |  Sprint: Shift / LB\nSwap: Q / Y  |  Fight: E or Space = Punch, F or M = Block"
+	controls_lbl.text = "CONTROLS (Keyboard / Gamepad)\nMove: WASD / L-Stick  |  Shoot: Space / X  |  Pass: F / A\nCheck: E / B  |  Grab: Hold M / RB  |  Sprint: Shift / LB\nSwap: Q / Y  |  Fight: Move + E=Jab, Space=Cross, Shift=Uppercut, F/M=Block"
 	controls_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	controls_lbl.add_theme_font_size_override("font_size", 15)
 	controls_lbl.add_theme_color_override("font_color", Color(0.82, 0.87, 0.95))

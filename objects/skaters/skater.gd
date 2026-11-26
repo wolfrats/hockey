@@ -39,7 +39,11 @@ var morale_boost_timer: float = 0.0
 var fight_heat: Dictionary = {}
 var fight_spectate_target: Vector2 = Vector2.ZERO
 var fight_anim_override: String = ""
+var fight_frame_override: int = -1
 var fight_flip_override: int = 0
+var shot_followthrough_start: int = 0
+var shot_followthrough_until: int = 0
+var shot_followthrough_flip_h: bool = false
 const PENALTY_STATES = ["entering_penalty", "in_penalty", "leaving_penalty", "return_from_penalty"]
 const GRAB_FABRIC_SCRIPT = preload("res://objects/skaters/grab_fabric.gd")
 
@@ -204,7 +208,9 @@ func home() -> void:
 	sprinting = false
 	celebrating = false
 	fight_anim_override = ""
+	fight_frame_override = -1
 	fight_flip_override = 0
+	shot_followthrough_until = 0
 	knocked_over = 0
 	was_knocked_over = false
 	if not spring.node_b.is_empty():
@@ -221,7 +227,9 @@ func penalty(duration: float, major: bool = false) -> void:
 	is_major_penalty = major
 	anim_state = "entering_penalty"
 	fight_anim_override = ""
+	fight_frame_override = -1
 	fight_flip_override = 0
+	shot_followthrough_until = 0
 	checking = 0
 	charging = false
 	sprinting = false
@@ -474,6 +482,7 @@ func take_damage(damage: float, color: Color = Color(1, 0, 0)) -> void:
 		checking = 0
 		charging = false
 		sprinting = false
+		shot_followthrough_until = 0
 		if puck:
 			puck.shoot(name, Vector2.ZERO)
 
@@ -509,7 +518,7 @@ func _physics_process(delta: float) -> void:
 		var regen_rate: float = 24.0 if morale_boost_timer > 0.0 else 15.0
 		health = min(statbook.max_health, health + delta * regen_rate)
 	if anim_state == "fighting":
-		linear_damp = 4.0
+		linear_damp = 0.0
 	elif anim_state == "fight_spectate":
 		var diff_spec: Vector2 = fight_spectate_target - global_position
 		if diff_spec.length() > 20.0:
@@ -671,7 +680,7 @@ func _physics_process(delta: float) -> void:
 			else:
 				look_dir = LookDir.SIDE
 
-	if speed > 5 or speed == 0:
+	if anim_state != "fighting" and (speed > 5 or speed == 0):
 		linear_damp = 0.9
 
 	if rammed:
@@ -745,6 +754,14 @@ func _physics_process(delta: float) -> void:
 			anim_name = "Check Down"
 		else:
 			anim_name = "Check Left"
+	elif shot_followthrough_until > Globals.ticks:
+		z_index = 0
+		$Sprite.position = Vector2.ZERO
+		started_charge = 0
+		anim_name = "Shoot Left"
+		$Sprite.flip_h = shot_followthrough_flip_h
+		var elapsed_ticks: int = Globals.ticks - shot_followthrough_start
+		frame = 3 if elapsed_ticks < 5 else 4
 	else:
 		z_index = 0
 		if faceoff_shake > 0:
@@ -775,9 +792,12 @@ func _physics_process(delta: float) -> void:
 		z_index = 1
 	elif fight_anim_override != "":
 		anim_name = fight_anim_override
-		frame = 0
-		if fight_anim_override == "Celly 1":
+		if fight_frame_override >= 0:
+			frame = fight_frame_override
+		elif fight_anim_override == "Celly 1":
 			frame = (int(Globals.ticks / 10.0) % 6)
+		else:
+			frame = 0
 		if fight_flip_override != 0:
 			$Sprite.flip_h = (fight_flip_override > 0)
 		z_index = 2 if fight_anim_override != "Die 1" else -1
@@ -837,6 +857,13 @@ func shoot(dir: Vector2, power: float, inaccuracy_modifier: float = 1) -> void:
 		puck.shoot(name, vec2)
 		puck = null
 		set_collision_layer_value(4, false)
+		if power > 0.66:
+			shot_followthrough_start = Globals.ticks
+			shot_followthrough_until = Globals.ticks + 16
+			if absf(dir.x) > 0.01:
+				shot_followthrough_flip_h = (dir.x > 0.0)
+			else:
+				shot_followthrough_flip_h = $Sprite.flip_h
 		if power < 0.33:
 			Globals.play_sound_at("HitSlow", global_position)
 		elif power < 0.90:

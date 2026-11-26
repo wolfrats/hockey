@@ -368,21 +368,6 @@ func simulate_other_matches() -> void:
 		var res: Dictionary = _simulate_game_result(home, away, false)
 		record_match(home, away, res["home_score"], res["away_score"], res["ended_in"])
 
-func simulate_current_week() -> void:
-	if str(season_data.get("phase", "regular")) != "regular":
-		return
-	var week = int(season_data["current_week"])
-	if week >= season_data["schedule"].size():
-		start_playoffs()
-		return
-	var matches = season_data["schedule"][week]
-	for m in matches:
-		var home = int(m[0])
-		var away = int(m[1])
-		var res: Dictionary = _simulate_game_result(home, away, false)
-		record_match(home, away, res["home_score"], res["away_score"], res["ended_in"])
-	advance_week()
-
 func advance_week() -> void:
 	season_data["current_week"] = int(season_data["current_week"]) + 1
 	if int(season_data["current_week"]) >= season_data["schedule"].size():
@@ -429,7 +414,10 @@ func start_playoffs() -> void:
 		"rounds": [round0],
 		"champion": -1
 	}
-	save_season()
+	if get_player_active_series().is_empty():
+		simulate_remaining_playoffs()
+	else:
+		save_season()
 
 func get_series_home_away(series: Dictionary) -> Array[int]:
 	var games_played: int = int(series["high_wins"]) + int(series["low_wins"])
@@ -559,21 +547,24 @@ func record_playoff_game(home: int, away: int, home_score: int, away_score: int)
 				_simulate_one_game_in_series(cur_round[i])
 
 	_try_advance_playoff_round()
-	save_season()
+	if str(season_data.get("phase", "regular")) == "playoffs" and get_player_active_series().is_empty():
+		simulate_remaining_playoffs()
+	else:
+		save_season()
 
-func simulate_playoff_round() -> void:
-	if str(season_data.get("phase", "regular")) != "playoffs":
-		return
-	var playoffs: Dictionary = season_data.get("playoffs", {})
-	var rounds: Array = playoffs.get("rounds", [])
-	var r: int = int(playoffs.get("round", 0))
-	if r < 0 or r >= rounds.size():
-		return
-	var cur_round: Array = rounds[r]
-	for s in cur_round:
-		while int(s.get("winner", -1)) == -1:
-			_simulate_one_game_in_series(s)
-	_try_advance_playoff_round()
+func simulate_remaining_playoffs() -> void:
+	var guard: int = 0
+	while str(season_data.get("phase", "regular")) == "playoffs" and guard < 8:
+		guard += 1
+		var playoffs: Dictionary = season_data.get("playoffs", {})
+		var rounds: Array = playoffs.get("rounds", [])
+		var r: int = int(playoffs.get("round", 0))
+		if r < 0 or r >= rounds.size():
+			break
+		for s in rounds[r]:
+			while int(s.get("winner", -1)) == -1:
+				_simulate_one_game_in_series(s)
+		_try_advance_playoff_round()
 	save_season()
 
 func _lookup_current_roster_name(team_id: int, number: int, fallback: String) -> String:

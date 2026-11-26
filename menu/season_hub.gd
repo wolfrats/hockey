@@ -14,12 +14,13 @@ var tab_bar: HBoxContainer = null
 var overview_hbox: HBoxContainer = null
 var alt_panel: ScrollContainer = null
 var alt_vbox: VBoxContainer = null
-var sim_btn: Button = null
 
 func _ready() -> void:
 	Season.season_on = true
 	if Season.season_data.has("period_length"):
 		Globals.period_length = float(Season.season_data["period_length"])
+	if str(Season.season_data.get("phase", "regular")) == "playoffs" and Season.get_player_active_series().is_empty():
+		Season.simulate_remaining_playoffs()
 
 	overview_hbox = $VBoxContainer/HBoxContainer
 	_build_extra_ui()
@@ -58,13 +59,6 @@ func _build_extra_ui() -> void:
 	alt_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	alt_vbox.add_theme_constant_override("separation", 8)
 	alt_panel.add_child(alt_vbox)
-
-	sim_btn = Button.new()
-	sim_btn.text = "Sim Week"
-	sim_btn.custom_minimum_size = Vector2(180, 60)
-	sim_btn.pressed.connect(_on_sim_pressed)
-	$VBoxContainer/Buttons.add_child(sim_btn)
-	$VBoxContainer/Buttons.move_child(sim_btn, %Play.get_index())
 
 func _switch_tab(tab_id: String) -> void:
 	current_tab = tab_id
@@ -225,8 +219,6 @@ func update_matchup() -> void:
 			matchup_title.text = "Season Complete"
 			matchup_label.text = "Champion:\n%s" % champ_name
 		%Play.visible = false
-		if sim_btn:
-			sim_btn.visible = false
 		return
 
 	if phase == "playoffs":
@@ -236,13 +228,8 @@ func update_matchup() -> void:
 		var round_name: String = Season.ROUND_NAMES[clampi(r, 0, Season.ROUND_NAMES.size() - 1)]
 
 		if active.is_empty():
-			is_season_over = false
-			matchup_title.text = round_name
-			matchup_label.text = "Your team is out of\nthe playoffs.\nSim to crown a champ!"
-			%Play.visible = false
-			if sim_btn:
-				sim_btn.visible = true
-				sim_btn.text = "Sim Round"
+			Season.simulate_remaining_playoffs()
+			update_matchup()
 			return
 
 		is_season_over = false
@@ -261,9 +248,6 @@ func update_matchup() -> void:
 		]
 		%Play.visible = true
 		%Play.text = "Play Playoff Game"
-		if sim_btn:
-			sim_btn.visible = true
-			sim_btn.text = "Sim Round"
 		return
 
 	# Regular season
@@ -290,9 +274,6 @@ func update_matchup() -> void:
 	matchup_label.text = "%s (Away)\nvs\n%s (Home)" % [a_name, h_name]
 	%Play.visible = true
 	%Play.text = "Play Match"
-	if sim_btn:
-		sim_btn.visible = true
-		sim_btn.text = "Sim Week"
 
 func _populate_bracket_tab() -> void:
 	_clear_container(alt_vbox)
@@ -377,7 +358,7 @@ func _populate_leaders_tab() -> void:
 	var leaders: Array = Season.get_league_leaders(leaders_sort, 25)
 	if leaders.is_empty():
 		var empty := Label.new()
-		empty.text = "No season player stats yet. Play or simulate a week to populate League Leaders!"
+		empty.text = "No season player stats yet. Play a match to populate League Leaders!"
 		empty.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		alt_vbox.add_child(empty)
 		return
@@ -463,14 +444,6 @@ func _add_roster_edit_row(team_index: int, is_goalie: bool, slot_idx: int, var_i
 		save_btn.text = "Saved!"
 	save_btn.pressed.connect(commit_fn)
 	edit.text_submitted.connect(func(_new_text): commit_fn.call())
-
-func _on_sim_pressed() -> void:
-	var phase: String = str(Season.season_data.get("phase", "regular"))
-	if phase == "regular":
-		Season.simulate_current_week()
-	elif phase == "playoffs":
-		Season.simulate_playoff_round()
-	_refresh_all()
 
 func _on_back_pressed() -> void:
 	Season.season_on = false
