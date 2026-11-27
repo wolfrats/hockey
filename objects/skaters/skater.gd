@@ -158,6 +158,16 @@ func release_from_penalty_early() -> void:
 	if anim_state == "entering_penalty" or anim_state == "in_penalty":
 		anim_state = "leaving_penalty"
 
+func finish_expired_penalty() -> void:
+	if not is_in_penalty() or penalty_time > 0.0:
+		return
+	penalty_time = 0.0
+	is_major_penalty = false
+	needs_penalty_reset = false
+	needs_reset = false
+	anim_state = ""
+	$Sprite.modulate.a = 1.0
+
 func grant_morale_boost(duration: float = 15.0) -> void:
 	morale_boost_timer = maxf(morale_boost_timer, duration)
 	if statbook != null:
@@ -226,6 +236,9 @@ func penalty(duration: float, major: bool = false) -> void:
 	penalty_time = duration
 	is_major_penalty = major
 	anim_state = "entering_penalty"
+	if damage_tween and damage_tween.is_valid():
+		damage_tween.kill()
+	$Sprite.modulate = Color.WHITE
 	fight_anim_override = ""
 	fight_frame_override = -1
 	fight_flip_override = 0
@@ -236,6 +249,7 @@ func penalty(duration: float, major: bool = false) -> void:
 	holding = 0
 	if puck:
 		puck.shoot(name, Vector2.ZERO)
+		puck = null
 	if not spring.node_b.is_empty():
 		spring.node_b = NodePath("")
 
@@ -329,6 +343,7 @@ func do_check() -> void:
 					if Globals.manager != null and Globals.manager.has_method("try_start_fight"):
 						if Globals.manager.try_start_fight(self, s, total_heat, was_grabbing_target):
 							fight_started = true
+							break
 
 		if hit_target:
 			Globals.play_sound_at("Check", global_position)
@@ -543,15 +558,21 @@ func _physics_process(delta: float) -> void:
 				if penalty_time <= 0:
 					anim_state = "leaving_penalty"
 		elif anim_state == "leaving_penalty":
-			linear_velocity = Vector2(0, -100)
-			$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta * 1.5)
-			if $Sprite.modulate.a <= 0.0:
-				anim_state = "return_from_penalty"
-				needs_reset = true
+			var can_leave: bool = Globals.manager == null or Globals.manager.is_practice or Globals.manager.anim_manager == null or Globals.manager.anim_manager.current_phase == AnimationManager.Phase.PLAYING
+			if can_leave:
+				linear_velocity = Vector2(0, -100)
+				$Sprite.modulate.a = max(0.0, $Sprite.modulate.a - delta * 1.5)
+				if $Sprite.modulate.a <= 0.0:
+					anim_state = "return_from_penalty"
+					needs_reset = true
+			else:
+				linear_velocity = Vector2.ZERO
 		elif anim_state == "return_from_penalty":
-			$Sprite.modulate.a = min(1.0, $Sprite.modulate.a + delta * 2.0)
-			if $Sprite.modulate.a >= 1.0:
-				anim_state = ""
+			var can_return: bool = Globals.manager == null or Globals.manager.is_practice or Globals.manager.anim_manager == null or Globals.manager.anim_manager.current_phase == AnimationManager.Phase.PLAYING
+			if can_return:
+				$Sprite.modulate.a = min(1.0, $Sprite.modulate.a + delta * 2.0)
+				if $Sprite.modulate.a >= 1.0:
+					anim_state = ""
 	elif anim_state == "skating_around":
 		if randf() < 0.05:
 			impulse(randf_range(-1, 1), randf_range(-1, 1))
@@ -602,13 +623,14 @@ func _physics_process(delta: float) -> void:
 		if diff.length() > 5.0:
 			facing_dir = diff.normalized()
 	elif anim_state == "face_off":
+		var in_faceoff_phase: bool = Globals.manager == null or Globals.manager.anim_manager == null or Globals.manager.anim_manager.current_phase == AnimationManager.Phase.FACE_OFF
 		# Only players near center can take the face-off
 		var faceoff_pos = Vector2(1005.5, 509)
 		var pucks = get_tree().get_nodes_in_group("pucks")
 		if pucks.size() > 0:
 			faceoff_pos = pucks[0].global_position
 
-		if global_position.distance_to(faceoff_pos) < 150:
+		if in_faceoff_phase and global_position.distance_to(faceoff_pos) < 150:
 			var tried_faceoff = false
 			if ghost:
 				if ghost.has_method("is_action_just_pressed_custom"):

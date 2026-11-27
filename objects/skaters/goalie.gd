@@ -29,6 +29,9 @@ var bump_offset: Vector2 = Vector2.ZERO
 func home() -> void:
 	needs_reset = true
 
+func get_team_index() -> int:
+	return Globals.home_team_index if home_team else Globals.away_team_index
+
 func pull() -> void:
 	if pulled: return
 	pulled = true
@@ -258,6 +261,16 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 						int(info.get("number", 0)),
 						str(info.get("name", "")),
 						"shots",
+						1
+					)
+				var is_live_play: bool = Globals.manager == null or (not Globals.manager.is_practice and (Globals.manager.anim_manager == null or Globals.manager.anim_manager.current_phase == AnimationManager.Phase.PLAYING))
+				if is_live_play and collider.possessor_team != home_team:
+					Globals.record_skater_stat(
+						get_team_index(),
+						home_team,
+						jersey_number,
+						skater_name,
+						"saves",
 						1
 					)
 				collider.shot_on_goal_counted = true

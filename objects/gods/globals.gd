@@ -585,6 +585,7 @@ func record_skater_stat(team_index: int, home_team: bool, number: int, skater_na
 			"downs": 0,
 			"penalties": 0,
 			"fights_won": 0,
+			"saves": 0,
 		}
 	var entry: Dictionary = skater_match_stats[key]
 	if skater_name != "":
@@ -807,24 +808,117 @@ func _ensure_team_roster(team_name: String, skater_count: int) -> bool:
 	return dirty
 
 
-func set_roster_player_name(team_index: int, is_goalie: bool, skater_index: int, variant_index: int, new_name: String) -> void:
-	var cleaned: String = new_name.strip_edges()
-	if cleaned == "":
-		return
+func derive_nose_color(skin_col: Color) -> Color:
+	return Color(
+		clampf(skin_col.r * 0.786, 0.0, 1.0),
+		clampf(skin_col.g * 0.820, 0.0, 1.0),
+		clampf(skin_col.b * 0.688, 0.0, 1.0),
+		1.0
+	)
+
+
+func get_roster_player_profile(team_index: int, is_goalie: bool, skater_index: int, variant_index: int) -> Dictionary:
 	var roster: Dictionary = get_team_roster(team_index)
 	if roster.is_empty():
-		return
+		return {}
 	if is_goalie:
-		if roster.has("goalie") and roster["goalie"] is Dictionary:
-			roster["goalie"]["name"] = cleaned
-			save_rosters()
-	else:
-		var skaters: Array = roster.get("skaters", [])
-		if skater_index >= 0 and skater_index < skaters.size():
-			var pair: Array = skaters[skater_index]
-			if variant_index >= 0 and variant_index < pair.size() and pair[variant_index] is Dictionary:
-				pair[variant_index]["name"] = cleaned
-				save_rosters()
+		var g = roster.get("goalie", {})
+		return g if g is Dictionary else {}
+	var skaters: Array = roster.get("skaters", [])
+	if skater_index >= 0 and skater_index < skaters.size():
+		var pair: Array = skaters[skater_index]
+		if variant_index >= 0 and variant_index < pair.size() and pair[variant_index] is Dictionary:
+			return pair[variant_index]
+	return {}
+
+
+func find_roster_member_by_number(team_index: int, number: int) -> Dictionary:
+	var roster: Dictionary = get_team_roster(team_index)
+	if roster.is_empty():
+		return {}
+	var g = roster.get("goalie", {})
+	if g is Dictionary and int(g.get("number", -1)) == number:
+		return {
+			"found": true,
+			"is_goalie": true,
+			"slot": -1,
+			"variant": 0,
+			"profile": g,
+		}
+	var skaters: Array = roster.get("skaters", [])
+	for i in range(skaters.size()):
+		var pair = skaters[i]
+		if pair is Array:
+			for v in range(pair.size()):
+				var p = pair[v]
+				if p is Dictionary and int(p.get("number", -1)) == number:
+					return {
+						"found": true,
+						"is_goalie": false,
+						"slot": i,
+						"variant": v,
+						"profile": p,
+					}
+	return {}
+
+
+func update_roster_player(team_index: int, is_goalie: bool, skater_index: int, variant_index: int, updates: Dictionary) -> Dictionary:
+	var profile: Dictionary = get_roster_player_profile(team_index, is_goalie, skater_index, variant_index)
+	if profile.is_empty():
+		return {"changed": false}
+
+	var old_num: int = int(profile.get("number", 1))
+	var new_num: int = old_num
+	var swapped: bool = false
+
+	if updates.has("name"):
+		var cleaned: String = str(updates["name"]).strip_edges()
+		if cleaned != "":
+			profile["name"] = cleaned
+
+	if updates.has("skin"):
+		var raw_skin = updates["skin"]
+		var skin_col: Color = raw_skin if raw_skin is Color else Color.from_string(str(raw_skin), skin_tone)
+		profile["skin"] = skin_col.to_html(false)
+		if updates.has("nose"):
+			var raw_nose = updates["nose"]
+			var nose_col: Color = raw_nose if raw_nose is Color else Color.from_string(str(raw_nose), derive_nose_color(skin_col))
+			profile["nose"] = nose_col.to_html(false)
+		else:
+			profile["nose"] = derive_nose_color(skin_col).to_html(false)
+
+	if updates.has("eye"):
+		var raw_eye = updates["eye"]
+		var eye_col: Color = raw_eye if raw_eye is Color else Color.from_string(str(raw_eye), eye_color)
+		profile["eye"] = eye_col.to_html(false)
+
+	if updates.has("number"):
+		new_num = clampi(int(updates["number"]), 1, 98)
+		if new_num != old_num:
+			var existing: Dictionary = find_roster_member_by_number(team_index, new_num)
+			if existing.get("found", false):
+				var same_member: bool = (
+					bool(existing["is_goalie"]) == is_goalie
+					and int(existing["slot"]) == skater_index
+					and int(existing["variant"]) == variant_index
+				)
+				if not same_member:
+					var other_profile: Dictionary = existing["profile"]
+					other_profile["number"] = old_num
+					swapped = true
+			profile["number"] = new_num
+
+	save_rosters()
+	return {
+		"changed": true,
+		"old_number": old_num,
+		"new_number": new_num,
+		"swapped": swapped,
+	}
+
+
+func set_roster_player_name(team_index: int, is_goalie: bool, skater_index: int, variant_index: int, new_name: String) -> void:
+	update_roster_player(team_index, is_goalie, skater_index, variant_index, {"name": new_name})
 
 
 func load_or_generate_rosters() -> void:

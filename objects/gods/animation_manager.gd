@@ -206,6 +206,13 @@ func _process(delta: float) -> void:
 				var pucks = get_tree().get_nodes_in_group("pucks")
 				for p in pucks:
 					p.freeze = false
+				var has_faceoff_skater: bool = false
+				for s in get_tree().get_nodes_in_group("skaters"):
+					if s is Skater and s.anim_state == "face_off" and not s.ot_benched:
+						has_faceoff_skater = true
+						break
+				if not has_faceoff_skater:
+					set_phase(Phase.PLAYING)
 		Phase.SHOOTOUT_SETUP:
 			if phase_timer <= 0:
 				set_phase(Phase.SHOOTOUT_ACTIVE)
@@ -270,6 +277,8 @@ func set_phase(new_phase: Phase) -> void:
 
 			for p in pucks:
 				p.visible = true
+				if p.posessor == null:
+					p.freeze = false
 				if "colidable" in p:
 					p.colidable = true
 
@@ -284,43 +293,44 @@ func set_phase(new_phase: Phase) -> void:
 			var team_has_penalty = false
 			for s in skaters:
 				if "anim_state" in s:
+					if s is Skater and s.is_in_penalty() and s.penalty_time <= 0.0:
+						s.finish_expired_penalty()
 					if s.is_in_penalty():
 						team_has_penalty = true
 						continue
 					if s.ot_benched:
 						continue
 					s.anim_state = "face_off"
+					if s is Skater:
+						s.release_grab()
+						s.charging = false
+						s.sprinting = false
+						s.checking = 0
+						s.knocked_over = 0
+						s.was_knocked_over = false
+			var faceoff_pos = Vector2(1005.5, 509)
+			if team_has_penalty:
+				var home_pen_count: int = 0
+				var away_pen_count: int = 0
+				for s in skaters:
+					if s is Skater and s.is_in_penalty() and s.penalty_time > 0:
+						if s.home_team:
+							home_pen_count += 1
+						else:
+							away_pen_count += 1
+				# Only put faceoff in defensive zone if one team has a man-advantage
+				if home_pen_count != away_pen_count:
+					if home_pen_count > away_pen_count:
+						faceoff_pos = Vector2(590, 282)
+					else:
+						faceoff_pos = Vector2(1420, 720)
+
 			for p in pucks:
+				p.home(faceoff_pos)
 				p.visible = true
 				p.freeze = true
 				if "colidable" in p:
 					p.colidable = true
-				p.home()
-				if team_has_penalty:
-					var penalized_skater = null
-					var home_pen_count: int = 0
-					var away_pen_count: int = 0
-					for s in skaters:
-						if s is Skater and s.is_in_penalty() and s.penalty_time > 0:
-							if s.home_team:
-								home_pen_count += 1
-							else:
-								away_pen_count += 1
-							penalized_skater = s
-					# Only put faceoff in defensive zone if one team has a man-advantage
-					if penalized_skater and home_pen_count != away_pen_count:
-						if home_pen_count > away_pen_count:
-							p.global_position = Vector2(590, 282)
-						else:
-							p.global_position = Vector2(1420, 720)
-					else:
-						p.global_position = Vector2(1005.5, 509)
-				else:
-					p.global_position = Vector2(1005.5, 509)
-
-			var faceoff_pos = Vector2(1005.5, 509)
-			if pucks.size() > 0:
-				faceoff_pos = pucks[0].global_position
 
 			var referees = get_tree().get_nodes_in_group("referees")
 			for ref in referees:
@@ -422,6 +432,8 @@ func set_phase(new_phase: Phase) -> void:
 			var circle = true
 			for s in skaters:
 				if "anim_state" in s:
+					if s is Skater and s.is_in_penalty() and s.penalty_time <= 0.0:
+						s.finish_expired_penalty()
 					if s.is_out_of_play():
 						continue
 					s.anim_state = "skating_circle" if circle else "skating_figure8"
@@ -431,6 +443,8 @@ func set_phase(new_phase: Phase) -> void:
 			phase_timer = 1.5
 			for s in skaters:
 				if "anim_state" in s:
+					if s is Skater and s.is_in_penalty() and s.penalty_time <= 0.0:
+						s.finish_expired_penalty()
 					if s.is_out_of_play():
 						continue
 					s.visible = true

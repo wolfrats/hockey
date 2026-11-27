@@ -125,6 +125,9 @@ func start_fight(skater1: Skater, skater2: Skater, mgr: Manager) -> void:
 		fighter_a = skater2
 		fighter_b = skater1
 
+	_assign_auto_swap_to_fighter(fighter_a)
+	_assign_auto_swap_to_fighter(fighter_b)
+
 	center_pos = (fighter_a.global_position + fighter_b.global_position) * 0.5
 	center_pos.x = clampf(center_pos.x, 420.0, 1590.0)
 	center_pos.y = clampf(center_pos.y, 260.0, 760.0)
@@ -145,10 +148,13 @@ func start_fight(skater1: Skater, skater2: Skater, mgr: Manager) -> void:
 		f.knocked_over = 0
 		f.was_knocked_over = false
 		f.shot_followthrough_until = 0
+		f.swapping = 0
+		f.swapped_this_shift = false
+		f.active_bench = null
 		f.anim_state = "fighting"
-		if f.puck:
-			f.puck.shoot(f.name, Vector2.ZERO)
-			f.puck = null
+		if f.has_node("Sprite"):
+			f.get_node("Sprite").modulate.a = 1.0
+		f.puck = null
 		f.linear_velocity = Vector2.ZERO
 
 	_clear_dropped_sticks(true)
@@ -165,14 +171,22 @@ func start_fight(skater1: Skater, skater2: Skater, mgr: Manager) -> void:
 		spec.release_grab()
 		spec.charging = false
 		spec.sprinting = false
+		spec.swapping = 0
+		spec.swapped_this_shift = false
+		spec.active_bench = null
 		spec.anim_state = "fight_spectate"
+		if spec.has_node("Sprite"):
+			spec.get_node("Sprite").modulate.a = 1.0
 		var angle: float = TAU * float(i) / float(max(1, spectators.size()))
 		spec.fight_spectate_target = center_pos + Vector2(cos(angle), sin(angle)) * 230.0
 		spec.fight_spectate_target.x = clampf(spec.fight_spectate_target.x, 220.0, 1780.0)
 		spec.fight_spectate_target.y = clampf(spec.fight_spectate_target.y, 190.0, 840.0)
 
-	# Hide pucks during fight
+	# Hide pucks during fight (detach possessor directly without queueing deferred unfreeze)
 	for p in get_tree().get_nodes_in_group("pucks"):
+		if p is Puck and p.posessor != null:
+			p.posessor.puck = null
+			p.posessor = null
 		p.visible = false
 		p.freeze = true
 		if "colidable" in p:
@@ -191,6 +205,38 @@ func start_fight(skater1: Skater, skater2: Skater, mgr: Manager) -> void:
 
 	Globals.play_sound_at("Grab", center_pos)
 	_build_ui()
+
+
+func _assign_auto_swap_to_fighter(fighter: Skater) -> void:
+	if fighter == null or fighter.ghost != null or manager == null:
+		return
+	var closest_player = null
+	var min_dist: float = INF
+	for p in manager.get_active_players():
+		if p.player_index < 0 or p.skater == null or not is_instance_valid(p.skater):
+			continue
+		if p.skater == fighter_a or p.skater == fighter_b:
+			continue
+		if p.skater.home_team != fighter.home_team:
+			continue
+		var auto_swap_on: bool = (p.player_index >= Globals.player_auto_swap.size() or Globals.player_auto_swap[p.player_index])
+		if not auto_swap_on:
+			continue
+		var dist: float = p.skater.global_position.distance_to(fighter.global_position)
+		if dist < min_dist:
+			min_dist = dist
+			closest_player = p
+
+	if closest_player != null:
+		var old_skater = closest_player.skater
+		if old_skater != null and is_instance_valid(old_skater):
+			if old_skater.has_method("release_grab"):
+				old_skater.release_grab()
+			if "sprinting" in old_skater:
+				old_skater.sprinting = false
+			old_skater.ghost = null
+		fighter.ghost = closest_player
+		closest_player.skater = fighter
 
 
 func _create_fighter_state(skater: Skater, initial_facing: int) -> FighterState:
@@ -444,14 +490,14 @@ func _step_fighter_input(st: FighterState, opp: FighterState, delta: float) -> v
 
 		var press_jab: bool = f.ghost.is_action_just_pressed_custom("check")
 		var press_cross: bool = f.ghost.is_action_just_pressed_custom("shoot")
-		var press_uppercut: bool = f.ghost.is_action_just_pressed_custom("sprint")
+		var press_uppercut: bool = f.ghost.is_action_just_pressed_custom("pass")
 		if press_uppercut:
 			want_punch_type = "uppercut"
 		elif press_cross:
 			want_punch_type = "uppercut" if st.counter > 0.0 else "cross"
 		elif press_jab:
 			want_punch_type = "uppercut" if st.counter > 0.0 else "jab"
-		want_guard = f.ghost.is_action_pressed_custom("grab") or f.ghost.is_action_pressed_custom("pass")
+		want_guard = f.ghost.is_action_pressed_custom("grab") or f.ghost.is_action_pressed_custom("sprint")
 	else:
 		var diff: int = Globals.home_ai_difficulty if f.home_team else Globals.away_ai_difficulty
 		st.ai_guard_timer = maxf(0.0, st.ai_guard_timer - delta)

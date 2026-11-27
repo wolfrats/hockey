@@ -299,6 +299,15 @@ func get_team_goalie(is_home: bool) -> Goalie:
 	return null
 
 
+func is_extra_attacker(skater: Skater) -> bool:
+	if skater == null:
+		return false
+	for child in get_children():
+		if child is Goalie and child.extra_attacker == skater:
+			return true
+	return false
+
+
 func _get_primary_human_is_home() -> bool:
 	if _team_has_human(true):
 		return true
@@ -402,6 +411,10 @@ func on_puck_possessed(skater: Skater) -> void:
 	if delayed_penalty_offender == null or not is_instance_valid(delayed_penalty_offender):
 		delayed_penalty_offender = null
 		return
+	if anim_manager == null or anim_manager.current_phase != AnimationManager.Phase.PLAYING:
+		return
+	if fight_controller != null and fight_controller.active:
+		return
 	if skater != null and skater.home_team == delayed_penalty_offender.home_team:
 		var offender := delayed_penalty_offender
 		var ref := delayed_penalty_ref
@@ -422,6 +435,10 @@ func cancel_delayed_penalty() -> void:
 
 func _enforce_penalty(offender: Skater, ref: Referee, duration: float) -> void:
 	if offender == null or not is_instance_valid(offender):
+		return
+	if fight_controller != null and fight_controller.active:
+		return
+	if anim_manager != null and anim_manager.current_phase != AnimationManager.Phase.PLAYING:
 		return
 	offender.penalty(duration, false)
 	Globals.play_sound_at("Blip1", offender.global_position, false)
@@ -452,11 +469,17 @@ func _release_earliest_minor_penalty(penalized_home_team: bool) -> bool:
 func try_start_fight(s1: Skater, s2: Skater, total_heat: float, was_grabbing: bool) -> bool:
 	if is_practice or anim_manager == null or fight_controller == null:
 		return false
+	if s1 == null or s2 == null or s1 == s2 or not is_instance_valid(s1) or not is_instance_valid(s2):
+		return false
+	if s1.is_queued_for_deletion() or s2.is_queued_for_deletion():
+		return false
 	if anim_manager.current_phase != AnimationManager.Phase.PLAYING:
 		return false
 	if fight_controller.active or fight_cooldown > 0.0 or is_overtime_active() or shootout_active:
 		return false
 	if s1.is_out_of_play() or s2.is_out_of_play():
+		return false
+	if is_extra_attacker(s1) or is_extra_attacker(s2):
 		return false
 
 	var human_involved: bool = (s1.ghost != null or s2.ghost != null)
@@ -470,8 +493,13 @@ func try_start_fight(s1: Skater, s2: Skater, total_heat: float, was_grabbing: bo
 		return false
 
 	cancel_delayed_penalty()
+	if not is_instance_valid(s1) or not is_instance_valid(s2) or s1.is_queued_for_deletion() or s2.is_queued_for_deletion():
+		return false
 	anim_manager.set_phase(AnimationManager.Phase.FIGHT)
 	fight_controller.start_fight(s1, s2, self)
+	if not fight_controller.active:
+		anim_manager.set_phase(AnimationManager.Phase.PLAYING)
+		return false
 	return true
 
 
@@ -617,11 +645,10 @@ func setup_shootout_turn() -> void:
 	# Place puck at center ice
 	for p in get_tree().get_nodes_in_group("pucks"):
 		if p is Puck:
-			p.home()
+			p.home(Vector2(1005.5, 509.0))
 			p.visible = true
 			p.freeze = true
 			p.colidable = true
-			p.global_position = Vector2(1005.5, 509.0)
 
 	_update_shootout_ui()
 	if chosen != null:

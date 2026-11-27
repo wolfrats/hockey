@@ -3,6 +3,7 @@ class_name Puck extends RigidBody2D
 var blocklist: Dictionary[String, float] = {}
 var colidable: bool = true
 var initial_position: Vector2
+var reset_position: Vector2 = Vector2.ZERO
 var needs_reset: bool = false
 var block_all: int = 0
 var last_possessor: String = ""
@@ -36,18 +37,23 @@ var _prev_speed: float = 0.0
 
 func _ready() -> void:
 	initial_position = global_position
+	reset_position = initial_position
 
 func get_visual_position() -> Vector2:
 	if has_node("Sprite"):
 		return $Sprite.global_position + Vector2(4.0, 2.0)
 	return global_position + Vector2(0.0, 38.0)
 
-func home() -> void:
+func home(target_pos: Vector2 = Vector2.INF) -> void:
+	reset_position = target_pos if (is_finite(target_pos.x) and is_finite(target_pos.y)) else initial_position
 	needs_reset = true
 	if self.posessor:
 		self.posessor.puck = null
 	self.posessor = null
 	self.freeze = false
+	self.global_position = reset_position
+	self.linear_velocity = Vector2.ZERO
+	self.angular_velocity = 0.0
 	shot_on_goal_counted = false
 	last_possessor = ""
 	assist_possessor = ""
@@ -176,11 +182,10 @@ func _process(delta: float) -> void:
 	if posessor:
 		freeze = true
 		($PointerAbove).visible = true
-		($CollisionShape2D).disabled = freeze 
+		($CollisionShape2D).disabled = true
 		self.global_position = posessor.global_position + posessor.facing_dir * 30.0
 	else:
-		freeze = false
-		($CollisionShape2D).disabled = freeze 
+		($CollisionShape2D).disabled = freeze or not colidable
 		($PointerAbove).visible = false
 	if Globals.ticks > block_all:
 		set_collision_mask_value(4, true)
@@ -232,10 +237,15 @@ func _physics_process(delta: float) -> void:
 			_has_prev_collision_pos = false
 			_prev_speed = 0.0
 
-		if not posessor and not freeze and not is_launching_shot:
+		var can_pickup_phase: bool = true
+		if Globals.manager != null and not Globals.manager.is_practice and Globals.manager.anim_manager != null:
+			var ph: int = Globals.manager.anim_manager.current_phase
+			can_pickup_phase = (ph == AnimationManager.Phase.PLAYING or ph == AnimationManager.Phase.SHOOTOUT_ACTIVE)
+
+		if can_pickup_phase and not posessor and not freeze and not is_launching_shot:
 			var pickup_speed: float = maxf(current_speed, pending_shot_speed)
 			for body in get_colliding_bodies():
-				if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck and not body.is_out_of_play():
+				if body is Skater and (not blocklist.has(body.name)) and colidable and not body.puck and not body.is_out_of_play() and body.anim_state == "":
 					var skater_id: int = body.get_instance_id()
 					if pass_through_cooldowns.has(skater_id) or not _can_skater_intercept(body, pickup_speed):
 						continue
@@ -257,6 +267,7 @@ func _physics_process(delta: float) -> void:
 			
 func assign_possessor(body: Skater) -> void:
 	var prev_possessor = posessor
+	needs_reset = false
 	_reset_shot_tracking()
 
 	if posessor:
@@ -339,6 +350,7 @@ func shoot(shooter, vector) -> bool:
 	
 	var shooter_home_team: bool = posessor.home_team
 	var shooter_name: String = posessor.get_player_name() if posessor.has_method("get_player_name") else last_possessor
+	needs_reset = false
 	Globals.manager.shot.emit(shooter_home_team, global_position, vector)
 	posessor = null
 	blocklist[shooter] = 0.25
@@ -380,7 +392,7 @@ func _enable_collision() -> void:
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	if needs_reset:
 		var trans = state.get_transform()
-		trans.origin = initial_position
+		trans.origin = reset_position
 		state.set_transform(trans)
 		state.linear_velocity = Vector2.ZERO
 		state.angular_velocity = 0

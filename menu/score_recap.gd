@@ -96,6 +96,8 @@ func _ready() -> void:
 				return pa > pb
 			if int(a.get("goals", 0)) != int(b.get("goals", 0)):
 				return int(a.get("goals", 0)) > int(b.get("goals", 0))
+			if int(a.get("saves", 0)) != int(b.get("saves", 0)):
+				return int(a.get("saves", 0)) > int(b.get("saves", 0))
 			return int(a.get("hits", 0)) > int(b.get("hits", 0))
 		)
 
@@ -110,12 +112,17 @@ func _ready() -> void:
 			var h: int = int(row.get("hits", 0))
 			var p_cnt: int = int(row.get("penalties", 0))
 			var fw: int = int(row.get("fights_won", 0))
-			var fw_str: String = (", %d Fight W" % fw) if fw > 0 else ""
+			var sv: int = int(row.get("saves", 0))
 
 			var lbl := Label.new()
-			lbl.text = "#%d %s (%s) — %dG %dA | %d SOG | %d HIT | %d PIM%s" % [
-				num, sname, tname, g, a, sh, h, p_cnt, fw_str
-			]
+			if sv > 0 and g == 0 and a == 0 and sh == 0 and h == 0 and p_cnt == 0 and fw == 0:
+				lbl.text = "#%d %s (%s) — %d SV" % [num, sname, tname, sv]
+			else:
+				var sv_str: String = (" | %d SV" % sv) if sv > 0 else ""
+				var fw_str: String = (", %d Fight W" % fw) if fw > 0 else ""
+				lbl.text = "#%d %s (%s) — %dG %dA | %d SOG | %d HIT | %d PIM%s%s" % [
+					num, sname, tname, g, a, sh, h, p_cnt, sv_str, fw_str
+				]
 			lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			stats_container.add_child(lbl)
 

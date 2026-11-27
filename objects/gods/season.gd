@@ -260,12 +260,13 @@ func merge_match_skater_stats(match_stats: Dictionary) -> void:
 				"hits": 0,
 				"downs": 0,
 				"penalties": 0,
-				"fights_won": 0
+				"fights_won": 0,
+				"saves": 0
 			}
 		var dest: Dictionary = store[key]
 		if str(m.get("name", "")) != "":
 			dest["name"] = str(m["name"])
-		for stat_key in ["goals", "assists", "shots", "hits", "downs", "penalties", "fights_won"]:
+		for stat_key in ["goals", "assists", "shots", "hits", "downs", "penalties", "fights_won", "saves"]:
 			dest[stat_key] = int(dest.get(stat_key, 0)) + int(m.get(stat_key, 0))
 
 func _add_sim_skater_stat(team_id: int, profile: Dictionary, stat_key: String, amount: int = 1) -> void:
@@ -290,12 +291,16 @@ func _add_sim_skater_stat(team_id: int, profile: Dictionary, stat_key: String, a
 			"hits": 0,
 			"downs": 0,
 			"penalties": 0,
-			"fights_won": 0
+			"fights_won": 0,
+			"saves": 0
 		}
 	store[key][stat_key] = int(store[key].get(stat_key, 0)) + amount
 
 func _attribute_sim_team_stats(team_id: int, goals: int) -> void:
 	var roster: Dictionary = Globals.get_team_roster(team_id)
+	var goalie_profile = roster.get("goalie", {})
+	if goalie_profile is Dictionary and not goalie_profile.is_empty():
+		_add_sim_skater_stat(team_id, goalie_profile, "saves", randi_range(4, 14))
 	var skater_slots: Array = roster.get("skaters", [])
 	if skater_slots.is_empty():
 		return
@@ -567,6 +572,39 @@ func simulate_remaining_playoffs() -> void:
 		_try_advance_playoff_round()
 	save_season()
 
+func remap_player_number(team_id: int, old_number: int, new_number: int, swapped: bool = false) -> void:
+	if season_data.is_empty() or old_number == new_number or old_number <= 0 or new_number <= 0:
+		return
+	if not season_data.has("skater_stats") or not (season_data["skater_stats"] is Dictionary):
+		return
+	var store: Dictionary = season_data["skater_stats"]
+	var old_key: String = Globals.get_skater_stat_key(team_id, old_number)
+	var new_key: String = Globals.get_skater_stat_key(team_id, new_number)
+	var has_old: bool = store.has(old_key)
+	var has_new: bool = store.has(new_key)
+	if not has_old and not has_new:
+		return
+
+	if swapped:
+		var old_entry = store[old_key] if has_old else null
+		var new_entry = store[new_key] if has_new else null
+		store.erase(old_key)
+		store.erase(new_key)
+		if old_entry != null:
+			old_entry["number"] = new_number
+			store[new_key] = old_entry
+		if new_entry != null:
+			new_entry["number"] = old_number
+			store[old_key] = new_entry
+	elif has_old:
+		var entry = store[old_key]
+		store.erase(old_key)
+		entry["number"] = new_number
+		store[new_key] = entry
+
+	save_season()
+
+
 func _lookup_current_roster_name(team_id: int, number: int, fallback: String) -> String:
 	var roster: Dictionary = Globals.get_team_roster(team_id)
 	if roster.is_empty():
@@ -591,6 +629,17 @@ func get_league_leaders(sort_by: String = "points", limit: int = 20) -> Array:
 		var g: int = int(entry.get("goals", 0))
 		var a: int = int(entry.get("assists", 0))
 		var pts: int = g + a
+		var sh: int = int(entry.get("shots", 0))
+		var hits_val: int = int(entry.get("hits", 0))
+		var downs_val: int = int(entry.get("downs", 0))
+		var pen_val: int = int(entry.get("penalties", 0))
+		var fw_val: int = int(entry.get("fights_won", 0))
+		var sv_val: int = int(entry.get("saves", 0))
+		if sort_by == "saves":
+			if sv_val <= 0:
+				continue
+		elif sv_val > 0 and pts == 0 and sh == 0 and hits_val == 0 and downs_val == 0 and pen_val == 0 and fw_val == 0:
+			continue
 		var name_str: String = _lookup_current_roster_name(tid, num, str(entry.get("name", "Skater #%d" % num)))
 		out.append({
 			"team_index": tid,
@@ -599,11 +648,12 @@ func get_league_leaders(sort_by: String = "points", limit: int = 20) -> Array:
 			"goals": g,
 			"assists": a,
 			"points": pts,
-			"shots": int(entry.get("shots", 0)),
-			"hits": int(entry.get("hits", 0)),
-			"downs": int(entry.get("downs", 0)),
-			"penalties": int(entry.get("penalties", 0)),
-			"fights_won": int(entry.get("fights_won", 0)),
+			"shots": sh,
+			"hits": hits_val,
+			"downs": downs_val,
+			"penalties": pen_val,
+			"fights_won": fw_val,
+			"saves": sv_val,
 		})
 	out.sort_custom(func(a, b):
 		var av: int = int(a.get(sort_by, 0))
