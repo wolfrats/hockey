@@ -57,7 +57,7 @@ const PUNCH_SPECS := {
 
 
 class FighterState:
-	var skater: Skater = null
+	var skater = null
 	var hp: float = 100.0
 	var max_hp: float = 100.0
 	var facing: int = 1 # 1 = right (flip_h true), -1 = left (flip_h false)
@@ -85,15 +85,15 @@ var stage: String = "" # "intro", "brawl", "outro"
 var stage_timer: float = 0.0
 var brawl_timer: float = 0.0
 
-var fighter_a: Skater = null # Left fighter
-var fighter_b: Skater = null # Right fighter
+var fighter_a = null # Left fighter (Skater or Referee)
+var fighter_b = null # Right fighter (Skater or Referee)
 var state_a: FighterState = FighterState.new()
 var state_b: FighterState = FighterState.new()
 var center_pos: Vector2 = Vector2(1005.5, 509.0)
 var dropped_sticks: Array[DroppedStick] = []
 
-var winner: Skater = null
-var loser: Skater = null
+var winner = null
+var loser = null
 
 # UI nodes
 var ui_panel: Control = null
@@ -107,7 +107,7 @@ var hint_label: Label = null
 var callout_timer: float = 0.0
 
 
-func start_fight(skater1: Skater, skater2: Skater, mgr: Manager) -> void:
+func start_fight(skater1, skater2, mgr: Manager) -> void:
 	if active or skater1 == null or skater2 == null or mgr == null:
 		return
 	manager = mgr
@@ -136,30 +136,44 @@ func start_fight(skater1: Skater, skater2: Skater, mgr: Manager) -> void:
 	state_b = _create_fighter_state(fighter_b, -1)
 
 	# Clear heat so they don't instantly refight after the box
-	fighter_a.fight_heat.clear()
-	fighter_b.fight_heat.clear()
+	if fighter_a is Skater:
+		fighter_a.fight_heat.clear()
+	if fighter_b is Skater:
+		fighter_b.fight_heat.clear()
 
 	# Prepare fighters
 	for f in [fighter_a, fighter_b]:
-		f.release_grab()
-		f.charging = false
-		f.sprinting = false
-		f.checking = 0
-		f.knocked_over = 0
-		f.was_knocked_over = false
-		f.shot_followthrough_until = 0
-		f.swapping = 0
-		f.swapped_this_shift = false
-		f.active_bench = null
-		f.anim_state = "fighting"
-		if f.has_node("Sprite"):
-			f.get_node("Sprite").modulate.a = 1.0
-		f.puck = null
-		f.linear_velocity = Vector2.ZERO
+		if f is Skater:
+			f.release_grab()
+			f.charging = false
+			f.sprinting = false
+			f.checking = 0
+			f.knocked_over = 0
+			f.was_knocked_over = false
+			f.shot_followthrough_until = 0
+			f.swapping = 0
+			f.swapped_this_shift = false
+			f.active_bench = null
+			f.anim_state = "fighting"
+			if f.has_node("Sprite"):
+				f.get_node("Sprite").modulate.a = 1.0
+			f.puck = null
+			f.linear_velocity = Vector2.ZERO
+		elif f is Referee:
+			f.knocked_over = 0
+			f.health = 100.0
+			f.mass = 1.5
+			f.set_delayed_penalty_signal(false)
+			f.anim_state = "fighting"
+			if f.has_node("Sprite"):
+				f.get_node("Sprite").modulate = Color.WHITE
+			f.linear_velocity = Vector2.ZERO
 
 	_clear_dropped_sticks(true)
-	_chuck_stick(fighter_a, -1.0, true)
-	_chuck_stick(fighter_b, 1.0, false)
+	if fighter_a is Skater:
+		_chuck_stick(fighter_a, -1.0, true)
+	if fighter_b is Skater:
+		_chuck_stick(fighter_b, 1.0, false)
 
 	# Spectators form a circle around the fight
 	var spectators: Array = []
@@ -192,8 +206,10 @@ func start_fight(skater1: Skater, skater2: Skater, mgr: Manager) -> void:
 		if "colidable" in p:
 			p.colidable = false
 
-	# Referee skates near the brawl
+	# Non-fighting referees skate near the brawl
 	for ref in get_tree().get_nodes_in_group("referees"):
+		if ref == fighter_a or ref == fighter_b:
+			continue
 		if "anim_state" in ref:
 			ref.anim_state = "skate_to"
 			ref.target_pos = center_pos + Vector2(0, -140)
@@ -207,8 +223,8 @@ func start_fight(skater1: Skater, skater2: Skater, mgr: Manager) -> void:
 	_build_ui()
 
 
-func _assign_auto_swap_to_fighter(fighter: Skater) -> void:
-	if fighter == null or fighter.ghost != null or manager == null:
+func _assign_auto_swap_to_fighter(fighter) -> void:
+	if not (fighter is Skater) or fighter.ghost != null or manager == null:
 		return
 	var closest_player = null
 	var min_dist: float = INF
@@ -239,10 +255,15 @@ func _assign_auto_swap_to_fighter(fighter: Skater) -> void:
 		closest_player.skater = fighter
 
 
-func _create_fighter_state(skater: Skater, initial_facing: int) -> FighterState:
+func _create_fighter_state(skater, initial_facing: int) -> FighterState:
 	var st := FighterState.new()
 	st.skater = skater
-	st.max_hp = skater.statbook.max_health * 1.15 if skater.statbook else 100.0
+	if skater is Referee:
+		st.max_hp = 135.0
+	elif skater is Skater and skater.statbook:
+		st.max_hp = skater.statbook.max_health * 1.15
+	else:
+		st.max_hp = 100.0
 	st.hp = st.max_hp
 	st.facing = initial_facing
 	st.attack_facing = initial_facing
@@ -290,7 +311,8 @@ func _build_ui() -> void:
 	box.add_child(vbox)
 
 	title_label = Label.new()
-	title_label.text = "DROP THE GLOVES!"
+	var is_ref_fight: bool = (fighter_a is Referee) or (fighter_b is Referee)
+	title_label.text = "THE REF DROPS THE GLOVES!" if is_ref_fight else "DROP THE GLOVES!"
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title_label.add_theme_font_size_override("font_size", 28)
 	title_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
@@ -468,21 +490,24 @@ func _step_fighter_timers(st: FighterState, delta: float) -> void:
 	st.counter = maxf(0.0, st.counter - delta)
 
 
-func _get_fighter_walk_speed(f: Skater) -> float:
-	if f.stats == Stats.ClassTypes.LIGHT:
-		return 175.0
-	if f.stats == Stats.ClassTypes.HEAVY:
-		return 128.0
+func _get_fighter_walk_speed(f) -> float:
+	if f is Referee:
+		return 155.0
+	if f is Skater:
+		if f.stats == Stats.ClassTypes.LIGHT:
+			return 175.0
+		if f.stats == Stats.ClassTypes.HEAVY:
+			return 128.0
 	return 150.0
 
 
 func _step_fighter_input(st: FighterState, opp: FighterState, delta: float) -> void:
-	var f: Skater = st.skater
+	var f = st.skater
 	var move_dir := Vector2.ZERO
 	var want_punch_type: String = ""
 	var want_guard: bool = false
 
-	if f.ghost != null and f.ghost.has_method("is_action_just_pressed_custom"):
+	if f is Skater and f.ghost != null and f.ghost.has_method("is_action_just_pressed_custom"):
 		if f.ghost.has_method("get_axis_custom"):
 			move_dir = Vector2(f.ghost.get_axis_custom("skate_x"), f.ghost.get_axis_custom("skate_y"))
 			if move_dir.length_squared() > 1.0:
@@ -499,7 +524,7 @@ func _step_fighter_input(st: FighterState, opp: FighterState, delta: float) -> v
 			want_punch_type = "uppercut" if st.counter > 0.0 else "jab"
 		want_guard = f.ghost.is_action_pressed_custom("grab") or f.ghost.is_action_pressed_custom("sprint")
 	else:
-		var diff: int = Globals.home_ai_difficulty if f.home_team else Globals.away_ai_difficulty
+		var diff: int = 2 if (f is Referee) else (Globals.home_ai_difficulty if f.home_team else Globals.away_ai_difficulty)
 		st.ai_guard_timer = maxf(0.0, st.ai_guard_timer - delta)
 		st.ai_retreat_timer = maxf(0.0, st.ai_retreat_timer - delta)
 		st.ai_strafe_timer -= delta
@@ -544,9 +569,11 @@ func _step_fighter_input(st: FighterState, opp: FighterState, delta: float) -> v
 					st.ai_guard_timer = randf_range(0.22, 0.42)
 				else:
 					var roll: float = randf()
-					if f.stats == Stats.ClassTypes.HEAVY:
+					if f is Referee:
+						want_punch_type = "jab" if roll < 0.35 else ("cross" if roll < 0.75 else "uppercut")
+					elif f is Skater and f.stats == Stats.ClassTypes.HEAVY:
 						want_punch_type = "uppercut" if roll < 0.32 else ("cross" if roll < 0.72 else "jab")
-					elif f.stats == Stats.ClassTypes.LIGHT:
+					elif f is Skater and f.stats == Stats.ClassTypes.LIGHT:
 						want_punch_type = "jab" if roll < 0.55 else ("cross" if roll < 0.85 else "uppercut")
 					else:
 						want_punch_type = "jab" if roll < 0.42 else ("cross" if roll < 0.78 else "uppercut")
@@ -567,7 +594,7 @@ func _step_fighter_input(st: FighterState, opp: FighterState, delta: float) -> v
 
 
 func _step_fighter_movement(st: FighterState, opp: FighterState, delta: float) -> void:
-	var f: Skater = st.skater
+	var f = st.skater
 	var to_opp_x: float = opp.skater.global_position.x - f.global_position.x
 	if st.attack_type == "" and absf(to_opp_x) > 4.0:
 		st.facing = 1 if to_opp_x >= 0.0 else -1
@@ -586,7 +613,7 @@ func _step_fighter_movement(st: FighterState, opp: FighterState, delta: float) -
 	_clamp_fighter_to_ring(f)
 
 
-func _clamp_fighter_to_ring(f: Skater) -> void:
+func _clamp_fighter_to_ring(f) -> void:
 	var offset: Vector2 = f.global_position - center_pos
 	if offset.length() > FIGHT_RING_RADIUS:
 		var clamped_offset: Vector2 = offset.normalized() * FIGHT_RING_RADIUS
@@ -648,7 +675,9 @@ func _step_fighter_attack(st: FighterState, opp: FighterState, delta: float) -> 
 		_resolve_punch_impact(st, opp, st.attack_type, spec)
 
 	if st.attack_timer >= total_duration:
-		var class_cd_mult: float = 0.85 if st.skater.stats == Stats.ClassTypes.LIGHT else (1.2 if st.skater.stats == Stats.ClassTypes.HEAVY else 1.0)
+		var class_cd_mult: float = 1.0
+		if st.skater is Skater:
+			class_cd_mult = 0.85 if st.skater.stats == Stats.ClassTypes.LIGHT else (1.2 if st.skater.stats == Stats.ClassTypes.HEAVY else 1.0)
 		st.punch_cd = float(spec["cooldown"]) * class_cd_mult
 		st.attack_type = ""
 		st.attack_timer = 0.0
@@ -657,8 +686,8 @@ func _step_fighter_attack(st: FighterState, opp: FighterState, delta: float) -> 
 
 
 func _resolve_punch_impact(attacker_st: FighterState, defender_st: FighterState, punch_type: String, spec: Dictionary) -> void:
-	var attacker: Skater = attacker_st.skater
-	var defender: Skater = defender_st.skater
+	var attacker = attacker_st.skater
+	var defender = defender_st.skater
 
 	var delta_pos: Vector2 = defender.global_position - attacker.global_position
 	var forward_dist: float = delta_pos.x * float(attacker_st.attack_facing)
@@ -669,7 +698,11 @@ func _resolve_punch_impact(attacker_st: FighterState, defender_st: FighterState,
 		Globals.play_sound_at("CheckMiss", attacker.global_position)
 		return
 
-	var base_dmg: float = (attacker.statbook.check_damage * float(spec["dmg_mult"])) if attacker.statbook else 16.0
+	var base_dmg: float = 16.0
+	if attacker is Referee:
+		base_dmg = 35.0 * float(spec["dmg_mult"])
+	elif attacker is Skater and attacker.statbook:
+		base_dmg = attacker.statbook.check_damage * float(spec["dmg_mult"])
 	base_dmg *= randf_range(0.88, 1.12)
 
 	var push_dir: Vector2 = delta_pos.normalized() if delta_pos.length_squared() > 1.0 else Vector2(float(attacker_st.attack_facing), 0.0)
@@ -713,7 +746,7 @@ func _resolve_punch_impact(attacker_st: FighterState, defender_st: FighterState,
 
 
 func _update_fighter_visual(st: FighterState, _opp: FighterState, delta: float) -> void:
-	var f: Skater = st.skater
+	var f = st.skater
 	if st.attack_type != "":
 		var spec: Dictionary = PUNCH_SPECS[st.attack_type]
 		var total_frames: int = int(spec["frames"])
@@ -744,23 +777,34 @@ func _enter_outro() -> void:
 		winner = fighter_b
 		loser = fighter_a
 
-	Globals.record_skater_stat(winner.get_team_index(), winner.home_team, winner.jersey_number, winner.skater_name, "fights_won", 1)
+	var is_ref_fight: bool = (fighter_a is Referee) or (fighter_b is Referee)
+	if winner is Skater:
+		Globals.record_skater_stat(winner.get_team_index(), winner.home_team, winner.jersey_number, winner.skater_name, "fights_won", 1)
 	Globals.play_sound_at("GoalHome", center_pos, false)
 
 	if title_label:
 		title_label.text = "%s WINS THE FIGHT!" % winner.get_skater_display()
 	if callout_label:
 		callout_label.text = "KO!" if (state_a.hp <= 0.0 or state_b.hp <= 0.0) else "DECISION!"
-	if hint_label:
+	if winner is Skater:
 		var win_team: String = StatBook.TEAMS[winner.get_team_index()]["name"]
-		hint_label.text = "%s earn a 15s MOMENTUM BOOST! Both fighters get 20s in the box." % win_team
+		if hint_label:
+			if is_ref_fight:
+				hint_label.text = "%s earn a 15s MOMENTUM BOOST! %s gets 30s in the box." % [win_team, winner.get_skater_display()]
+			else:
+				hint_label.text = "%s earn a 15s MOMENTUM BOOST! Both fighters get 20s in the box." % win_team
 
-	# Grant morale boost to winner's team
-	for s in get_tree().get_nodes_in_group("skaters"):
-		if s is Skater and s.home_team == winner.home_team and not s.is_out_of_play():
-			s.grant_morale_boost(15.0)
-	if manager:
-		manager.show_banner("MOMENTUM BOOST! %s" % StatBook.TEAMS[winner.get_team_index()]["name"], winner.get_jersey_color(), 3.0)
+		# Grant morale boost to winner's team
+		for s in get_tree().get_nodes_in_group("skaters"):
+			if s is Skater and s.home_team == winner.home_team and not s.is_out_of_play():
+				s.grant_morale_boost(15.0)
+		if manager:
+			manager.show_banner("MOMENTUM BOOST! %s" % win_team, winner.get_jersey_color(), 3.0)
+	else:
+		if hint_label:
+			hint_label.text = "Don't mess with the stripes! %s gets 30s in the box." % loser.get_skater_display()
+		if manager:
+			manager.show_banner("THE REFEREE WINS THE BRAWL!", Color(0.95, 0.95, 1.0), 3.0)
 
 
 func _chuck_stick(fighter: Skater, outward_x: float, facing_right: bool) -> void:
@@ -786,6 +830,7 @@ func _clear_dropped_sticks(immediate: bool = false) -> void:
 
 
 func _finish_fight() -> void:
+	var is_ref_fight: bool = (fighter_a is Referee) or (fighter_b is Referee)
 	active = false
 	_clear_ui()
 	_clear_dropped_sticks(false)
@@ -798,10 +843,22 @@ func _finish_fight() -> void:
 			if s.anim_state == "fight_spectate" or s.anim_state == "fighting":
 				s.anim_state = ""
 
-	if fighter_a != null and is_instance_valid(fighter_a):
-		fighter_a.penalty(20.0, true)
-	if fighter_b != null and is_instance_valid(fighter_b):
-		fighter_b.penalty(20.0, true)
+	for ref in get_tree().get_nodes_in_group("referees"):
+		if ref is Referee:
+			ref.fight_anim_override = ""
+			ref.fight_frame_override = -1
+			ref.fight_flip_override = 0
+			ref.z_index = 0
+			ref.mass = 100.0
+			ref.health = 100.0
+			if ref.anim_state == "fighting":
+				ref.anim_state = ""
+
+	var penalty_duration: float = 30.0 if is_ref_fight else 20.0
+	if fighter_a != null and is_instance_valid(fighter_a) and fighter_a is Skater:
+		fighter_a.penalty(penalty_duration, true)
+	if fighter_b != null and is_instance_valid(fighter_b) and fighter_b is Skater:
+		fighter_b.penalty(penalty_duration, true)
 
 	fighter_a = null
 	fighter_b = null

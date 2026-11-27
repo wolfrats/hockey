@@ -344,6 +344,11 @@ func do_check() -> void:
 						if Globals.manager.try_start_fight(self, s, total_heat, was_grabbing_target):
 							fight_started = true
 							break
+				elif s is Referee and not fight_started and not target_downed_before:
+					if Globals.manager != null and Globals.manager.has_method("try_start_ref_fight"):
+						if Globals.manager.try_start_ref_fight(self, s):
+							fight_started = true
+							break
 
 		if hit_target:
 			Globals.play_sound_at("Check", global_position)

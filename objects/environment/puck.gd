@@ -265,6 +265,46 @@ func _physics_process(delta: float) -> void:
 		var is_possessed: bool = (posessor != null) or (is_replay and replay_possessed)
 		$Trail.step_physics(delta, get_visual_position(), linear_velocity, is_possessed, is_replay, is_visible_in_tree(), needs_reset)
 			
+func _build_possessor_info(skater: Skater) -> Dictionary:
+	var current_name: String = "Home AI" if skater.home_team else "Away AI"
+	var p_index: int = -1
+	var p_color: Color = Color(0, 0, 0, 0)
+	if skater.ghost:
+		current_name = skater.ghost.name
+		var raw_idx = skater.ghost.get("player_index")
+		if raw_idx is int and raw_idx >= 0 and raw_idx < Globals.player_colors.size():
+			p_index = raw_idx
+			p_color = Globals.player_colors[p_index]
+		else:
+			p_color = Globals.get_player_color_from_label(current_name)
+	return {
+		"team_index": skater.get_team_index(),
+		"home_team": skater.home_team,
+		"number": skater.jersey_number,
+		"name": skater.skater_name,
+		"player_label": current_name,
+		"player_index": p_index,
+		"player_color": p_color,
+	}
+
+func refresh_current_possessor_info() -> void:
+	if posessor == null:
+		return
+	var current_info: Dictionary = _build_possessor_info(posessor)
+	var current_name: String = str(current_info["player_label"])
+	var same_team: bool = (posessor.home_team == possessor_team) and not last_possessor_info.is_empty()
+	var same_skater: bool = same_team and int(last_possessor_info.get("number", -1)) == posessor.jersey_number
+	if last_possessor_info.is_empty() or not same_skater:
+		if same_team and not same_skater:
+			assist_possessor = last_possessor
+			assist_possessor_info = last_possessor_info.duplicate()
+		elif not same_team:
+			assist_possessor = ""
+			assist_possessor_info = {}
+	last_possessor = current_name
+	last_possessor_info = current_info
+	possessor_team = posessor.home_team
+
 func assign_possessor(body: Skater) -> void:
 	var prev_possessor = posessor
 	needs_reset = false
@@ -296,17 +336,8 @@ func assign_possessor(body: Skater) -> void:
 				posessor.ghost = closest_player
 				closest_player.skater = posessor
 
-	var current_name = ("Home AI" if posessor.home_team else "Away AI")
-	if posessor.ghost:
-		current_name = posessor.ghost.name
-
-	var current_info: Dictionary = {
-		"team_index": posessor.get_team_index(),
-		"home_team": posessor.home_team,
-		"number": posessor.jersey_number,
-		"name": posessor.skater_name,
-		"player_label": current_name,
-	}
+	var current_info: Dictionary = _build_possessor_info(posessor)
+	var current_name: String = str(current_info["player_label"])
 
 	if prev_possessor != posessor:
 		var same_team: bool = (posessor.home_team == possessor_team) and not last_possessor_info.is_empty()
@@ -320,6 +351,9 @@ func assign_possessor(body: Skater) -> void:
 		last_possessor = current_name
 		last_possessor_info = current_info
 		possessor_team = posessor.home_team
+	else:
+		last_possessor = current_name
+		last_possessor_info = current_info
 
 	if Globals.manager != null and Globals.manager.has_method("on_puck_possessed"):
 		Globals.manager.on_puck_possessed(posessor)
@@ -348,6 +382,7 @@ func shoot(shooter, vector) -> bool:
 	if not posessor or shooter != posessor.name:
 		return false
 	
+	refresh_current_possessor_info()
 	var shooter_home_team: bool = posessor.home_team
 	var shooter_name: String = posessor.get_player_name() if posessor.has_method("get_player_name") else last_possessor
 	needs_reset = false

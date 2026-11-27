@@ -13,6 +13,9 @@ var knocked_over: int = 0
 var damage_tween: Tween
 var delayed_penalty_active: bool = false
 var delayed_signal_label: Label = null
+var fight_anim_override: String = ""
+var fight_frame_override: int = -1
+var fight_flip_override: int = 0
 
 # Cone of sight parameters
 var cone_angle: float = PI / 3.0 # 60 degrees
@@ -20,6 +23,15 @@ var cone_radius: float = 300.0
 
 @onready var sprite = $Sprite
 @onready var sight_polygon = $SightCone
+
+func get_skater_display() -> String:
+	return "THE REFEREE"
+
+func get_jersey_color() -> Color:
+	return Color(0.85, 0.85, 0.88)
+
+func get_sprite_scale() -> Vector2:
+	return $Sprite.scale
 
 func set_delayed_penalty_signal(active: bool) -> void:
 	delayed_penalty_active = active
@@ -76,18 +88,43 @@ func shake() -> void:
 	shake_tween.tween_property($Sprite, "position", Vector2.ZERO, 0.05)
 
 func _physics_process(delta: float) -> void:
+	if anim_state == "fighting":
+		linear_damp = 0.0
+		if sight_polygon:
+			sight_polygon.visible = false
+		if delayed_signal_label:
+			delayed_signal_label.visible = false
+		if fight_anim_override != "":
+			var f_anim: String = fight_anim_override
+			var f_frame: int = 0
+			if fight_frame_override >= 0:
+				f_frame = fight_frame_override
+			elif f_anim == "Celly 1":
+				f_frame = (int(Globals.ticks / 10.0) % 6)
+			if fight_flip_override != 0:
+				sprite.flip_h = (fight_flip_override > 0)
+			z_index = 2 if f_anim != "Die 1" else -1
+			if Globals.referee_textures.has(f_anim):
+				sprite.texture = Globals.referee_textures[f_anim]
+			sprite.region_rect = Rect2(f_frame * 192, 0, 192, 192)
+			sprite.region_enabled = true
+		return
+
 	if knocked_over <= Globals.ticks and health < 100.0:
 		health += delta * 5.0
 		if health > 100.0:
 			health = 100.0
 
 	if knocked_over > Globals.ticks:
+		z_index = -1
 		linear_damp = 3.0
 		sprite.texture = Globals.referee_textures["Die 1"]
 		sprite.region_rect = Rect2(0, 0, 192, 192)
 		sprite.region_enabled = true
 		_update_cone_visuals()
 		return
+
+	z_index = 0
 
 	if anim_state == "skating_around":
 		if randf() < 0.05:
@@ -194,6 +231,10 @@ func is_in_cone(point: Vector2) -> bool:
 	return abs(angle_to_point) <= cone_angle / 2.0
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
+	if anim_state == "fighting":
+		state.angular_velocity = 0
+		return
+
 	if anim_state == "lerping":
 		var trans = state.get_transform()
 		trans.origin = trans.origin.lerp(initial_position, 0.05)

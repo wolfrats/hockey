@@ -13,6 +13,9 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 					Globals.manager.on_shootout_goal(goal_name)
 				return
 
+		if body.posessor != null and body.has_method("refresh_current_possessor_info"):
+			body.refresh_current_possessor_info()
+
 		if not body.shot_on_goal_counted and body.last_possessor != "":
 			if not Globals.shot_stats.has(body.last_possessor):
 				Globals.shot_stats[body.last_possessor] = 0

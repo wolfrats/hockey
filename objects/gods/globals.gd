@@ -39,6 +39,7 @@ var check_stats: Dictionary = {}
 var hit_stats: Dictionary = {}
 var down_stats: Dictionary = {}
 var skater_match_stats: Dictionary = {}
+var match_goals: Array[Dictionary] = []
 var match_home_score: int = 0
 var match_away_score: int = 0
 var match_ended_in: String = ""
@@ -268,7 +269,8 @@ func skater_texture(size, action) -> Texture2D:
 func generate_referee_textures() -> void:
 	var sprites = [
 		"Skate Left", "Skate Down", "Skate Up", "Glide Left", "Check Left", "Check Down", "Check Up",
-		"Grab Left", "Grab Down", "Grab Up", "Pummel Down", "Pummel Up", "Shoot Left", "Die 1"
+		"Grab Left", "Grab Down", "Grab Up", "Pummel Down", "Pummel Up", "Shoot Left", "Die 1",
+		"Celly 1", "Fight", "Fight Move", "Fight Jab", "Fight Cross", "Fight Uppercut"
 	]
 	for s in sprites:
 		var tex = skater_texture("medium", s)
@@ -559,6 +561,7 @@ func clear_match_stats() -> void:
 	hit_stats.clear()
 	down_stats.clear()
 	skater_match_stats.clear()
+	match_goals.clear()
 	match_home_score = 0
 	match_away_score = 0
 	match_ended_in = ""
@@ -591,6 +594,191 @@ func record_skater_stat(team_index: int, home_team: bool, number: int, skater_na
 	if skater_name != "":
 		entry["name"] = skater_name
 	entry[stat_key] = int(entry.get(stat_key, 0)) + amount
+
+func record_goal(goal_data: Dictionary) -> void:
+	match_goals.append(goal_data)
+
+func get_player_color_from_label(player_label: String) -> Color:
+	if player_label == "Player" or player_label == "Player 1":
+		return player_colors[0] if player_colors.size() > 0 else Color(0, 0, 0, 0)
+	if player_label.begins_with("Player"):
+		var suffix: String = player_label.trim_prefix("Player").strip_edges()
+		if suffix.is_valid_int():
+			var idx: int = int(suffix) - 1
+			if idx >= 0 and idx < player_colors.size():
+				return player_colors[idx]
+	return Color(0, 0, 0, 0)
+
+func get_controller_color(info: Dictionary) -> Color:
+	if info.is_empty():
+		return Color(0, 0, 0, 0)
+	var raw_color = info.get("player_color", null)
+	if raw_color is Color and raw_color.a > 0.0:
+		return raw_color
+	if info.has("player_index"):
+		var idx: int = int(info["player_index"])
+		if idx >= 0 and idx < player_colors.size():
+			return player_colors[idx]
+	var label: String = str(info.get("player_label", ""))
+	if label != "":
+		return get_player_color_from_label(label)
+	return Color(0, 0, 0, 0)
+
+func _create_underlined_text_segment(
+	text: String,
+	underline_color: Color,
+	font_size: int,
+	text_color: Color,
+	underline_height: int = 3
+) -> VBoxContainer:
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 0)
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	var lbl := Label.new()
+	lbl.text = text
+	lbl.add_theme_font_size_override("font_size", font_size)
+	lbl.add_theme_color_override("font_color", text_color)
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(lbl)
+
+	var line := ColorRect.new()
+	line.custom_minimum_size = Vector2(0, underline_height)
+	line.color = underline_color
+	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(line)
+
+	return box
+
+func populate_goal_sub_row(
+	container: HBoxContainer,
+	scorer_info: Dictionary,
+	assist_info: Dictionary,
+	font_size: int = 20,
+	text_color: Color = Color(0.95, 0.96, 1.0),
+	underline_height: int = 4
+) -> void:
+	for child in container.get_children():
+		container.remove_child(child)
+		child.queue_free()
+
+	var no_underline := Color(0, 0, 0, 0)
+
+	var scorer_str: String = "Team Goal"
+	var scorer_color: Color = no_underline
+	if not scorer_info.is_empty():
+		var snum: int = int(scorer_info.get("number", 0))
+		var sname: String = str(scorer_info.get("name", ""))
+		if sname != "":
+			scorer_str = "#%d %s" % [snum, sname] if snum > 0 else sname
+			scorer_color = get_controller_color(scorer_info)
+		elif snum > 0:
+			scorer_str = "#%d" % snum
+			scorer_color = get_controller_color(scorer_info)
+
+	container.add_child(_create_underlined_text_segment(scorer_str, scorer_color, font_size, text_color, underline_height))
+	container.add_child(_create_underlined_text_segment("   |   ", no_underline, font_size, text_color, underline_height))
+
+	var has_assist: bool = false
+	var assist_name_str: String = ""
+	var assist_color: Color = no_underline
+	if not assist_info.is_empty():
+		var anum: int = int(assist_info.get("number", 0))
+		var aname: String = str(assist_info.get("name", ""))
+		if aname != "":
+			assist_name_str = "#%d %s" % [anum, aname] if anum > 0 else aname
+			assist_color = get_controller_color(assist_info)
+			has_assist = true
+
+	if has_assist:
+		container.add_child(_create_underlined_text_segment("Assist: ", no_underline, font_size, text_color, underline_height))
+		container.add_child(_create_underlined_text_segment(assist_name_str, assist_color, font_size, text_color, underline_height))
+	else:
+		container.add_child(_create_underlined_text_segment("Unassisted", no_underline, font_size, text_color, underline_height))
+
+func format_goal_title(team_name: String, tag: String = "") -> String:
+	return ("GOAL! %s  —  %s" % [team_name, tag]) if tag != "" else ("GOAL! %s" % team_name)
+
+func get_goal_team_color(team_index: int, team_home: bool) -> Color:
+	if team_index < 0 or team_index >= StatBook.TEAMS.size():
+		return Color.GOLD
+	var team_data: Dictionary = StatBook.TEAMS[team_index]
+	return team_data["body_color"] if team_home else team_data.get("away_foot_color", team_data["body_color"])
+
+func create_goal_summary_card(goal_data: Dictionary) -> PanelContainer:
+	var team_home: bool = bool(goal_data.get("team_home", true))
+	var team_idx: int = int(goal_data.get("team_index", home_team_index if team_home else away_team_index))
+	var team_name: String = str(StatBook.TEAMS[team_idx]["name"]) if (team_idx >= 0 and team_idx < StatBook.TEAMS.size()) else "Team"
+	var team_col: Color = get_goal_team_color(team_idx, team_home)
+	var tag: String = str(goal_data.get("tag", ""))
+	var scorer_info: Dictionary = goal_data.get("scorer_info", {})
+	var assist_info: Dictionary = goal_data.get("assist_info", {})
+	var period_label: String = str(goal_data.get("period_label", ""))
+	var clock_str: String = str(goal_data.get("clock", ""))
+	var h_score: int = int(goal_data.get("home_score", 0))
+	var a_score: int = int(goal_data.get("away_score", 0))
+
+	var panel := PanelContainer.new()
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.07, 0.09, 0.14, 0.92)
+	style.border_color = Color(0.92, 0.92, 0.95)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(8)
+	style.content_margin_left = 12
+	style.content_margin_right = 16
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	panel.add_theme_stylebox_override("panel", style)
+
+	var hbox := HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 12)
+	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	panel.add_child(hbox)
+
+	var accent := ColorRect.new()
+	accent.custom_minimum_size = Vector2(10, 44)
+	accent.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	accent.color = team_col
+	accent.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(accent)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 2)
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_child(vbox)
+
+	var title_row := HBoxContainer.new()
+	title_row.add_theme_constant_override("separation", 12)
+	title_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(title_row)
+
+	var title_lbl := Label.new()
+	title_lbl.text = format_goal_title(team_name, tag)
+	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title_lbl.add_theme_font_size_override("font_size", 20)
+	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.9, 0.25))
+	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title_row.add_child(title_lbl)
+
+	if period_label != "" or clock_str != "":
+		var meta_lbl := Label.new()
+		var time_part: String = ("%s %s" % [period_label, clock_str]).strip_edges()
+		meta_lbl.text = "%s  (%d-%d)" % [time_part, h_score, a_score]
+		meta_lbl.add_theme_font_size_override("font_size", 16)
+		meta_lbl.add_theme_color_override("font_color", Color(0.75, 0.8, 0.9))
+		meta_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		title_row.add_child(meta_lbl)
+
+	var sub_row := HBoxContainer.new()
+	sub_row.add_theme_constant_override("separation", 0)
+	sub_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	populate_goal_sub_row(sub_row, scorer_info, assist_info, 16, Color(0.95, 0.96, 1.0), 3)
+	vbox.add_child(sub_row)
+
+	return panel
 
 func _ensure_onscreen_controls_built() -> void:
 	if get_node_or_null("Holder") != null:

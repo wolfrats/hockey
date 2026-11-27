@@ -33,7 +33,7 @@ var toast_label: Label = null
 var toast_timer: float = 0.0
 var goal_banner_panel: PanelContainer = null
 var goal_banner_title: Label = null
-var goal_banner_sub: Label = null
+var goal_banner_sub: HBoxContainer = null
 var goal_banner_accent: ColorRect = null
 
 # Delayed penalty state
@@ -497,6 +497,33 @@ func try_start_fight(s1: Skater, s2: Skater, total_heat: float, was_grabbing: bo
 		return false
 	anim_manager.set_phase(AnimationManager.Phase.FIGHT)
 	fight_controller.start_fight(s1, s2, self)
+	if not fight_controller.active:
+		anim_manager.set_phase(AnimationManager.Phase.PLAYING)
+		return false
+	return true
+
+
+func try_start_ref_fight(skater: Skater, ref: Referee) -> bool:
+	if is_practice or anim_manager == null or fight_controller == null:
+		return false
+	if skater == null or ref == null or not is_instance_valid(skater) or not is_instance_valid(ref):
+		return false
+	if skater.is_queued_for_deletion() or ref.is_queued_for_deletion():
+		return false
+	if anim_manager.current_phase != AnimationManager.Phase.PLAYING:
+		return false
+	if fight_controller.active or is_overtime_active() or shootout_active:
+		return false
+	if skater.is_out_of_play() or is_extra_attacker(skater):
+		return false
+	if randf() >= 0.01:
+		return false
+
+	cancel_delayed_penalty()
+	if not is_instance_valid(skater) or not is_instance_valid(ref) or skater.is_queued_for_deletion() or ref.is_queued_for_deletion():
+		return false
+	anim_manager.set_phase(AnimationManager.Phase.FIGHT)
+	fight_controller.start_fight(skater, ref, self)
 	if not fight_controller.active:
 		anim_manager.set_phase(AnimationManager.Phase.PLAYING)
 		return false
@@ -1280,6 +1307,7 @@ func setup_ui() -> void:
 
 	goal_banner_accent = ColorRect.new()
 	goal_banner_accent.custom_minimum_size = Vector2(12, 54)
+	goal_banner_accent.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	goal_banner_accent.color = Color.GOLD
 	gb_hbox.add_child(goal_banner_accent)
 
@@ -1292,9 +1320,9 @@ func setup_ui() -> void:
 	goal_banner_title.add_theme_color_override("font_color", Color(1.0, 0.9, 0.25))
 	gb_vbox.add_child(goal_banner_title)
 
-	goal_banner_sub = Label.new()
-	goal_banner_sub.add_theme_font_size_override("font_size", 20)
-	goal_banner_sub.add_theme_color_override("font_color", Color(0.95, 0.96, 1.0))
+	goal_banner_sub = HBoxContainer.new()
+	goal_banner_sub.add_theme_constant_override("separation", 0)
+	goal_banner_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	gb_vbox.add_child(goal_banner_sub)
 
 
@@ -1315,25 +1343,11 @@ func show_goal_banner(team_home: bool, scorer_info: Dictionary, assist_info: Dic
 	var team_idx: int = Globals.home_team_index if team_home else Globals.away_team_index
 	var team_data: Dictionary = StatBook.TEAMS[team_idx]
 	var team_name: String = str(team_data["name"])
-	var team_col: Color = team_data["body_color"] if team_home else team_data.get("away_foot_color", team_data["body_color"])
+	var team_col: Color = Globals.get_goal_team_color(team_idx, team_home)
 
 	goal_banner_accent.color = team_col
-	goal_banner_title.text = ("GOAL! %s  —  %s" % [team_name, tag]) if tag != "" else ("GOAL! %s" % team_name)
-
-	var scorer_str: String = "Team Goal"
-	if not scorer_info.is_empty():
-		var snum: int = int(scorer_info.get("number", 0))
-		var sname: String = str(scorer_info.get("name", ""))
-		scorer_str = "#%d %s" % [snum, sname] if snum > 0 else sname
-
-	var assist_str: String = "Unassisted"
-	if not assist_info.is_empty():
-		var anum: int = int(assist_info.get("number", 0))
-		var aname: String = str(assist_info.get("name", ""))
-		if aname != "":
-			assist_str = "Assist: #%d %s" % [anum, aname] if anum > 0 else ("Assist: %s" % aname)
-
-	goal_banner_sub.text = "%s   |   %s" % [scorer_str, assist_str]
+	goal_banner_title.text = Globals.format_goal_title(team_name, tag)
+	Globals.populate_goal_sub_row(goal_banner_sub, scorer_info, assist_info, 20, Color(0.95, 0.96, 1.0), 4)
 	goal_banner_panel.visible = true
 
 
@@ -1502,5 +1516,26 @@ func goal_scored(goal_name: String, scorer: String = "", assister: String = "", 
 			"assists",
 			1
 		)
+
+	var period_str: String = "P%d" % current_period
+	if current_period == 4:
+		period_str = "OT"
+	elif current_period > 4:
+		period_str = "OT%d" % (current_period - 3)
+	var mins: int = int(time_remaining / 60)
+	var secs: int = int(time_remaining) % 60
+	var clock_str: String = "%d:%02d" % [mins, secs]
+	Globals.record_goal({
+		"team_home": scoring_team_is_home,
+		"team_index": Globals.home_team_index if scoring_team_is_home else Globals.away_team_index,
+		"scorer_info": scorer_info.duplicate(true),
+		"assist_info": assist_info.duplicate(true),
+		"tag": banner_tag,
+		"period": current_period,
+		"period_label": period_str,
+		"clock": clock_str,
+		"home_score": home_score,
+		"away_score": away_score,
+	})
 
 	show_goal_banner(scoring_team_is_home, scorer_info, assist_info, banner_tag)

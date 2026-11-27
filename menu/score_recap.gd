@@ -27,7 +27,7 @@ func _ready() -> void:
 	# Widen scroll container slightly so named box scores fit nicely
 	var scroll := stats_container.get_parent() as ScrollContainer
 	if scroll:
-		scroll.custom_minimum_size = Vector2(760, 280)
+		scroll.custom_minimum_size = Vector2(760, 300)
 
 	var all_players = []
 	for dict in [
@@ -39,16 +39,36 @@ func _ready() -> void:
 			if not all_players.has(p):
 				all_players.append(p)
 
-	if all_players.size() == 0 and Globals.skater_match_stats.is_empty():
+	if all_players.size() == 0 and Globals.skater_match_stats.is_empty() and Globals.match_goals.is_empty():
 		var empty_label = Label.new()
 		empty_label.text = "No stats recorded."
 		empty_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		stats_container.add_child(empty_label)
 		return
 
+	var g_hdr := Label.new()
+	g_hdr.text = "-- Scoring Summary --"
+	g_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	g_hdr.add_theme_color_override("font_color", Color(1.0, 0.9, 0.25))
+	stats_container.add_child(g_hdr)
+
+	if Globals.match_goals.is_empty():
+		var no_goals_lbl := Label.new()
+		no_goals_lbl.text = "No goals scored."
+		no_goals_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		no_goals_lbl.add_theme_color_override("font_color", Color(0.75, 0.78, 0.85))
+		stats_container.add_child(no_goals_lbl)
+	else:
+		var goals_vbox := VBoxContainer.new()
+		goals_vbox.add_theme_constant_override("separation", 8)
+		goals_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		stats_container.add_child(goals_vbox)
+		for goal_data in Globals.match_goals:
+			goals_vbox.add_child(Globals.create_goal_summary_card(goal_data))
+
 	if all_players.size() > 0:
 		var p_hdr := Label.new()
-		p_hdr.text = "-- Player Summary --"
+		p_hdr.text = "\n-- Player Summary --"
 		p_hdr.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		p_hdr.add_theme_color_override("font_color", Color(0.65, 0.8, 1.0))
 		stats_container.add_child(p_hdr)
